@@ -1,0 +1,162 @@
+---
+title: "Read me"
+output: 
+  html_document: 
+    keep_md: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# rr2 package: calculating R2 for regression models
+
+Codes from Ives 2017 biorxiv preprint <http://biorxiv.org/content/early/2017/05/30/144170>; turned it into a R package.
+
+- replaced all `t(D) %*% D` with `crossprod(D)` as the later is faster. But it is still slow, especially for `R2.ce()`. For a data frame with 2000 rows and 3 variables, it took > 30 mins and did not finish yet...
+    + rewrote the loops in c++, got about 3-9 times speed up.
+- formatted all R code to make it more readable.
+- splitted all functions into 4 scripts: `utils.R`, `r2_ls.R`, `r2_lr.R`, and `r2_ce.R`.
+- documented a little bit for main functions.
+- compared with original R script and got same results for all examples.
+
+To do:
+
+- write *more* unit tests to make sure things work as expected.
+- `phylolm` does not export its compiled C code, maybe probamatic if want to submit to CRAN.
+  + solution: copy its source code into this package.
+  
+## Comparing speed of R version loops with c++ version
+
+The same function `R2.ce()` has three versions: 
+
+- the original R code sourced into global environment `R2.ce()` 
+- the R package version: `rr2::R2.ce(cpp = FALSE)`
+- the R package c++ version: `rr2::R2.ce(cpp = TRUE)`
+
+They give the same results, and the c++ version is the fastest, which resulted about 10 times speed up for LMMs and GLMMs but only about 3 times for PGLS and Phylogenetic logistic regressions. I think it is because the phylogenetic regressions spend more time outside of the loop, thus the less speed up.
+
+### LMMs 
+
+```{r loops-lmms}
+# lmer
+set.seed(123)
+p1 <- 10; nsample <- 10
+n <- p1 * nsample
+d <- data.frame(x1=0, x2=0, y=0, u1=rep(1:p1, each=nsample), 
+                u2=rep(1:p1, times=nsample))
+d$u1 <- as.factor(d$u1)
+d$u2 <- as.factor(d$u2)
+b1 <- 1; b2 <- -1; sd1 <- 1.5
+d$x1 <- rnorm(n=n); d$x2 <- rnorm(n=n)
+d$y <- b1 * d$x1 + b2 * d$x2 + rep(rnorm(n=p1, sd=sd1), each=nsample) + 
+  rep(rnorm(n=p1, sd=sd1), times=nsample) + rnorm(n=n)
+
+mod = lme4::lmer(y ~ x1 + x2 + (1 | u1) + (1 | u2), data=d, REML = F)
+mod.r1 = lme4::lmer(y ~ x1 + (1 | u1) + (1 | u2), data=d, REML = F)
+
+a = rr2::R2.ce(mod, mod.r1, cpp = T)
+b = rr2::R2.ce(mod, mod.r1, cpp = F)
+source("misc/Ives R2 R code/R2_Supplement_Appendix_S1_source_code.R")
+c = R2.ce(mod, mod.r1)
+data.frame(cpp = a, R.pkg = b, R.orig = c) # same results
+
+
+library(microbenchmark)
+microbenchmark(rr2::R2.ce(mod, mod.r1, cpp = T), 
+               rr2::R2.ce(mod, mod.r1, cpp = F), 
+               R2.ce(mod, mod.r1),
+               times = 20)
+```
+
+The package version is faster because Tony accidentally put a solve step in the loop, which is unnecessary since its results do not change over loops.
+
+### GLMMs 
+
+```{r loops-glmms}
+set.seed(123)
+p1 <- 10; nsample <- 10; n <- p1 * nsample
+d <- data.frame(x=0, y=0, u=rep(1:p1, each=nsample))
+d$u <- as.factor(d$u)
+b1 <- 1; sd1 <- 1.5
+d$x <- rnorm(n=n)
+prob <- inv.logit(b1 * d$x + rep(rnorm(n=p1, sd=sd1), each=nsample))
+d$y <- rbinom(n=n, size=1, prob=prob)
+
+mod <- lme4::glmer(y ~ x + (1 | u), data=d, family="binomial")
+mod.r1 <- lme4::glmer(y ~ 1 + (1 | u), data=d, family="binomial")
+
+a = rr2::R2.ce(mod, mod.r1, cpp = T)
+b = rr2::R2.ce(mod, mod.r1, cpp = F)
+c = R2.ce(mod, mod.r1)
+
+data.frame(cpp = a, R.pkg = b, R.orig = c) # same results
+
+microbenchmark(rr2::R2.ce(mod, mod.r1, cpp = T), 
+               rr2::R2.ce(mod, mod.r1, cpp = F), 
+               R2.ce(mod, mod.r1),
+               times = 20)
+```
+
+The package version is slighly faster than the original version because the replacement of `t(D) %*% D` with `crossprod(D)`.
+
+### PGLS 
+
+```{r loops-pgls}
+set.seed(123)
+p1 <- 10; nsample <- 10; n <- p1 * nsample
+d <- data.frame(x=array(0, dim=n), y=0)
+b1 <- 1.5; signal <- 0.7
+phy <- ape::compute.brlen(ape::rtree(n=n), method = "Grafen", power = 1)
+phy.x <- phy
+x <- ape::rTraitCont(phy.x, model = "BM", sigma = 1)
+e <- signal^0.5 * ape::rTraitCont(phy, model = "BM", sigma = 1) + (1-signal)^0.5 * rnorm(n=n)
+d$x <- x[match(names(e), names(x))]
+d$y <- b1 * x + e
+rownames(d) <- phy$tip.label
+
+z.x <- phylolm::phylolm(y ~ 1, phy=phy, data=d, model="lambda")
+lam.x <- round(z.x$optpar, digits=4)
+mod <- phylolm::phylolm(y ~ x, phy=phy, data=d, model="lambda", starting.value=.98*lam.x+.01)
+mod.r <- lm(y ~ x, data=d)
+
+a = rr2::R2.ce(mod, mod.r, phy = phy, cpp = T)
+b = rr2::R2.ce(mod, mod.r, phy = phy, cpp = F)
+c = R2.ce(mod, mod.r, phy = phy)
+
+data.frame(cpp = a, R.pkg = b, R.orig = c) # same results
+
+microbenchmark(rr2::R2.ce(mod, mod.r, phy = phy, cpp = T), 
+               rr2::R2.ce(mod, mod.r, phy = phy, cpp = F), 
+               R2.ce(mod, mod.r, phy = phy),
+               times = 20)
+```
+
+### PLOG 
+
+```{r loops-plog}
+set.seed(123)
+p1 <- 10; nsample <- 10; n <- p1 * nsample
+b1 <- 1.5; signal <- 2
+phy <- ape::compute.brlen(ape::rtree(n=n), method = "Grafen", power = 1)
+d <- data.frame(x=array(0, dim=n), y=0)
+d$x <- rnorm(n)
+e <- signal * ape::rTraitCont(phy, model = "BM", sigma = 1)
+e <- e[match(phy$tip.label, names(e))]
+d$y <- rbinom(n=n, size=1, prob=rr2::inv.logit(b1 * d$x + e))
+rownames(d) <- phy$tip.label
+
+mod <- rr2::binaryPGLMM(formula = "y ~ x", data=d, phy=phy)
+mod.r <- rr2::binaryPGLMM(y ~ 1, data=d, phy=phy)
+
+a = rr2::R2.ce(mod, mod.r, phy = phy, cpp = T)
+b = rr2::R2.ce(mod, mod.r, phy = phy, cpp = F)
+c = R2.ce(mod, mod.r, phy = phy)
+
+data.frame(cpp = a, R.pkg = b, R.orig = c) # same results
+
+microbenchmark(rr2::R2.ce(mod, mod.r, phy = phy, cpp = T), 
+               rr2::R2.ce(mod, mod.r, phy = phy, cpp = F), 
+               R2.ce(mod, mod.r, phy = phy),
+               times = 20)
+```
