@@ -15,8 +15,6 @@ using namespace arma;
 //'
 //' @param R a matrix (not sparse matrix, use \code{as.matrix(R)} to convert if necessary)
 //' @param V a symmetric matrix (not sparse matrix)
-//' @param iV the inverse of V (not sparse matrix)
-//' @param X model matrix (not sparse matrix)
 //' @export
 // [[Rcpp::export]]
 arma::vec loop_cpp(const arma::vec& R, const arma::mat& V) {
