@@ -32,10 +32,7 @@ R2.lr <- function(mod = NULL, mod.r = NULL) {
   }
 
   if (class(mod)[1] == "glmerMod") {
-    if (family(mod)[[1]] != "binomial") {
-      stop("Sorry, but only binomial (binary) glmerMod models are allowed.")
-    }
-    if (!exists(deparse(substitute(mod.r)))) {
+    if (!is.object(mod.r)) {
       Y <- model.frame(mod)[, 1]
       mod.r <- glm(Y ~ 1, family = family(mod)[[1]])
     }
@@ -82,7 +79,7 @@ R2.lr.glmerMod <- function(mod = NULL, mod.r = NULL) {
   X <- model.matrix(mod)
   n <- dim(X)[1]
 
-  R2.lr <- 1 - exp(-2/n * (logLik(mod) - logLik(mod.r)))
+  R2.lr <- (1 - exp(-2/n * (logLik(mod) - logLik(mod.r))))/(1 - exp(2/n * logLik(mod.r)))
   return(R2.lr)
 }
 
