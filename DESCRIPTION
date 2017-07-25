@@ -1,11 +1,10 @@
 Package: rr2
 Type: Package
-Title: R2s of Regression Models
+Title: R2s for Regression Models
 Version: 0.1.0
 Authors@R: c(
     person("Anthony", "Ives", , "arives@wisc.edu", c("aut", "cre")),
     person("Daijiang", "Li", , "daijianglee@gmail.com", role = "ctb"))
-Maintainer: Who to complain to <yourfault@somewhere.net>
 Description: This package provides three ways to calculate R2 of
     regression models, including LMMs, GLMMs, Phylogenetic GLS, and 
     Phylogenetic Logistic regressions. See details in Ives preprint
