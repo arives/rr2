@@ -11,14 +11,12 @@ Description: This package provides three methods to calculate R2 for models
     at biorxiv.
 License: GPL
 Depends: R (>= 3.0), Matrix (>= 1.1.1), stats
-LinkingTo: Rcpp, RcppArmadillo
 Encoding: UTF-8
 LazyData: true
 Imports: lme4,
     phylolm,
     ape,
-    utils,
-    Rcpp
+    utils
 RoxygenNote: 6.0.1
 URL: http://biorxiv.org/content/early/2017/05/30/144170
 Suggests: testthat

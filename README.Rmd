@@ -41,7 +41,6 @@ This package also has some helper functions such as `inv.logit()`, `partialR2()`
 |PLOG: binaryPGLMM |     R2.ce, R2.ls, -----|
 |PLOG: phyloglm    |     -----, -----, R2.lr|
 
-
 # Usage: calculating R2s for regression models
 
 First, let's simulate data that will be used to fit various models
@@ -153,8 +152,6 @@ R2(z.f.plog2, z.x.plog2, ls = FALSE, ce = FALSE) # R2.ls and R2.ce do not apply 
 # alternate
 R2.lr(z.f.plog2, z.x.plog2)
 ```
-
-We copied the R and c files of `phylolm::phyloglm()` into our package and added the 'Nelder-Mead' optimal method for simulations because with simple simulated data, the optimal methods provided by `phylolm::phyloglm()` may not work. We did not export this function, but one can use it with `rr2:::phyloglm()`. 
 
 # Citation
 

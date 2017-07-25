@@ -18,9 +18,9 @@ library(rr2)
 Package structure
 =================
 
-This package has three main functions: `R2.ls()`, `R2.lr()`, and `R2.ce()`. You can use them individually in the form of, for example, `R2.ls(mod, mod.r, phy)`. `phy` argument is not needed for `R2.lr()` but is required for the other two functions when used with phylogenetic models.
+This package has three main functions: `R2.ls()`, `R2.lr()`, and `R2.ce()`. You can use them individually in the form of, e.g., `R2.ls(mod, mod.r)` where `mod` is the full model and `mod.r` is the reduce model for partial R2s. If you do not include the reduced model `mod.r`, then the appropriate model with just the intercept is used to give the total R2. When using `R2.ls` and `R2.ce` with PGLS, you need to include the phylo object containing a phylogenetic tree, e.g., `R2.ls(mod, mod.r, phy = phy)`.
 
-You can calculate all three R2s at the same time with `R2(mod, mod.r, phy)`. You can also specify which R2(s) to calculate within this function, e.g., `R2(mod, mod.r, phy, ce = FALSE)` or `R2(mod, mod.r, phy, ls = FALSE)`.
+You can calculate all three R2s at the same time with `R2(mod, mod.r)`. You can also specify which R2(s) to calculate within this function by turning off unwanted methods, e.g., `R2(mod, mod.r, ce = FALSE)` or `R2(mod, mod.r, ls = FALSE)`.
 
 This package also has some helper functions such as `inv.logit()`, `partialR2()`, and `partialR2adj()`.
 
@@ -36,7 +36,7 @@ This package also has some helper functions such as `inv.logit()`, `partialR2()`
 Usage: calculating R2s for regression models
 ============================================
 
-First, let's simulate data that will be used to fit various regression models
+First, let's simulate data that will be used to fit various models
 
 ``` r
 # data 
@@ -67,7 +67,7 @@ b1 <- 1; sd1 <- 1.5
 prob <- rr2::inv.logit(b1 * d$x1 + rep(rnorm(n = p1, sd = sd1), each = nsample)) # random intercept u1
 d$y_binary <- rbinom(n = n, size = 1, prob = prob)
 
-# y for PGLS
+# PGLS
 b1 <- 1.5; signal <- 0.7
 phy <- ape::compute.brlen(ape::rtree(n = n), method = "Grafen", power = 1)
 phy.x <- ape::compute.brlen(phy, method = "Grafen", power = .0001)
@@ -77,7 +77,7 @@ d$x_trait <- x_trait[match(names(e), names(x_trait))]
 d$y_pgls <- b1 * x_trait + e
 rownames(d) <- phy$tip.label    
 
-# y for Phylogenetic logistic regression
+# Phylogenetic Logistic Regression
 b1 <- 1.5; signal <- 2
 e <- signal * ape::rTraitCont(phy, model = "BM", sigma = 1)
 e <- e[match(phy$tip.label, names(e))]
@@ -108,6 +108,11 @@ LMM
 
 ``` r
 library(rr2)
+```
+
+    ## Loading required package: Matrix
+
+``` r
 z.f.lmm <- lme4::lmer(y_re_intercept ~ x1 + x2 + (1 | u1) + (1 | u2), data = d, REML = F)
 z.x.lmm <- lme4::lmer(y_re_intercept ~ x1 + (1 | u1) + (1 | u2), data = d, REML = F)
 z.v.lmm <- lme4::lmer(y_re_intercept ~ 1 + (1 | u2), data = d, REML = F)
@@ -220,16 +225,16 @@ R2(mod = z.f.plog, mod.r = z.x.plog, lr = FALSE) # R2.lr can't be used with bina
 ```
 
     ##     R2s     value
-    ## 1 R2_ls 0.3950225
-    ## 2 R2_ce 0.3344826
+    ## 1 R2_ls 0.7124029
+    ## 2 R2_ce 0.3344832
 
 ``` r
 R2(mod = z.f.plog, lr = FALSE)
 ```
 
     ##     R2s     value
-    ## 1 R2_ls 0.7291474
-    ## 2 R2_ce 0.5531280
+    ## 1 R2_ls 0.7291481
+    ## 2 R2_ce 0.5531285
 
 ``` r
 z.f.plog2 <- phylolm::phyloglm(y_phy_binary ~ x1, data = d, start.alpha = 1, phy = phy)
@@ -248,8 +253,6 @@ R2.lr(z.f.plog2, z.x.plog2)
 ```
 
     ## [1] 0.3853273
-
-We copied the R and c files of `phylolm::phyloglm()` into our package and added the 'Nelder-Mead' optimal method for simulations because with simple simulated data, the optimal methods provided by `phylolm::phyloglm()` may not work. We did not export this function, but one can use it with `rr2:::phyloglm()`.
 
 Citation
 ========

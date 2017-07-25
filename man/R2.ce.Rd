@@ -4,7 +4,7 @@
 \alias{R2.ce}
 \title{Calculate R2.ce}
 \usage{
-R2.ce(mod = NULL, mod.r = NULL, phy = NULL, cpp = TRUE)
+R2.ce(mod = NULL, mod.r = NULL, phy = NULL)
 }
 \arguments{
 \item{mod}{a regression model with the following class: 'lmerMod', 'glmerMod', 'phylolm', and 'binaryPGLMM'}
@@ -12,8 +12,6 @@ R2.ce(mod = NULL, mod.r = NULL, phy = NULL, cpp = TRUE)
 \item{mod.r}{reduced model, if not provided, will use corresponding models with intercept as the only predictor}
 
 \item{phy}{a phylogeny with tip labels and branch length}
-
-\item{cpp}{whether to use Rcpp version of loops when the mod is class of 'phylolm', default is TRUE}
 }
 \value{
 R2.ce

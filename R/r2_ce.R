@@ -4,11 +4,10 @@
 #' @param mod a regression model with the following class: 'lmerMod', 'glmerMod', 'phylolm', and 'binaryPGLMM'
 #' @param mod.r reduced model, if not provided, will use corresponding models with intercept as the only predictor
 #' @param phy a phylogeny with tip labels and branch length
-#' @param cpp whether to use Rcpp version of loops when the mod is class of 'phylolm', default is TRUE
 #' @return R2.ce
 #' @export
 #'
-R2.ce <- function(mod = NULL, mod.r = NULL, phy = NULL, cpp = TRUE) {
+R2.ce <- function(mod = NULL, mod.r = NULL, phy = NULL) {
     
     if (!is.element(class(mod)[1], c("lmerMod", "glmerMod", "phylolm", "binaryPGLMM"))) {
         stop("mod must be class one of classes lmerMod, glmerMod, phylolm (but not phyloglm), binaryPGLMM.")
@@ -50,11 +49,7 @@ R2.ce <- function(mod = NULL, mod.r = NULL, phy = NULL, cpp = TRUE) {
         if (!is.element(class(mod.r)[1], c("phylolm", "lm"))) {
             stop("mod.r must be class phylolm or lm.")
         }
-        if (cpp) {
-            return(R2.ce.phylolm(mod, mod.r, phy, cpp = TRUE))
-        } else {
-            return(R2.ce.phylolm(mod, mod.r, phy, cpp = FALSE))
-        }
+        return(R2.ce.phylolm(mod, mod.r, phy))
     }
     
     if (class(mod)[1] == "binaryPGLMM") {
@@ -83,7 +78,7 @@ R2.ce.glmerMod <- function(mod = NULL, mod.r = NULL) {
     return(1 - SSE.ce/SSE.ce.r)
 }
 
-R2.ce.phylolm <- function(mod = NULL, mod.r = NULL, phy = NULL, cpp = TRUE) {
+R2.ce.phylolm <- function(mod = NULL, mod.r = NULL, phy = NULL) {
     Y <- mod$y
     X <- mod$X
     n <- dim(X)[1]
@@ -100,17 +95,13 @@ R2.ce.phylolm <- function(mod = NULL, mod.r = NULL, phy = NULL, cpp = TRUE) {
     V <- ape::vcv(phy.f)
     R <- Y - stats::fitted(mod)
     
-    if (cpp) {
-        Rhat = loop_cpp(as.matrix(R), as.matrix(V))
-    } else {
-        Rhat <- matrix(0, nrow = n, ncol = 1)
-        for (j in 1:n) {
-            r <- R[-j]
-            VV <- V[-j, -j]
-            iVV <- solve(VV)
-            v <- V[j, -j]
-            Rhat[j] <- v %*% iVV %*% r
-        }
+    Rhat <- matrix(0, nrow = n, ncol = 1)
+    for (j in 1:n) {
+        r <- R[-j]
+        VV <- V[-j, -j]
+        iVV <- solve(VV)
+        v <- V[j, -j]
+        Rhat[j] <- v %*% iVV %*% r
     }
     
     Yhat <- as.numeric(stats::fitted(mod) + Rhat)
@@ -128,17 +119,13 @@ R2.ce.phylolm <- function(mod = NULL, mod.r = NULL, phy = NULL, cpp = TRUE) {
         }
         V.r <- ape::vcv(phy.r)
         R.r <- Y - stats::fitted(mod.r)
-        if (cpp) {
-            Rhat.r = loop_cpp(as.matrix(R.r), as.matrix(V.r))
-        } else {
-            Rhat.r <- matrix(0, nrow = n, ncol = 1)
-            for (j in 1:n) {
-                r.r <- R.r[-j]
-                VV.r <- V.r[-j, -j]
-                iVV.r <- solve(VV.r)
-                v.r <- V.r[j, -j]
-                Rhat.r[j] <- v.r %*% iVV.r %*% r.r
-            }
+        Rhat.r <- matrix(0, nrow = n, ncol = 1)
+        for (j in 1:n) {
+            r.r <- R.r[-j]
+            VV.r <- V.r[-j, -j]
+            iVV.r <- solve(VV.r)
+            v.r <- V.r[j, -j]
+            Rhat.r[j] <- v.r %*% iVV.r %*% r.r
         }
         Yhat.r <- as.numeric(stats::fitted(mod.r) + Rhat.r)
     }
