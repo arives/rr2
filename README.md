@@ -2,7 +2,7 @@
 Goal
 ====
 
-This package can be used to calculate three R2s for regression models with the following class: 'lmerMod' (LMM), 'glmerMod' (GLMM), 'phylolm' (Phylogenetic GLS), and 'binaryPGLMM/phyloglm' (Phylogenetic logistic regression). Detailed technical descriptions can be found in [Ives 2017, preprint](http://www.biorxiv.org/content/early/2017/05/30/144170).
+This package provides three R2s for statistical models with correlated errors including classes: 'lmerMod' (LMM), 'glmerMod' (GLMM), 'phylolm' (Phylogenetic GLS), and 'binaryPGLMM/phyloglm' (Phylogenetic Logistic Regression). Detailed technical descriptions can be found in [Ives 2017, preprint](http://www.biorxiv.org/content/early/2017/05/30/144170).
 
 Installation
 ============
@@ -18,9 +18,9 @@ library(rr2)
 Package structure
 =================
 
-This package has three main functions: `R2.ls()`, `R2.lr()`, and `R2.ce()`. You can use them individually in the form of, for example, `R2.ls(mod, mod.r, phy)`. `phy` argument is not needed for `R2.lr()` but is required for the other two functions when used with phylogenetic regression models.
+This package has three main functions: `R2.ls()`, `R2.lr()`, and `R2.ce()`. You can use them individually in the form of, for example, `R2.ls(mod, mod.r, phy)`. `phy` argument is not needed for `R2.lr()` but is required for the other two functions when used with phylogenetic models.
 
-You can calculate all three R2s at the same time with `R2(mod, mod.r, phy)`. You can specifify which R2(s) to calculate within this function too, e.g. `R2(mod, mod.r, phy, ce = FALSE)` or `R2(mod, mod.r, phy, ls = FALSE)`.
+You can calculate all three R2s at the same time with `R2(mod, mod.r, phy)`. You can also specify which R2(s) to calculate within this function, e.g., `R2(mod, mod.r, phy, ce = FALSE)` or `R2(mod, mod.r, phy, ls = FALSE)`.
 
 This package also has some helper functions such as `inv.logit()`, `partialR2()`, and `partialR2adj()`.
 
@@ -36,7 +36,7 @@ This package also has some helper functions such as `inv.logit()`, `partialR2()`
 Usage: calculating R2s for regression models
 ============================================
 
-First, let's simulate some data that will be used to fit various regression models
+First, let's simulate data that will be used to fit various regression models
 
 ``` r
 # data 
@@ -103,36 +103,14 @@ head(d)
 
 Then, let's fit some models and calculate their R2s.
 
-LM
---
+LMM
+---
 
 ``` r
-z.f.lm = lm(y_re_intercept ~ x1 + x2, data = d)
-z.r.lm = lm(y_re_intercept ~ x1, data = d)
-
 library(rr2)
 ```
 
     ## Loading required package: Matrix
-
-``` r
-partialR2(mod = z.f.lm, mod.r = z.r.lm)
-```
-
-    ## [1] 0.2473776
-
-``` r
-partialR2adj(mod = z.f.lm, df.f = 3, mod.r = z.r.lm, df.r = 2)
-```
-
-    ## $R2
-    ## [1] 0.2473776
-    ## 
-    ## $R2.adj
-    ## [1] 0.4982517
-
-LMM
----
 
 ``` r
 z.f.lmm <- lme4::lmer(y_re_intercept ~ x1 + x2 + (1 | u1) + (1 | u2), data = d, REML = F)
@@ -235,15 +213,15 @@ R2(mod = z.f.pgls, phy = phy)
     ## 2 R2_ls 0.8862266
     ## 3 R2_ce 0.8777782
 
-Phy-Logistic regression
------------------------
+Phylogenetic Logistic Regression
+--------------------------------
 
 ``` r
 z.f.plog <- rr2::binaryPGLMM(y_phy_binary ~ x1, data = d, phy = phy)
 z.x.plog <- rr2::binaryPGLMM(y_phy_binary ~ 1, data = d, phy = phy)
 z.v.plog <- glm(y_phy_binary ~ x1, data = d, family = "binomial")
 
-R2(mod = z.f.plog, mod.r = z.x.plog, lr = FALSE) # R2.lr doesn't apply for binaryPGLMM
+R2(mod = z.f.plog, mod.r = z.x.plog, lr = FALSE) # R2.lr can't be used with binaryPGLMM because it is not a ML method
 ```
 
     ##     R2s     value
@@ -259,22 +237,22 @@ R2(mod = z.f.plog, lr = FALSE)
     ## 2 R2_ce 0.5531280
 
 ``` r
-z.f.plog2 <- rr2:::phyloglm(y_phy_binary ~ x1, data = d, start.alpha = 1, phy = phy, opt.method = "Nelder-Mead")
-z.x.plog2 <- rr2:::phyloglm(y_phy_binary ~ 1, data = d, phy = phy, start.alpha = min(20, z.f.plog2$alpha), opt.method = "Nelder-Mead")
+z.f.plog2 <- phylolm::phyloglm(y_phy_binary ~ x1, data = d, start.alpha = 1, phy = phy)
+z.x.plog2 <- phylolm::phyloglm(y_phy_binary ~ 1, data = d, phy = phy, start.alpha = min(20, z.f.plog2$alpha))
 z.v.plog2 <- glm(y_phy_binary ~ x1, data = d, family = "binomial")
 
 R2(z.f.plog2, z.x.plog2, ls = FALSE, ce = FALSE) # R2.ls and R2.ce do not apply for phyloglm
 ```
 
     ##     R2s     value
-    ## 1 R2_lr 0.3853137
+    ## 1 R2_lr 0.3853273
 
 ``` r
 # alternate
 R2.lr(z.f.plog2, z.x.plog2)
 ```
 
-    ## [1] 0.3853137
+    ## [1] 0.3853273
 
 Citation
 ========
