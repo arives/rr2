@@ -5,9 +5,9 @@ Version: 0.1.0
 Authors@R: c(
     person("Anthony", "Ives", , "arives@wisc.edu", c("aut", "cre")),
     person("Daijiang", "Li", , "daijianglee@gmail.com", role = "ctb"))
-Description: This package provides three ways to calculate R2 of
-    regression models, including LMMs, GLMMs, Phylogenetic GLS, and 
-    Phylogenetic Logistic regressions. See details in Ives preprint
+Description: This package provides three methods to calculate R2 for models
+    with correlated errors, including Phylogenetic GLS, Phylogenetic 
+    Logistic Regression, LMMs, and GLMM. See details in Ives preprint
     at biorxiv.
 License: GPL
 Depends: R (>= 3.0), Matrix (>= 1.1.1), stats
