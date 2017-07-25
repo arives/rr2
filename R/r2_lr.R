@@ -96,20 +96,20 @@ R2.lr.phyloglm <- function(mod = NULL, mod.r = NULL) {
     
     Y <- mod$y
     n <- dim(mod$X)[1]
-    X <- mod$X[, -1]
+    X <- mod$X
     
     alpha.cutoff <- 40
     if (mod$alpha < alpha.cutoff) {
         LL <- mod$logLik
     } else {
-        LL <- logLik(glm(Y ~ X, family = "binomial"))
+        LL <- logLik(glm(Y ~ 0 + X, family = "binomial"))
     }
     if (class(mod.r)[1] == "phyloglm") {
         if (mod.r$alpha < alpha.cutoff) {
             LL.r <- mod.r$logLik
         } else {
             X.r <- mod.r$X
-            LL.r <- logLik(glm(Y ~ X.r, family = "binomial"))
+            LL.r <- logLik(glm(Y ~ 0 + X.r, family = "binomial"))
         }
     } else {
         LL.r <- logLik(mod.r)
