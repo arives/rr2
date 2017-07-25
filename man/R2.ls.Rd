@@ -7,7 +7,7 @@
 R2.ls(mod = NULL, mod.r = NULL, phy = NULL)
 }
 \arguments{
-\item{mod}{a regression model with the following class: "lmerMod", "glmerMod", "phylolm", and "binaryPGLMM"}
+\item{mod}{a regression model with the following class: 'lmerMod', 'glmerMod', 'phylolm', and 'binaryPGLMM'}
 
 \item{mod.r}{reduced model, if not provided, will use corresponding models with intercept as the only predictor}
 

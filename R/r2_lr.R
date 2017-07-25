@@ -1,7 +1,7 @@
 #' Calculate R2.lr
 #'
 #' Calculate R2.lr for LMM, GLMM, PGLM, and PGLMMs.
-#' @param mod a regression model with the following class: 'lmerMod', 'glmerMod', 'phylolm', and 'binaryPGLMM'
+#' @param mod a regression model with the following class: 'lmerMod', 'glmerMod', 'phylolm', and 'phyloglm'
 #' @param mod.r reduced model, if not provided, will use corresponding models with intercept as the only predictor
 #' @return R2.lr
 #' @export
@@ -106,7 +106,7 @@ R2.lr.phyloglm <- function(mod = NULL, mod.r = NULL) {
     }
     if (class(mod.r)[1] == "phyloglm") {
         if (mod.r$alpha < alpha.cutoff) {
-            LL.r <- mod.r$logLik[, -1]
+            LL.r <- mod.r$logLik
         } else {
             X.r <- mod.r$X
             LL.r <- logLik(glm(Y ~ X.r, family = "binomial"))

@@ -1,5 +1,5 @@
 #' @importFrom utils tail
-#' @importFrom stats anova binomial family glm lm logLik model.frame model.matrix model.response optim pchisq pnorm poisson quantile reorder rnorm sd sigma update var
+#' @importFrom stats anova binomial family glm lm logLik model.frame model.matrix model.response optim pchisq pnorm poisson quantile reorder rnorm sd sigma update var na.omit
 #' @importMethodsFrom Matrix t %*% crossprod diag tcrossprod solve determinant update
 NULL
 
@@ -253,7 +253,6 @@ binaryPGLMM <- function(formula, data = list(), phy, s2.init = 0.1, B.init = NUL
 #' @param opt.method optim methods: 'Nelder-Mead', 'L-BFGS-B', 'BFGS', 'SANN'
 #' @return a large list with class as \code{phyloglm}
 #' @references See here for the orginal function \url{https://github.com/lamho86/phylolm/blob/master/man/phyloglm.Rd}
-#' @export
 #'
 phyloglm <- function(formula, data = list(), phy, method = c("logistic_MPLE", "logistic_IG10", "poisson_GEE"), btol = 10, log.alpha.bound = 4, start.beta = NULL, 
     start.alpha = NULL, boot = 0, full.matrix = TRUE, opt.method = c("Nelder-Mead", "L-BFGS-B", "BFGS", "SANN")) {

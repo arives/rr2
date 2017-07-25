@@ -8,7 +8,7 @@ Authors@R: c(
 Maintainer: Who to complain to <yourfault@somewhere.net>
 Description: This package provides three ways to calculate R2 of
     regression models, including LMMs, GLMMs, Phylogenetic GLS, and 
-    Phylogenetic Ligistic regressions. See details in Ives preprint
+    Phylogenetic Logistic regressions. See details in Ives preprint
     at biorxiv.
 License: GPL
 Depends: R (>= 3.0), Matrix (>= 1.1.1), stats

@@ -10,7 +10,7 @@
 R2.ls <- function(mod = NULL, mod.r = NULL, phy = NULL) {
     
     if (!is.element(class(mod)[1], c("lmerMod", "glmerMod", "phylolm", "binaryPGLMM"))) {
-        stop("mod must be class one of classes lmerMod, glmerMod, phylolm, binaryPGLMM.")
+        stop("mod must be class one of classes lmerMod, glmerMod, phylolm (but not phyloglm), binaryPGLMM.")
     }
     
     if (class(mod)[1] == "lmerMod") {
@@ -108,10 +108,8 @@ R2.ls.glmerMod <- function(mod = NULL, mod.r = NULL) {
     
     mu <- family(mod)$linkinv(X %*% lme4::fixef(mod))
     
-    if (family(mod)[1] == "binomial") 
-        v <- mu * (1 - mu)
-    if (family(mod)[1] == "poisson") 
-        v <- mu
+    if (family(mod)[1] == "binomial") v <- mu * (1 - mu)
+    if (family(mod)[1] == "poisson")  v <- mu
     
     sig2e <- pi^2/3
     sig2a <- prod(diag(C))^(1/n)
@@ -128,10 +126,8 @@ R2.ls.glmerMod <- function(mod = NULL, mod.r = NULL) {
         
         mu.r <- family(mod.r)$linkinv(X.r %*% lme4::fixef(mod.r))
         
-        if (family(mod.r)[1] == "binomial") 
-            v.r <- mu.r * (1 - mu.r)
-        if (family(mod.r)[1] == "poisson") 
-            v.r <- mu.r
+        if (family(mod.r)[1] == "binomial") v.r <- mu.r * (1 - mu.r)
+        if (family(mod.r)[1] == "poisson")  v.r <- mu.r
         
         sig2e.r <- pi^2/3
         sig2a.r <- prod(diag(C.r))^(1/n)
@@ -143,10 +139,8 @@ R2.ls.glmerMod <- function(mod = NULL, mod.r = NULL) {
     if (class(mod.r)[1] == "glm") {
         mu.r <- mod.r$fitted.values
         
-        if (family(mod.r)[1] == "binomial") 
-            v.r <- mu.r * (1 - mu.r)
-        if (family(mod.r)[1] == "poisson") 
-            v.r <- mu.r
+        if (family(mod.r)[1] == "binomial") v.r <- mu.r * (1 - mu.r)
+        if (family(mod.r)[1] == "poisson")  v.r <- mu.r
         
         sig2e.r <- pi^2/3
         Yhat.r <- log(mu.r/(1 - mu.r))

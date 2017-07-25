@@ -7,13 +7,13 @@
 R2.ce(mod = NULL, mod.r = NULL, phy = NULL, cpp = TRUE)
 }
 \arguments{
-\item{mod}{a regression model with the following class: "lmerMod", "glmerMod", "phylolm", and "binaryPGLMM"}
+\item{mod}{a regression model with the following class: 'lmerMod', 'glmerMod', 'phylolm', and 'binaryPGLMM'}
 
 \item{mod.r}{reduced model, if not provided, will use corresponding models with intercept as the only predictor}
 
 \item{phy}{a phylogeny with tip labels and branch length}
 
-\item{cpp}{whether to use Rcpp version of loops, default is TRUE}
+\item{cpp}{whether to use Rcpp version of loops when the mod is class of 'phylolm', default is TRUE}
 }
 \value{
 R2.ce

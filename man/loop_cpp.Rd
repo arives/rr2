@@ -4,16 +4,12 @@
 \alias{loop_cpp}
 \title{A loop in c++ to speed up}
 \usage{
-loop_cpp(R, V, iV, X)
+loop_cpp(R, V)
 }
 \arguments{
 \item{R}{a matrix (not sparse matrix, use \code{as.matrix(R)} to convert if necessary)}
 
 \item{V}{a symmetric matrix (not sparse matrix)}
-
-\item{iV}{the inverse of V (not sparse matrix)}
-
-\item{X}{model matrix (not sparse matrix)}
 }
 \description{
 A loop in c++ to speed up

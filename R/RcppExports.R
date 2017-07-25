@@ -5,10 +5,8 @@
 #'
 #' @param R a matrix (not sparse matrix, use \code{as.matrix(R)} to convert if necessary)
 #' @param V a symmetric matrix (not sparse matrix)
-#' @param iV the inverse of V (not sparse matrix)
-#' @param X model matrix (not sparse matrix)
 #' @export
-loop_cpp <- function(R, V, iV, X) {
-    .Call('rr2_loop_cpp', PACKAGE = 'rr2', R, V, iV, X)
+loop_cpp <- function(R, V) {
+    .Call('rr2_loop_cpp', PACKAGE = 'rr2', R, V)
 }
 

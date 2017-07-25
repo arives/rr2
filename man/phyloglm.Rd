@@ -16,7 +16,7 @@ phyloglm(formula, data = list(), phy, method = c("logistic_MPLE",
 
 \item{phy}{phylogenetic tree of type phylo with branch lengths}
 
-\item{method}{The "logistic_IG10" method optimizes a GEE approximation to the penalized likelihood of the logistic regression. "logistic_MPLE" maximizes the penalized likelihood of the logistic regression. In both cases, the penalty is Firth's correction. The "poisson_GEE" method solves the generalized estimating equations (GEE) for Poisson regression.}
+\item{method}{The 'logistic_IG10' method optimizes a GEE approximation to the penalized likelihood of the logistic regression. 'logistic_MPLE' maximizes the penalized likelihood of the logistic regression. In both cases, the penalty is Firth's correction. The 'poisson_GEE' method solves the generalized estimating equations (GEE) for Poisson regression.}
 
 \item{btol}{(logistic regression only) bound on the linear predictor to bound the searching space.}
 
@@ -30,7 +30,7 @@ phyloglm(formula, data = list(), phy, method = c("logistic_MPLE",
 
 \item{full.matrix}{if \code{TRUE}, the full matrix of bootstrap estimates (coefficients and alpha) will be returned.}
 
-\item{opt.method}{optim methods: "Nelder-Mead", "L-BFGS-B", "BFGS", "SANN"}
+\item{opt.method}{optim methods: 'Nelder-Mead', 'L-BFGS-B', 'BFGS', 'SANN'}
 }
 \value{
 a large list with class as \code{phyloglm}

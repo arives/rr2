@@ -7,22 +7,27 @@
 using namespace Rcpp;
 
 // loop_cpp
-arma::vec loop_cpp(const arma::vec& R, const arma::mat& V, const arma::mat& iV, const arma::mat& X);
-RcppExport SEXP rr2_loop_cpp(SEXP RSEXP, SEXP VSEXP, SEXP iVSEXP, SEXP XSEXP) {
+arma::vec loop_cpp(const arma::vec& R, const arma::mat& V);
+RcppExport SEXP rr2_loop_cpp(SEXP RSEXP, SEXP VSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::vec& >::type R(RSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type V(VSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type iV(iVSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
-    rcpp_result_gen = Rcpp::wrap(loop_cpp(R, V, iV, X));
+    rcpp_result_gen = Rcpp::wrap(loop_cpp(R, V));
     return rcpp_result_gen;
 END_RCPP
 }
 
+RcppExport void logistreglikelihood(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
+RcppExport void threepoint(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
+RcppExport void transbranchlengths_IvesGarland2010(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
+
 static const R_CallMethodDef CallEntries[] = {
-    {"rr2_loop_cpp", (DL_FUNC) &rr2_loop_cpp, 4},
+    {"rr2_loop_cpp", (DL_FUNC) &rr2_loop_cpp, 2},
+    {"logistreglikelihood",                (DL_FUNC) &logistreglikelihood,                12},
+    {"threepoint",                         (DL_FUNC) &threepoint,                         13},
+    {"transbranchlengths_IvesGarland2010", (DL_FUNC) &transbranchlengths_IvesGarland2010, 12},
     {NULL, NULL, 0}
 };
 
