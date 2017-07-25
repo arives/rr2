@@ -154,6 +154,8 @@ R2(z.f.plog2, z.x.plog2, ls = FALSE, ce = FALSE) # R2.ls and R2.ce do not apply 
 R2.lr(z.f.plog2, z.x.plog2)
 ```
 
+We copied the R and c files of `phylolm::phyloglm()` into our package and added the 'Nelder-Mead' optimal method for simulations because with simple simulated data, the optimal methods provided by `phylolm::phyloglm()` may not work. We did not export this function, but one can use it with `rr2:::phyloglm()`. 
+
 # Citation
 
 Please cite the following paper if you find this package useful:

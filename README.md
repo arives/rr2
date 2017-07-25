@@ -108,11 +108,6 @@ LMM
 
 ``` r
 library(rr2)
-```
-
-    ## Loading required package: Matrix
-
-``` r
 z.f.lmm <- lme4::lmer(y_re_intercept ~ x1 + x2 + (1 | u1) + (1 | u2), data = d, REML = F)
 z.x.lmm <- lme4::lmer(y_re_intercept ~ x1 + (1 | u1) + (1 | u2), data = d, REML = F)
 z.v.lmm <- lme4::lmer(y_re_intercept ~ 1 + (1 | u2), data = d, REML = F)
@@ -253,6 +248,8 @@ R2.lr(z.f.plog2, z.x.plog2)
 ```
 
     ## [1] 0.3853273
+
+We copied the R and c files of `phylolm::phyloglm()` into our package and added the 'Nelder-Mead' optimal method for simulations because with simple simulated data, the optimal methods provided by `phylolm::phyloglm()` may not work. We did not export this function, but one can use it with `rr2:::phyloglm()`.
 
 Citation
 ========
