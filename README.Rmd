@@ -26,9 +26,9 @@ library(rr2)
 
 # Package structure
 
-This package has three main functions: `R2.ls()`, `R2.lr()`, and `R2.ce()`. You can use them individually in the form of, e.g., `R2.ls(mod, mod.r, phy)`. Here, the `phy` is the phylo object containing a phylogenetic tree. This argument is not needed for `R2.lr()` but is required for the other two functions when used with phylogenetic models. 
+This package has three main functions: `R2.ls()`, `R2.lr()`, and `R2.ce()`. You can use them individually in the form of, e.g., `R2.ls(mod, mod.r)` where `mod` is the full model and `mod.r` is the reduce model for partial R2s. If you do not include the reduced model `mod.r`, then the appropriate model with just the intercept is used to give the total R2. When using `R2.ls` and `R2.ce` with PGLS, you need to include the phylo object containing a phylogenetic tree, e.g., `R2.ls(mod, mod.r, phy = phy)`. 
 
-You can calculate all three R2s at the same time with `R2(mod, mod.r, phy)`. You can also specify which R2(s) to calculate within this function by turning off unwanted methods, e.g., `R2(mod, mod.r, phy, ce = FALSE)` or `R2(mod, mod.r, phy, ls = FALSE)`. 
+You can calculate all three R2s at the same time with `R2(mod, mod.r)`. You can also specify which R2(s) to calculate within this function by turning off unwanted methods, e.g., `R2(mod, mod.r, ce = FALSE)` or `R2(mod, mod.r, ls = FALSE)`. 
 
 This package also has some helper functions such as `inv.logit()`, `partialR2()`, and `partialR2adj()`.
 
