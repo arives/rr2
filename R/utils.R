@@ -140,7 +140,7 @@ binaryPGLMM <- function(formula, data = list(), phy, s2.init = 0.1, B.init = NUL
     p <- ncol(X)
     Vphy <- ape::vcv(phy)
     Vphy <- Vphy/max(Vphy)
-    # Vphy/exp(determinant(Vphy)$modulus[1]/n) # check with Tony
+    Vphy <- Vphy/exp(determinant(Vphy)$modulus[1]/n)
     
     if (!is.null(B.init) & length(B.init) != p) {
         warning("B.init not correct length, so computed B.init using glm()")
