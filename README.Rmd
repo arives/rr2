@@ -20,9 +20,11 @@ This package can be installed with:
 
 ```{r, eval=FALSE}
 install.packages("devtools")
-devtools::install_github("arives/rr2")
+devtools::install_github("arives/rr2", ref = "cpp_ce")
 library(rr2)
 ```
+
+Comparing with the master branch, this version 1) borrowed and updated `phylolm::phyloglm()` with the 'Nelder-Mead' optimal method; 2) has a Rcpp option for `R2.ce()`, which may result 3-5 times speed up. However, because of the c++ and c files, one may come across issues such as `unsupported option '-fopenmp'` or `library not found for -lgfortran` when installing this package. For macOS, [this](https://daijiang.name/en/2017/06/21/fopenmp-option-of-clang-error/) may be helpful.
 
 # Package structure
 
