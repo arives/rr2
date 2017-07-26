@@ -20,3 +20,5 @@ Imports: lme4,
 RoxygenNote: 6.0.1
 URL: http://biorxiv.org/content/early/2017/05/30/144170
 Suggests: testthat
+URL: https://github.com/arives/rr2
+BugReports: https://github.com/arives/rr2/issues
