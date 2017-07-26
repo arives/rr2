@@ -7,6 +7,6 @@
 #' @param V a symmetric matrix (not sparse matrix)
 #' @export
 loop_cpp <- function(R, V) {
-    .Call('rr2_loop_cpp', PACKAGE = 'rr2', R, V)
+    .Call('_rr2_loop_cpp', PACKAGE = 'rr2', R, V)
 }
 
