@@ -71,7 +71,8 @@ d$y_re_slope <- b1 * d$x1 +
 
 # GLMM
 b1 <- 1; sd1 <- 1.5
-prob <- rr2::inv.logit(b1 * d$x1 + rep(rnorm(n = p1, sd = sd1), each = nsample)) # random intercept u1
+prob <- rr2::inv.logit(b1 * d$x1 + rep(rnorm(n = p1, sd = sd1), each = nsample)) 
+# random intercept u1
 d$y_binary <- rbinom(n = n, size = 1, prob = prob)
 
 # PGLS
@@ -127,10 +128,12 @@ R2(mod = z.f.glmm)
 ```{r pgls}
 z.x.pgls <- phylolm::phylolm(y_pgls ~ 1, phy = phy, data = d, model = "lambda")
 lam.x.pgls <- round(z.x.pgls$optpar, digits = 4)
-z.f.pgls <- phylolm::phylolm(y_pgls ~ x_trait, phy = phy, data = d, model = "lambda", starting.value = 0.98 * lam.x.pgls + 0.01)
+z.f.pgls <- phylolm::phylolm(y_pgls ~ x_trait, phy = phy, data = d, model = "lambda", 
+                             starting.value = 0.98 * lam.x.pgls + 0.01)
 z.v.pgls <- lm(y_pgls ~ x_trait, data = d)
 
-R2(mod = z.f.pgls, mod.r = z.v.pgls, phy = phy) # phy is needed for phylogenetic models' R2.ls and R2.ce
+# phy is needed for phylogenetic models' R2.ls and R2.ce
+R2(mod = z.f.pgls, mod.r = z.v.pgls, phy = phy)
 R2(mod = z.f.pgls, phy = phy)
 ```
 
@@ -141,14 +144,17 @@ z.f.plog <- rr2::binaryPGLMM(y_phy_binary ~ x1, data = d, phy = phy)
 z.x.plog <- rr2::binaryPGLMM(y_phy_binary ~ 1, data = d, phy = phy)
 z.v.plog <- glm(y_phy_binary ~ x1, data = d, family = "binomial")
 
-R2(mod = z.f.plog, mod.r = z.x.plog, lr = FALSE) # R2.lr can't be used with binaryPGLMM because it is not a ML method
+# R2.lr can't be used with binaryPGLMM because it is not a ML method
+R2(mod = z.f.plog, mod.r = z.x.plog, lr = FALSE)
 R2(mod = z.f.plog, lr = FALSE)
 
 z.f.plog2 <- phylolm::phyloglm(y_phy_binary ~ x1, data = d, start.alpha = 1, phy = phy)
-z.x.plog2 <- phylolm::phyloglm(y_phy_binary ~ 1, data = d, phy = phy, start.alpha = min(20, z.f.plog2$alpha))
+z.x.plog2 <- phylolm::phyloglm(y_phy_binary ~ 1, data = d, phy = phy, 
+                               start.alpha = min(20, z.f.plog2$alpha))
 z.v.plog2 <- glm(y_phy_binary ~ x1, data = d, family = "binomial")
 
-R2(z.f.plog2, z.x.plog2, ls = FALSE, ce = FALSE) # R2.ls and R2.ce do not apply for phyloglm
+# R2.ls and R2.ce do not apply for phyloglm
+R2(z.f.plog2, z.x.plog2, ls = FALSE, ce = FALSE) 
 # alternate
 R2.lr(z.f.plog2, z.x.plog2)
 ```
