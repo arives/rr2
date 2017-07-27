@@ -145,8 +145,8 @@ z.x.plog <- rr2::binaryPGLMM(y_phy_binary ~ 1, data = d, phy = phy)
 z.v.plog <- glm(y_phy_binary ~ x1, data = d, family = "binomial")
 
 # R2.lr can't be used with binaryPGLMM because it is not a ML method
-R2(mod = z.f.plog, mod.r = z.x.plog, lr = FALSE)
-R2(mod = z.f.plog, lr = FALSE)
+R2(mod = z.f.plog, mod.r = z.x.plog)
+R2(mod = z.f.plog)
 
 z.f.plog2 <- phylolm::phyloglm(y_phy_binary ~ x1, data = d, start.alpha = 1, phy = phy)
 z.x.plog2 <- phylolm::phyloglm(y_phy_binary ~ 1, data = d, phy = phy, 
@@ -154,7 +154,7 @@ z.x.plog2 <- phylolm::phyloglm(y_phy_binary ~ 1, data = d, phy = phy,
 z.v.plog2 <- glm(y_phy_binary ~ x1, data = d, family = "binomial")
 
 # R2.ls and R2.ce do not apply for phyloglm
-R2(z.f.plog2, z.x.plog2, ls = FALSE, ce = FALSE) 
+R2(z.f.plog2, z.x.plog2) 
 # alternate
 R2.lr(z.f.plog2, z.x.plog2)
 ```

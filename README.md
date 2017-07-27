@@ -225,16 +225,20 @@ z.x.plog <- rr2::binaryPGLMM(y_phy_binary ~ 1, data = d, phy = phy)
 z.v.plog <- glm(y_phy_binary ~ x1, data = d, family = "binomial")
 
 # R2.lr can't be used with binaryPGLMM because it is not a ML method
-R2(mod = z.f.plog, mod.r = z.x.plog, lr = FALSE)
+R2(mod = z.f.plog, mod.r = z.x.plog)
 ```
+
+    ## models with class binaryPGLMM do not have R2.lr method
 
     ##     R2s     value
     ## 1 R2_ls 0.7124029
     ## 2 R2_ce 0.3344832
 
 ``` r
-R2(mod = z.f.plog, lr = FALSE)
+R2(mod = z.f.plog)
 ```
+
+    ## models with class binaryPGLMM do not have R2.lr method
 
     ##     R2s     value
     ## 1 R2_ls 0.7291481
@@ -247,8 +251,10 @@ z.x.plog2 <- phylolm::phyloglm(y_phy_binary ~ 1, data = d, phy = phy,
 z.v.plog2 <- glm(y_phy_binary ~ x1, data = d, family = "binomial")
 
 # R2.ls and R2.ce do not apply for phyloglm
-R2(z.f.plog2, z.x.plog2, ls = FALSE, ce = FALSE) 
+R2(z.f.plog2, z.x.plog2) 
 ```
+
+    ## models with class phyloglm only have R2.lr method
 
     ##     R2s     value
     ## 1 R2_lr 0.3853273
