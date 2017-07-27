@@ -12,6 +12,21 @@
 #'
 R2 = function(mod = NULL, mod.r = NULL, phy = NULL, lr = TRUE, ls = TRUE, ce = TRUE){
   
+  # phyloglm only have R2.lr method
+  if(class(mod) == "phyloglm"){
+    ls = FALSE; ce = FALSE
+    message("models with class phyloglm only have R2.lr method")
+  }
+  
+  # binaryPGLMM does not have R2.lr method
+  if(class(mod) == "binaryPGLMM"){
+    lr = FALSE
+    message("models with class binaryPGLMM do not have R2.lr method")
+  }
+  
+  # phylolm requires phy object
+  if(class(mod) == "phylolm" & is.null(phy)) stop("phy object is required for models with class phylolm")
+  
   out = data.frame(R2s = c("R2_lr", "R2_ls", "R2_ce"), value = NA)
   
   if(is.null(phy)){
