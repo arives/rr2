@@ -8,7 +8,7 @@ Authors@R: c(
 Description: This package provides three methods to calculate R2 for models
     with correlated errors, including Phylogenetic GLS, Phylogenetic 
     Logistic Regression, LMMs, and GLMM. See details in Ives preprint
-    at biorxiv.
+    at biorxiv (https://doi.org/10.1101/144170).
 License: GPL
 Depends: R (>= 3.0), Matrix (>= 1.1.1), stats
 Encoding: UTF-8
@@ -18,7 +18,6 @@ Imports: lme4,
     ape,
     utils
 RoxygenNote: 6.0.1
-URL: http://biorxiv.org/content/early/2017/05/30/144170
 Suggests: testthat
 URL: https://github.com/arives/rr2
 BugReports: https://github.com/arives/rr2/issues
