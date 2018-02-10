@@ -1,4 +1,4 @@
-pred#' Calculate R2.pred
+#' Calculate R2.pred
 #'
 #' Calculate R2.pred for LMM, GLMM, PGLM, and PGLMMs.
 #' @param mod a regression model with the following class: 'lmerMod', 'glmerMod', 'phylolm', and 'binaryPGLMM'
