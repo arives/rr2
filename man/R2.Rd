@@ -2,23 +2,23 @@
 % Please edit documentation in R/r2.R
 \name{R2}
 \alias{R2}
-\title{Calculate R2.lr, R2.ls, and R2.ce}
+\title{Calculate R2.lik, R2.resid, and R2.pred}
 \usage{
-R2(mod = NULL, mod.r = NULL, phy = NULL, lr = TRUE, ls = TRUE,
-  ce = TRUE)
+R2(mod = NULL, mod.r = NULL, phy = NULL, lik = TRUE, resid = TRUE,
+  pred = TRUE)
 }
 \arguments{
 \item{mod}{a regression model with the following class: 'lmerMod', 'glmerMod', 'phylolm', and 'binaryPGLMM'}
 
 \item{mod.r}{reduced model, if not provided, will use corresponding models with intercept as the only predictor}
 
-\item{phy}{the phylogeny for phylogenetic models, which is not required to be specified for R2.lr.}
+\item{phy}{the phylogeny for phylogenetic models, which is not required to be specified for R2.lik.}
 
-\item{lr}{whether to calculate R2.lr, default is TRUE}
+\item{lik}{whether to calculate R2.lik, default is TRUE}
 
-\item{ls}{whether to calculate R2.ls, default is TRUE}
+\item{resid}{whether to calculate R2.resid, default is TRUE}
 
-\item{ce}{whether to calculate R2.ce, default is TRUE}
+\item{pred}{whether to calculate R2.pred, default is TRUE}
 }
 \value{
 all three R2s

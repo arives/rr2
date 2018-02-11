@@ -18,20 +18,20 @@ library(rr2)
 Package structure
 =================
 
-This package has three main functions: `R2.ls()`, `R2.lr()`, and `R2.ce()`. You can use them individually in the form of, e.g., `R2.ls(mod, mod.r)` where `mod` is the full model and `mod.r` is the reduce model for partial R2s. If you do not include the reduced model `mod.r`, then the appropriate model with just the intercept is used to give the total R2. When using `R2.ls` and `R2.ce` with PGLS, you need to include the phylo object containing a phylogenetic tree, e.g., `R2.ls(mod, mod.r, phy = phy)`.
+This package has three main functions: `R2.resid()`, `R2.lik()`, and `R2.pred()`. You can use them individually in the form of, e.g., `R2.resid(mod, mod.r)` where `mod` is the full model and `mod.r` is the reduce model for partial R2s. If you do not include the reduced model `mod.r`, then the appropriate model with just the intercept is used to give the total R2. When using `R2.resid` and `R2.pred` with PGLS, you need to include the phylo object containing a phylogenetic tree, e.g., `R2.resid(mod, mod.r, phy = phy)`.
 
-You can calculate all three R2s at the same time with `R2(mod, mod.r)`. You can also specify which R2(s) to calculate within this function by turning off unwanted methods, e.g., `R2(mod, mod.r, ce = FALSE)` or `R2(mod, mod.r, ls = FALSE)`.
+You can calculate all three R2s at the same time with `R2(mod, mod.r)`. You can also specify which R2(s) to calculate within this function by turning off unwanted methods, e.g., `R2(mod, mod.r, resid = FALSE)` or `R2(mod, mod.r, resid = FALSE)`.
 
 This package also has some helper functions such as `inv.logit()`, `partialR2()`, and `partialR2adj()`.
 
-| Models            | Available.R2s           |
-|:------------------|:------------------------|
-| LM                | partialR2, partialR2adj |
-| LMM: lmerMod      | R2.ce, R2.ls, R2.lr     |
-| GLMM: glmerMod    | R2.ce, R2.ls, R2.lr     |
-| PGLS: phylolm     | R2.ce, R2.ls, R2.lr     |
-| PLOG: binaryPGLMM | R2.ce, R2.ls, -----     |
-| PLOG: phyloglm    | -----, -----, R2.lr     |
+| Models             | Available.R2s             |
+|:-------------------|:--------------------------|
+| LM                 | partialR2, partialR2adj   |
+| LMM: lmerMod       | R2.pred, R2.resid, R2.lik |
+| GLMM: glmerMod     | R2.pred, R2.resid, R2.lik |
+| PGLS: phylolm      | R2.pred, R2.resid, R2.lik |
+| PGLMM: binaryPGLMM | R2.pred, R2.resid, -----  |
+| PGLMM: phyloglm    | -------, --------, R2.lik |
 
 Usage: calculating R2s for regression models
 ============================================
@@ -122,37 +122,37 @@ z.0.lmm <- lm(y_re_intercept ~ 1, data = d)
 R2(mod = z.f.lmm, mod.r = z.x.lmm)
 ```
 
-    ##     R2s     value
-    ## 1 R2_lr 0.5356524
-    ## 2 R2_ls 0.6036311
-    ## 3 R2_ce 0.6087728
+    ##        R2s     value
+    ## 1   R2_lik 0.5356524
+    ## 2 R2_resid 0.6036311
+    ## 3  R2_pred 0.6087728
 
 ``` r
 R2(mod = z.f.lmm, mod.r = z.v.lmm)
 ```
 
-    ##     R2s     value
-    ## 1 R2_lr 0.7441745
-    ## 2 R2_ls 0.8373347
-    ## 3 R2_ce 0.8559029
+    ##        R2s     value
+    ## 1   R2_lik 0.7441745
+    ## 2 R2_resid 0.8373347
+    ## 3  R2_pred 0.8559029
 
 ``` r
 R2(mod = z.f.lmm, mod.r = z.0.lmm)
 ```
 
-    ##     R2s     value
-    ## 1 R2_lr 0.7762978
-    ## 2 R2_ls 0.8767789
-    ## 3 R2_ce 0.8991618
+    ##        R2s     value
+    ## 1   R2_lik 0.7762978
+    ## 2 R2_resid 0.8767789
+    ## 3  R2_pred 0.8991618
 
 ``` r
 R2(mod = z.f.lmm) # if omit mod.r, default will be the simplest model, such as z.0.lmm here.
 ```
 
-    ##     R2s     value
-    ## 1 R2_lr 0.7762978
-    ## 2 R2_ls 0.8767789
-    ## 3 R2_ce 0.8991618
+    ##        R2s     value
+    ## 1   R2_lik 0.7762978
+    ## 2 R2_resid 0.8767789
+    ## 3  R2_pred 0.8991618
 
 GLMM
 ----
@@ -165,28 +165,28 @@ z.v.glmm <- glm(y_binary ~ x1, data = d, family = "binomial")
 R2(mod = z.f.glmm, mod.r = z.x.glmm)
 ```
 
-    ##     R2s     value
-    ## 1 R2_lr 0.1170588
-    ## 2 R2_ls 0.2254840
-    ## 3 R2_ce 0.1373521
+    ##        R2s     value
+    ## 1   R2_lik 0.1170588
+    ## 2 R2_resid 0.2254840
+    ## 3  R2_pred 0.1373521
 
 ``` r
 R2(mod = z.f.glmm, mod.r = z.v.glmm)
 ```
 
-    ##     R2s     value
-    ## 1 R2_lr 0.1990563
-    ## 2 R2_ls 0.4246935
-    ## 3 R2_ce 0.3545240
+    ##        R2s     value
+    ## 1   R2_lik 0.1990563
+    ## 2 R2_resid 0.4246935
+    ## 3  R2_pred 0.3545240
 
 ``` r
 R2(mod = z.f.glmm)
 ```
 
-    ##     R2s     value
-    ## 1 R2_lr 0.2406380
-    ## 2 R2_ls 0.4530099
-    ## 3 R2_ce 0.3792381
+    ##        R2s     value
+    ## 1   R2_lik 0.2406380
+    ## 2 R2_resid 0.4530099
+    ## 3  R2_pred 0.3792381
 
 PGLS
 ----
@@ -198,23 +198,23 @@ z.f.pgls <- phylolm::phylolm(y_pgls ~ x_trait, phy = phy, data = d, model = "lam
                              starting.value = 0.98 * lam.x.pgls + 0.01)
 z.v.pgls <- lm(y_pgls ~ x_trait, data = d)
 
-# phy is needed for phylogenetic models' R2.ls and R2.ce
+# phy is needed for phylogenetic models' R2.resid and R2.pred
 R2(mod = z.f.pgls, mod.r = z.v.pgls, phy = phy)
 ```
 
-    ##     R2s     value
-    ## 1 R2_lr 0.2353912
-    ## 2 R2_ls 0.3590018
-    ## 3 R2_ce 0.3114035
+    ##        R2s     value
+    ## 1   R2_lik 0.2353912
+    ## 2 R2_resid 0.3590018
+    ## 3  R2_pred 0.3114035
 
 ``` r
 R2(mod = z.f.pgls, phy = phy)
 ```
 
-    ##     R2s     value
-    ## 1 R2_lr 0.8642865
-    ## 2 R2_ls 0.8862266
-    ## 3 R2_ce 0.8777782
+    ##        R2s     value
+    ## 1   R2_lik 0.8642865
+    ## 2 R2_resid 0.8862266
+    ## 3  R2_pred 0.8777782
 
 Phylogenetic Logistic Regression
 --------------------------------
@@ -224,25 +224,25 @@ z.f.plog <- rr2::binaryPGLMM(y_phy_binary ~ x1, data = d, phy = phy)
 z.x.plog <- rr2::binaryPGLMM(y_phy_binary ~ 1, data = d, phy = phy)
 z.v.plog <- glm(y_phy_binary ~ x1, data = d, family = "binomial")
 
-# R2.lr can't be used with binaryPGLMM because it is not a ML method
+# R2.lik can't be used with binaryPGLMM because it is not a ML method
 R2(mod = z.f.plog, mod.r = z.x.plog)
 ```
 
-    ## models with class binaryPGLMM do not have R2.lr method
+    ## models with class binaryPGLMM do not have R2.lik method
 
-    ##     R2s     value
-    ## 1 R2_ls 0.7124029
-    ## 2 R2_ce 0.3344832
+    ##        R2s     value
+    ## 1 R2_resid 0.7124029
+    ## 2  R2_pred 0.3344832
 
 ``` r
 R2(mod = z.f.plog)
 ```
 
-    ## models with class binaryPGLMM do not have R2.lr method
+    ## models with class binaryPGLMM do not have R2.lik method
 
-    ##     R2s     value
-    ## 1 R2_ls 0.7291481
-    ## 2 R2_ce 0.5531285
+    ##        R2s     value
+    ## 1 R2_resid 0.7291481
+    ## 2  R2_pred 0.5531285
 
 ``` r
 z.f.plog2 <- phylolm::phyloglm(y_phy_binary ~ x1, data = d, start.alpha = 1, phy = phy)
@@ -250,18 +250,18 @@ z.x.plog2 <- phylolm::phyloglm(y_phy_binary ~ 1, data = d, phy = phy,
                                start.alpha = min(20, z.f.plog2$alpha))
 z.v.plog2 <- glm(y_phy_binary ~ x1, data = d, family = "binomial")
 
-# R2.ls and R2.ce do not apply for phyloglm
+# R2.resid and R2.pred do not apply for phyloglm
 R2(z.f.plog2, z.x.plog2) 
 ```
 
-    ## models with class phyloglm only have R2.lr method
+    ## models with class phyloglm only have R2.lik method
 
-    ##     R2s     value
-    ## 1 R2_lr 0.3853273
+    ##      R2s     value
+    ## 1 R2_lik 0.3853273
 
 ``` r
 # alternate
-R2.lr(z.f.plog2, z.x.plog2)
+R2.lik(z.f.plog2, z.x.plog2)
 ```
 
     ## [1] 0.3853273

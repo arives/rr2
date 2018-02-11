@@ -27,7 +27,7 @@ R2 = function(mod = NULL, mod.r = NULL, phy = NULL, lik = TRUE, resid = TRUE, pr
   # phylolm requires phy object
   if(class(mod) == "phylolm" & is.null(phy)) stop("phy object is required for models with class phylolm")
   
-  out = data.frame(R2s = c("R2_lik", "R2_resid", "R2_pred"), value = NA)
+  out = data.frame(R2s = c("R2_lik", "R2_resid", "R2_pred"), value = NA, stringsAsFactors = FALSE)
   
   if(is.null(phy)){
     if(lik) out$value[1] = R2.lik(mod, mod.r)
