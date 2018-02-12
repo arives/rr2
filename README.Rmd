@@ -35,6 +35,8 @@ This package also has some helper functions such as `inv.logit()`, `partialR2()`
 |Models             |           Available.R2s|
 |:------------------|:-----------------------------|
 |LM                 |       partialR2, partialR2adj|
+|LM                 |     R2.pred, R2.resid, R2.lik|
+|GLM                |     R2.pred, R2.resid, R2.lik|
 |LMM:  lmerMod      |     R2.pred, R2.resid, R2.lik|
 |GLMM: glmerMod     |     R2.pred, R2.resid, R2.lik|
 |PGLS: phylolm      |     R2.pred, R2.resid, R2.lik|
