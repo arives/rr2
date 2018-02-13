@@ -38,3 +38,7 @@ arma::vec loop_cpp(const arma::vec& R, const arma::mat& V) {
   }
   return Rhat;
 }
+
+/***R
+# loop_cpp(as.matrix(R), as.matrix(V))
+*/

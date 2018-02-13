@@ -21,27 +21,29 @@ This package can be installed with:
 ```{r, eval=FALSE}
 install.packages("devtools")
 devtools::install_github("arives/rr2", ref = "cpp_ce")
+# for macOS, you can also install the binary file
+install.packages("https://raw.githubusercontent.com/arives/rr2/cpp_ce/rr2_0.1.0.tgz", repos = NULL)
 library(rr2)
 ```
 
-Comparing with the master branch, this version 1) borrowed and updated `phylolm::phyloglm()` with the 'Nelder-Mead' optimal method; 2) has a Rcpp option for `R2.ce()`, which may result 3-5 times speed up. However, because of the c++ and c files, one may come across issues such as `unsupported option '-fopenmp'` or `library not found for -lgfortran` when installing this package. For macOS, [this](https://daijiang.name/en/2017/06/21/fopenmp-option-of-clang-error/) may be helpful.
-
 # Package structure
 
-This package has three main functions: `R2.ls()`, `R2.lr()`, and `R2.ce()`. You can use them individually in the form of, e.g., `R2.ls(mod, mod.r)` where `mod` is the full model and `mod.r` is the reduce model for partial R2s. If you do not include the reduced model `mod.r`, then the appropriate model with just the intercept is used to give the total R2. When using `R2.ls` and `R2.ce` with PGLS, you need to include the phylo object containing a phylogenetic tree, e.g., `R2.ls(mod, mod.r, phy = phy)`. 
+This package has three main functions: `R2.resid()`, `R2.lik()`, and `R2.pred()`. You can use them individually in the form of, e.g., `R2.resid(mod, mod.r)` where `mod` is the full model and `mod.r` is the reduce model for partial R2s. If you do not include the reduced model `mod.r`, then the appropriate model with just the intercept is used to give the total R2. When using `R2.resid` and `R2.pred` with PGLS, you need to include the phylo object containing a phylogenetic tree, e.g., `R2.resid(mod, mod.r, phy = phy)`. 
 
-You can calculate all three R2s at the same time with `R2(mod, mod.r)`. You can also specify which R2(s) to calculate within this function by turning off unwanted methods, e.g., `R2(mod, mod.r, ce = FALSE)` or `R2(mod, mod.r, ls = FALSE)`. 
+You can calculate all three R2s at the same time with `R2(mod, mod.r)`. You can also specify which R2(s) to calculate within this function by turning off unwanted methods, e.g., `R2(mod, mod.r, resid = FALSE)` or `R2(mod, mod.r, resid = FALSE)`. 
 
 This package also has some helper functions such as `inv.logit()`, `partialR2()`, and `partialR2adj()`.
 
-|Models            |           Available.R2s|
-|:-----------------|:-----------------------|
-|LM                | partialR2, partialR2adj|
-|LMM:  lmerMod     |     R2.ce, R2.ls, R2.lr|
-|GLMM: glmerMod    |     R2.ce, R2.ls, R2.lr|
-|PGLS: phylolm     |     R2.ce, R2.ls, R2.lr|
-|PLOG: binaryPGLMM |     R2.ce, R2.ls, -----|
-|PLOG: phyloglm    |     -----, -----, R2.lr|
+|Models             |           Available.R2s|
+|:------------------|:-----------------------------|
+|LM                 |       partialR2, partialR2adj|
+|LM                 |     R2.pred, R2.resid, R2.lik|
+|GLM                |     R2.pred, R2.resid, R2.lik|
+|LMM:  lmerMod      |     R2.pred, R2.resid, R2.lik|
+|GLMM: glmerMod     |     R2.pred, R2.resid, R2.lik|
+|PGLS: phylolm      |     R2.pred, R2.resid, R2.lik|
+|PGLMM: binaryPGLMM |     R2.pred, R2.resid,  -----|
+|PGLMM: phyloglm    |     -------, --------, R2.lik|
 
 # Usage: calculating R2s for regression models
 
@@ -134,7 +136,7 @@ z.f.pgls <- phylolm::phylolm(y_pgls ~ x_trait, phy = phy, data = d, model = "lam
                              starting.value = 0.98 * lam.x.pgls + 0.01)
 z.v.pgls <- lm(y_pgls ~ x_trait, data = d)
 
-# phy is needed for phylogenetic models' R2.ls and R2.ce
+# phy is needed for phylogenetic models' R2.resid and R2.pred
 R2(mod = z.f.pgls, mod.r = z.v.pgls, phy = phy)
 R2(mod = z.f.pgls, phy = phy)
 ```
@@ -146,24 +148,28 @@ z.f.plog <- rr2::binaryPGLMM(y_phy_binary ~ x1, data = d, phy = phy)
 z.x.plog <- rr2::binaryPGLMM(y_phy_binary ~ 1, data = d, phy = phy)
 z.v.plog <- glm(y_phy_binary ~ x1, data = d, family = "binomial")
 
-# R2.lr can't be used with binaryPGLMM because it is not a ML method
-R2(mod = z.f.plog, mod.r = z.x.plog, lr = FALSE)
-R2(mod = z.f.plog, lr = FALSE)
+# R2.lik can't be used with binaryPGLMM because it is not a ML method
+R2(mod = z.f.plog, mod.r = z.x.plog)
+R2(mod = z.f.plog)
 
-z.f.plog2 <- rr2:::phyloglm(y_phy_binary ~ x1, data = d, start.alpha = 1, 
-                            phy = phy, opt.method = "Nelder-Mead")
-z.x.plog2 <- rr2:::phyloglm(y_phy_binary ~ 1, data = d, phy = phy, 
-                            start.alpha = min(20, z.f.plog2$alpha), 
-                            opt.method = "Nelder-Mead")
+z.f.plog2 <- phylolm::phyloglm(y_phy_binary ~ x1, data = d, start.alpha = 1, phy = phy)
+z.x.plog2 <- phylolm::phyloglm(y_phy_binary ~ 1, data = d, phy = phy, 
+                               start.alpha = min(20, z.f.plog2$alpha))
 z.v.plog2 <- glm(y_phy_binary ~ x1, data = d, family = "binomial")
 
-# R2.ls and R2.ce do not apply for phyloglm
-R2(z.f.plog2, z.x.plog2, ls = FALSE, ce = FALSE) 
+# R2.resid and R2.pred do not apply for phyloglm
+R2(z.f.plog2, z.x.plog2) 
 # alternate
-R2.lr(z.f.plog2, z.x.plog2)
+R2.lik(z.f.plog2, z.x.plog2)
 ```
 
-We copied the R and c files of `phylolm::phyloglm()` into our package and added the 'Nelder-Mead' optimal method for simulations because with simple simulated data, the optimal methods provided by `phylolm::phyloglm()` may not work. We did not export this function, but one can use it with `rr2:::phyloglm()`. 
+# Time comparsions of cpp
+
+```{r}
+microbenchmark::microbenchmark(R2.pred(mod = z.f.pgls, mod.r = z.v.pgls, phy = phy, cpp = T),
+                               R2.pred(mod = z.f.pgls, mod.r = z.v.pgls, phy = phy, cpp = F),
+                               times = 50)
+```
 
 # Citation
 

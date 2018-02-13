@@ -73,9 +73,9 @@ R2.pred <- function(mod = NULL, mod.r = NULL, phy = NULL, cpp = TRUE) {
             stop("mod.r must be class phylolm or lm.")
         }
       if (cpp) {
-        return(R2.ce.phylolm(mod, mod.r, phy, cpp = TRUE))
+        return(R2.pred.phylolm(mod, mod.r, phy, cpp = TRUE))
       } else {
-        return(R2.ce.phylolm(mod, mod.r, phy, cpp = FALSE))
+        return(R2.pred.phylolm(mod, mod.r, phy, cpp = FALSE))
       }
     }
 

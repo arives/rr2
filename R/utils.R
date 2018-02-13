@@ -1,3 +1,6 @@
+#' @useDynLib rr2, .registration = TRUE
+#' @importFrom Rcpp sourceCpp
+NULL
 #' @importFrom utils tail
 #' @importFrom stats anova binomial family glm lm logLik model.frame model.matrix model.response optim pchisq pnorm poisson quantile reorder rnorm sd sigma update var na.omit
 #' @importMethodsFrom Matrix t %*% crossprod diag tcrossprod solve determinant update
