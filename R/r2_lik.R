@@ -89,7 +89,8 @@ R2.lik <- function(mod = NULL, mod.r = NULL) {
 
 R2.lik.lm <- function(mod = NULL, mod.r = NULL) {
     
-    X <- mod$X
+    Y <- model.frame(mod)[,1]
+    X <- model.matrix(mod)
     n <- dim(X)[1]
     
     R2.lik <- 1 - exp(-2/n * (logLik(mod)[[1]] - logLik(mod.r)[[1]]))
@@ -98,7 +99,8 @@ R2.lik.lm <- function(mod = NULL, mod.r = NULL) {
 
 R2.lik.glm <- function(mod = NULL, mod.r = NULL) {
     
-    X <- mod$X
+    Y <- model.frame(mod)[,1]
+    X <- model.matrix(mod)
     n <- dim(X)[1]
     
     R2.lik <- 1 - exp(-2/n * (logLik(mod)[[1]] - logLik(mod.r)[[1]]))
