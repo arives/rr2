@@ -88,8 +88,6 @@ R2.lik <- function(mod = NULL, mod.r = NULL) {
 }
 
 R2.lik.lm <- function(mod = NULL, mod.r = NULL) {
-    
-    Y <- model.frame(mod)[,1]
     X <- model.matrix(mod)
     n <- dim(X)[1]
     
@@ -97,48 +95,25 @@ R2.lik.lm <- function(mod = NULL, mod.r = NULL) {
     return(R2.lik)
 }
 
-R2.lik.glm <- function(mod = NULL, mod.r = NULL) {
-    
-    Y <- model.frame(mod)[,1]
-    X <- model.matrix(mod)
-    n <- dim(X)[1]
-    
-    R2.lik <- 1 - exp(-2/n * (logLik(mod)[[1]] - logLik(mod.r)[[1]]))
-    return(R2.lik)
-}
+R2.lik.glm <- R2.lik.lm
 
-R2.lik.lmerMod <- function(mod = NULL, mod.r = NULL) {
-
-    X <- model.matrix(mod)
-    n <- dim(X)[1]
-
-    R2.lik <- 1 - exp(-2/n * (logLik(mod) - logLik(mod.r)))
-    return(R2.lik)
-}
+R2.lik.lmerMod <- R2.lik.lm
 
 R2.lik.glmerMod <- function(mod = NULL, mod.r = NULL) {
-
     X <- model.matrix(mod)
     n <- dim(X)[1]
-
-    R2.lik <- (1 - exp(-2/n * (logLik(mod) - logLik(mod.r))))/(1 - exp(2/n * logLik(mod.r)))
+    R2.lik <- (1 - exp(-2 / n * (logLik(mod) - logLik(mod.r)))) / 
+      (1 - exp(2 / n * logLik(mod.r)))
     return(R2.lik)
 }
 
-R2.lik.phylolm <- function(mod = NULL, mod.r = NULL) {
-
-    X <- mod$X
-    n <- dim(X)[1]
-
-    R2.lik <- 1 - exp(-2/n * (logLik(mod)[[1]] - logLik(mod.r)[[1]]))
-    return(R2.lik)
-}
+R2.lik.phylolm <- R2.lik.lm
 
 R2.lik.phyloglm <- function(mod = NULL, mod.r = NULL) {
 
     Y <- mod$y
-    n <- dim(mod$X)[1]
     X <- mod$X
+    n <- dim(X)[1]
 
     alpha.cutoff <- 40
     if (mod$alpha < alpha.cutoff) {
