@@ -107,7 +107,12 @@ R2.lik.glmerMod <- function(mod = NULL, mod.r = NULL) {
     return(R2.lik)
 }
 
-R2.lik.phylolm <- R2.lik.lm
+R2.lik.phylolm <- function(mod = NULL, mod.r = NULL) {
+  X <- mod$X
+  n <- dim(X)[1]
+  R2.lik <- 1 - exp(-2/n * (logLik(mod)[[1]] - logLik(mod.r)[[1]]))
+  return(R2.lik)
+}
 
 R2.lik.phyloglm <- function(mod = NULL, mod.r = NULL) {
 

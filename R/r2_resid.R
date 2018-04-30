@@ -106,15 +106,15 @@ R2.resid.lm <- function(mod = NA, mod.r = NA) {
 
 R2.resid.glm <- function(mod = NA, mod.r = NA) {
   mu <- mod$fitted.values
-  if(family(mod)[1] == "binomial") Yhat <- mu * (1 - mu)
-  if(family(mod)[1] == "poisson") Yhat <- mu
+  if(family(mod)[1] == "binomial") Yhat <- log(mu / (1 - mu))
+  if(family(mod)[1] == "poisson") Yhat <- log(mu)
   
   sig2e = sig2e.r = pi^2/3
   SSE.resid <- sig2e/(var(Yhat) + sig2e)
   
   mu.r <- mod.r$fitted.values
-  if(family(mod.r)[1] == "binomial") Yhat.r <- mu.r * (1 - mu.r)
-  if(family(mod.r)[1] == "poisson") Yhat.r <- mu.r
+  if(family(mod.r)[1] == "binomial") Yhat.r <- log(mu.r / (1 - mu.r))
+  if(family(mod.r)[1] == "poisson") Yhat.r <- log(mu.r)
   
   SSE.resid.r <- sig2e.r/(var(Yhat.r) + sig2e.r)
   
@@ -123,7 +123,7 @@ R2.resid.glm <- function(mod = NA, mod.r = NA) {
 }
 
 R2.resid.lmerMod <- function(mod = NULL, mod.r = NULL) {
-  
+  X <- model.matrix(mod)
   n <- dim(X)[1]
   X.r <- model.matrix(mod.r)
   p.r <- dim(X.r)[2]
@@ -157,8 +157,8 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL) {
   
   mu <- family(mod)$linkinv(X %*% lme4::fixef(mod))
   
-  if (family(mod)[1] == "binomial") Yhat <- mu * (1 - mu)
-  if (family(mod)[1] == "poisson")  Yhat <- mu
+  if (family(mod)[1] == "binomial") Yhat <- log(mu / (1 - mu))
+  if (family(mod)[1] == "poisson")  Yhat <- log(mu)
   
   sig2e = sig2e.r = pi^2/3
   sig2a <- prod(diag(C))^(1/n)
@@ -174,8 +174,8 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL) {
     
     mu.r <- family(mod.r)$linkinv(X.r %*% lme4::fixef(mod.r))
     
-    if (family(mod.r)[1] == "binomial") Yhat.r <- mu.r * (1 - mu.r)
-    if (family(mod.r)[1] == "poisson")  Yhat.r <- mu.r
+    if (family(mod.r)[1] == "binomial") Yhat.r <- log(mu.r / (1 - mu.r))
+    if (family(mod.r)[1] == "poisson")  Yhat.r <- log(mu.r)
     
     sig2a.r <- prod(diag(C.r))^(1/n)
     
@@ -185,8 +185,8 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL) {
   if (class(mod.r)[1] == "glm") {
     mu.r <- mod.r$fitted.values
     
-    if (family(mod.r)[1] == "binomial") Yhat.r <- mu.r * (1 - mu.r)
-    if (family(mod.r)[1] == "poisson")  Yhat.r <- mu.r
+    if (family(mod.r)[1] == "binomial") Yhat.r <- log(mu.r / (1 - mu.r))
+    if (family(mod.r)[1] == "poisson")  Yhat.r <- log(mu.r)
     
     SSE.resid.r <- sig2e.r/(var(Yhat.r) + sig2e.r)
   }
@@ -236,6 +236,7 @@ R2.resid.phylolm <- function(mod = NULL, mod.r = NULL, phy = NULL) {
   if (class(mod.r) == "lm") {
     X.r <- model.matrix(mod.r)
     p.r <- dim(X.r)[2]
+    scal.r <- 1
     sigma2.r <- (n - p.r)/n * stats::sigma(mod.r)^2
   }
   
