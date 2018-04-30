@@ -88,34 +88,17 @@ R2.pred <- function(mod = NULL, mod.r = NULL, phy = NULL) {
 
 R2.pred.lm <- function(mod = NA, mod.r = NA) {
 	Y <- model.frame(mod)[,1]
-	SSE.pred <- var(Y - mod$fitted.values)
-	SSE.pred.r <- var(Y - mod.r$fitted.values)
-
-	R2.pred <- 1 - SSE.pred/SSE.pred.r
-	return(R2.pred)
-}
-
-R2.pred.glm <- function(mod = NA, mod.r = NA) {
-	Y <- model.frame(mod)[,1]
 	SSE.pred <- var(Y - stats::fitted(mod))
 	SSE.pred.r <- var(Y - stats::fitted(mod.r))
 	R2.pred <- 1 - SSE.pred/SSE.pred.r
 	return(R2.pred)
 }
 
-R2.pred.lmerMod <- function(mod = NULL, mod.r = NULL) {
-    Y <- model.frame(mod)[, 1]
-    SSE.pred <- var(Y - stats::fitted(mod))
-    SSE.pred.r <- var(Y - stats::fitted(mod.r))
-    return(1 - SSE.pred/SSE.pred.r)
-}
+R2.pred.glm <- R2.pred.lm
 
-R2.pred.glmerMod <- function(mod = NULL, mod.r = NULL) {
-    Y <- model.frame(mod)[, 1]
-    SSE.pred <- var(Y - stats::fitted(mod))
-    SSE.pred.r <- var(Y - stats::fitted(mod.r))
-    return(1 - SSE.pred/SSE.pred.r)
-}
+R2.pred.lmerMod <- R2.pred.lm
+
+R2.pred.glmerMod <- R2.pred.lm
 
 R2.pred.phylolm <- function(mod = NULL, mod.r = NULL, phy = NULL) {
     Y <- mod$y
@@ -123,35 +106,18 @@ R2.pred.phylolm <- function(mod = NULL, mod.r = NULL, phy = NULL) {
     n <- dim(X)[1]
     p <- dim(X)[2]
 
+    if (!mod$model %in% c("lambda", "OUrandomRoot", "OUfixedRoot", "BM", "kappa", "delta", "EB", "trend")){
+      stop("evolution model not supported yet")
+    }
     optpar <- round(mod$optpar, digits = 4)
-    if (mod$model == "lambda") {
-        phy.f <- phylolm::transf.branch.lengths(phy, parameters = list(lambda = optpar), model = mod$model)$tree
+    m.list = list(x = optpar)
+    if(mod$model %in% c("OUrandomRoot", "OUfixedRoot")){
+      names(m.list) = "alpha"
+    } else {
+      names(m.list) = mod$model
     }
-
-    if (mod$model %in% c("OUrandomRoot", "OUfixedRoot")) {
-        phy.f <- phylolm::transf.branch.lengths(phy, parameters = list(alpha = optpar), model = mod$model)$tree
-    }
-
-	if(mod$model == "BM") {
-        phy.f <- phylolm::transf.branch.lengths(phy, parameters = list("BM" = optpar), model = mod$model)$tree
-    }
-
-	if(mod$model == "kappa") {
-        phy.f <- phylolm::transf.branch.lengths(phy, parameters = list("kappa" = optpar), model = mod$model)$tree
-    }
-
-	if(mod$model == "delta") {
-        phy.f <- phylolm::transf.branch.lengths(phy, parameters = list("delta" = optpar), model = mod$model)$tree
-    }
-
-	if(mod$model == "EB") {
-        phy.f <- phylolm::transf.branch.lengths(phy, parameters = list("EB" = optpar), model = mod$model)$tree
-    }
-
-	if(mod$model == "trend") {
-        phy.f <- phylolm::transf.branch.lengths(phy, parameters = list("trend" = optpar), model = mod$model)$tree
-    }
-
+    phy.f <- phylolm::transf.branch.lengths(phy, parameters = m.list, model = mod$model)$tree
+    
     V <- ape::vcv(phy.f)
     R <- Y - stats::fitted(mod)
 
@@ -170,34 +136,17 @@ R2.pred.phylolm <- function(mod = NULL, mod.r = NULL, phy = NULL) {
     # reduced model
     if (class(mod.r) == "phylolm") {
         X.r <- mod.r$X
+        if (!mod.r$model %in% c("lambda", "OUrandomRoot", "OUfixedRoot", "BM", "kappa", "delta", "EB", "trend")){
+          stop("evolution model not supported yet")
+        }
         optpar.r <- round(mod.r$optpar, digits = 4)
-        if (mod.r$model == "lambda") {
-            phy.r <- phylolm::transf.branch.lengths(phy, parameters = list(lambda = optpar.r), model = mod.r$model)$tree
+        m.list.r = list(x = optpar.r)
+        if(mod.r$model %in% c("OUrandomRoot", "OUfixedRoot")){
+          names(m.list.r) = "alpha"
+        } else {
+          names(m.list.r) = mod.r$model
         }
-
-	    if (mod.r$model %in% c("OUrandomRoot", "OUfixedRoot")) {
-            phy.r <- phylolm::transf.branch.lengths(phy, parameters = list(alpha = optpar.r), model = mod.r$model)$tree
-        }
-
-		if(mod.r$model == "BM") {
-            phy.r <- phylolm::transf.branch.lengths(phy, parameters = list("BM" = optpar.r), model = mod.r$model)$tree
-        }
-
-		if(mod.r$model == "kappa") {
-            phy.r <- phylolm::transf.branch.lengths(phy, parameters = list("kappa" = optpar.r), model = mod.r$model)$tree
-        }
-
-		if(mod.r$model == "delta") {
-            phy.r <- phylolm::transf.branch.lengths(phy, parameters = list("delta" = optpar.r), model = mod.r$model)$tree
-        }
-
-		if(mod.r$model == "EB") {
-            phy.r <- phylolm::transf.branch.lengths(phy, parameters = list("EB" = optpar.r), model = mod.r$model)$tree
-        }
-
-		if(mod.r$model == "trend") {
-            phy.r <- phylolm::transf.branch.lengths(phy, parameters = list("trend" = optpar.r), model = mod.r$model)$tree
-        }
+        phy.r <- phylolm::transf.branch.lengths(phy, parameters = m.list.r, model = mod.r$model)$tree
 
         V.r <- ape::vcv(phy.r)
         R.r <- Y - stats::fitted(mod.r)
