@@ -1,8 +1,8 @@
 context("testing R2 functions")
 
 # data 
-# set.seed(123)
-p1 <- 10; nsample <- 10; n <- p1 * nsample
+set.seed(123456)
+p1 <- 10; nsample <- 20; n <- p1 * nsample
 d <- data.frame(x1 = rnorm(n = n), 
                 x2 = rnorm(n = n), 
                 u1 = rep(1:p1, each = nsample), 
@@ -50,15 +50,66 @@ d$y_phy_binary <- rbinom(n = n, size = 1, prob = rr2::inv.logit(b1 * d$x1 + e))
 # })
 
 test_that("when missing mod.r, the functions will automatically creat one", {
-    z.f <- lme4::lmer(y_re_intercept ~ x1 + x2 + (1 | u1) + (1 | u2), data = d, REML = F)
-    z.0 <- lm(y_re_intercept ~ 1, data = d)
-    
-    expect_equal(R2.resid(z.f, z.0), R2.resid(z.f))
-    expect_equal(R2.pred(z.f, z.0), R2.pred(z.f))
-    expect_equal(R2.lik(z.f, z.0), R2.lik(z.f))
+  # LM
+  z.f <- lm(y_re_intercept ~ x1 + x2, data = d)
+  z.0 <- lm(y_re_intercept ~ 1, data = d)
+  expect_equal(R2(z.f, z.0), R2(z.f))
+  
+  # GLM
+  z.f.glm <- glm(y_binary ~ x1 + x2, data = d, family = "binomial")
+  z.v.glm <- glm(y_binary ~ 1, data = d, family = "binomial")
+  expect_equal(R2(mod = z.f.glm, mod.r = z.v.glm),
+               R2(mod = z.f.glm))
+  
+  # LMM
+  z.f <- lme4::lmer(y_re_intercept ~ x1 + x2 + (1 | u1) + (1 | u2), data = d, REML = F)
+  z.0 <- lm(y_re_intercept ~ 1, data = d)
+  expect_equal(R2(z.f, z.0), R2(z.f))
+  
+  # GLMM
+  z.f.glmm <- lme4::glmer(y_binary ~ x1 + (1 | u1), data = d, family = "binomial")
+  z.v.glmm <- glm(y_binary ~ 1, data = d, family = "binomial")
+  expect_equal(R2(mod = z.f.glmm, mod.r = z.v.glmm),
+               R2(mod = z.f.glmm))
+  
+  # PGLS
+  z.x.pgls <- phylolm::phylolm(y_pgls ~ 1, phy = phy, data = d, model = "lambda")
+  lam.x.pgls <- round(z.x.pgls$optpar, digits = 4)
+  z.f.pgls <- phylolm::phylolm(y_pgls ~ x_trait, phy = phy, data = d, model = "lambda", 
+                               starting.value = 0.98 * lam.x.pgls + 0.01)
+  z.v.pgls <- lm(y_pgls ~ 1, data = d)
+  expect_equal(R2(mod = z.f.pgls, mod.r = z.v.pgls, phy = phy),
+               R2(mod = z.f.pgls, phy = phy))
+  
+  for(md in c("OUrandomRoot", "OUfixedRoot", "BM", 
+              "kappa", "delta", "EB")){
+    z.f.pgls2 <- phylolm::phylolm(y_pgls ~ x_trait, phy = phy, data = d, model = md)
+    z.v.pgls2 <- lm(y_pgls ~ 1, data = d)
+    expect_equal(R2(mod = z.f.pgls2, mod.r = z.v.pgls2, phy = phy),
+                 R2(mod = z.f.pgls2, phy = phy))
+  }
+  
+  # binaryPGLMM
+  z.f.plog <- rr2::binaryPGLMM(y_phy_binary ~ x1, data = d, phy = phy)
+  z.v.plog <- glm(y_phy_binary ~ 1, data = d, family = "binomial")
+  # R2.lik can't be used with binaryPGLMM because it is not a ML method
+  expect_message(t1 <- R2(mod = z.f.plog, mod.r = z.v.plog), 
+                 "models with class binaryPGLMM do not have R2.lik method")
+  expect_message(t2 <- R2(mod = z.f.plog, mod.r = z.v.plog), 
+                 "models with class binaryPGLMM do not have R2.lik method")
+  expect_equal(t1, t2)
+  
+  z.f.plog2 <- phylolm::phyloglm(y_phy_binary ~ x1, data = d, start.alpha = 1, phy = phy)
+  z.v.plog2 <- glm(y_phy_binary ~ 1, data = d, family = "binomial")
+  expect_message(t11 <- R2(z.f.plog2, z.v.plog2),
+                 "models with class phyloglm only have R2.lik method")
+  expect_message(t12 <- R2(z.f.plog2),
+                 "models with class phyloglm only have R2.lik method")
+  expect_equal(t11, t12)
 })
 
-test_that("when lmer models were fitted with REML = T, R2.lr (but not R2.ls and R2.ce) will change it to FALSE", {
-    z.f2 <- lme4::lmer(y_re_intercept ~ x1 + x2 + (1 | u1) + (1 | u2), data = d, REML = T)
-    expect_warning(R2.lik(z.f2), "mod updated with REML = F")
+test_that("when lmer models were fitted with REML = T, 
+          R2.lr (but not R2.ls and R2.ce) will change it to FALSE", {
+  z.f2 <- lme4::lmer(y_re_intercept ~ x1 + x2 + (1 | u1) + (1 | u2), data = d, REML = T)
+  expect_warning(R2(z.f2), "mod updated with REML = F")
 })
