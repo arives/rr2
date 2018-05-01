@@ -203,32 +203,46 @@ R2.resid.phylolm <- function(mod = NULL, mod.r = NULL, phy = NULL) {
   if (!mod$model %in% c("lambda", "OUrandomRoot", "OUfixedRoot", "BM", "kappa", "delta", "EB", "trend")){
     stop("evolution model not supported yet")
   }
-  optpar <- round(mod$optpar, digits = 4)
-  m.list = list(x = optpar)
-  if(mod$model %in% c("OUrandomRoot", "OUfixedRoot")){
-    names(m.list) = "alpha"
+  
+  if(!mod$model %in% c("BM", "trend")){# optpar for BM models is NULL
+    optpar <- round(mod$optpar, digits = 4)
+    m.list = list(x = optpar)
+    if(mod$model %in% c("OUrandomRoot", "OUfixedRoot")){
+      names(m.list) = "alpha"
+    } else {
+      names(m.list) = mod$model
+    }
+    phy.f <- phylolm::transf.branch.lengths(phy, parameters = m.list, model = mod$model)$tree
   } else {
-    names(m.list) = mod$model
+    phy.f <- phylolm::transf.branch.lengths(phy, parameters = NULL, model = mod$model)$tree
   }
-  phy.f <- phylolm::transf.branch.lengths(phy, parameters = m.list, model = mod$model)$tree
+
   scal <- sum(phy.f$edge.length)/n
   sigma2 <- mod$sigma2
   
   if (class(mod.r) == "phylolm") {
+    if (!mod.r$model %in% c("lambda", "OUrandomRoot", "OUfixedRoot", "BM", 
+                            "kappa", "delta", "EB", "trend")){
+      stop("evolution model not supported yet")
+    }
+      
     X.r <- mod.r$X
     p.r <- dim(X.r)[2]
     
-    if (!mod.r$model %in% c("lambda", "OUrandomRoot", "OUfixedRoot", "BM", "kappa", "delta", "EB", "trend")){
-      stop("evolution model not supported yet")
-    }
-    optpar.r <- round(mod.r$optpar, digits = 4)
-    m.list.r = list(x = optpar.r)
-    if(mod.r$model %in% c("OUrandomRoot", "OUfixedRoot")){
-      names(m.list.r) = "alpha"
+    if(!mod.r$model %in% c("BM", "trend")){
+      optpar.r <- round(mod$optpar.r, digits = 4)
+      m.list.r = list(x = optpar.r)
+      if(mod.r$model %in% c("OUrandomRoot", "OUfixedRoot")){
+        names(m.list.r) = "alpha"
+      } else {
+        names(m.list.r) = mod.r$model
+      }
+      phy.r <- phylolm::transf.branch.lengths(phy, parameters = m.list.r, model = mod.r$model)$tree
     } else {
-      names(m.list.r) = mod.r$model
+      # If model="BM" or model="trend", the output tree is the same as the input tree except that 
+      # the output tree is in pruningwise order.
+      phy.r <- phylolm::transf.branch.lengths(phy, parameters = NULL, model = mod.r$model)$tree
     }
-    phy.r <- phylolm::transf.branch.lengths(phy, parameters = m.list.r, model = mod.r$model)$tree
     scal.r <- sum(phy.r$edge.length)/n
     sigma2.r <- mod.r$sigma2
   }
