@@ -44,6 +44,14 @@ e <- signal * ape::rTraitCont(phy, model = "BM", sigma = 1)
 e <- e[match(phy$tip.label, names(e))]
 d$y_phy_binary <- rbinom(n = n, size = 1, prob = rr2::inv.logit(b1 * d$x1 + e))
 
+# data for communityPGLMM
+comm = phyr::comm_a
+comm$site = row.names(comm)
+dat = tidyr::gather(comm, key = "sp", value = "freq", -site) %>% 
+  dplyr::left_join(phyr::envi, by = "site") %>% 
+  dplyr::left_join(phyr::traits, by = "sp")
+dat$pa = as.numeric(dat$freq > 0)
+
 # test_that("R2 functions do not work with lm", {
 #     z.lm = lm(y_re_intercept ~ x1 + x2, data = d)
 #     expect_error(R2.lik(z.lm), "mod must be class one of classes lmerMod, glmerMod, phylolm, phyloglm.")
@@ -106,6 +114,12 @@ test_that("when missing mod.r, the functions will automatically creat one", {
   expect_message(t12 <- R2(z.f.plog2),
                  "models with class phyloglm only have R2.lik method")
   expect_equal(t11, t12)
+  
+  # communityPGLMM
+  mod <- phyr::communityPGLMM(freq ~ 1 + shade + (1|sp__) + (1|site) + (1|sp__@site), 
+                                            dat, tree = phyr::phylotree, REML = F)
+  mod.r <- lm(freq ~ 1, dat)
+  expect_equal(R2(mod, mod.r), R2(mod))
 })
 
 test_that("when lmer models were fitted with REML = T, 

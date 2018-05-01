@@ -8,8 +8,8 @@
 #'
 R2.lik <- function(mod = NULL, mod.r = NULL) {
   
-  if (!is.element(class(mod)[1], c("lm", "glm", "lmerMod", "glmerMod", "phylolm", "phyloglm"))) {
-    stop("mod must be class one of classes lm, glm, lmerMod, glmerMod, phylolm, phyloglm.")
+  if (!is.element(class(mod)[1], c("lm", "glm", "lmerMod", "glmerMod", "phylolm", "phyloglm", "communityPGLMM"))) {
+    stop("mod must be class one of classes lm, glm, lmerMod, glmerMod, phylolm, phyloglm, communityPGLMM.")
   }
   
   if (class(mod)[1] == "lm") {
@@ -85,6 +85,24 @@ R2.lik <- function(mod = NULL, mod.r = NULL) {
     }
     return(R2.lik.phyloglm(mod, mod.r)[1])
   }
+  
+  if (class(mod)[1] == "communityPGLMM") {
+    if(mod$family == "binomial")
+      stop("binary communityPGLMMs do not have log likelihood, \
+           If you are interested in LRT of random terms, use \
+           phyr::communityPGLMM.binary.LRT()")
+    if(mod$REML == TRUE)
+      stop("mod was fitted with REML, please set it to FALSE and re-fit it")
+    
+    if (!is.object(mod.r)) {
+      Y <- mod$Y
+      mod.r <- lm(Y ~ 1)
+    }
+    if (!is.element(class(mod.r)[1], c("communityPGLMM", "lm"))) {
+      stop("mod.r must be class communityPGLMM or lm.")
+    }
+    return(R2.like.communityPGLMM(mod, mod.r))
+  }
 }
 
 R2.lik.lm <- function(mod = NULL, mod.r = NULL) {
@@ -138,5 +156,16 @@ R2.lik.phyloglm <- function(mod = NULL, mod.r = NULL) {
   
   R2.lik <- (1 - exp(-2/n * (LL - LL.r)))/(1 - exp(2/n * LL.r))
   
+  return(R2.lik)
+}
+
+R2.like.communityPGLMM <- function(mod = NULL, mod.r = NULL){
+  n <- nrow(mod$X)
+  if(class(mod.r) == "lm"){
+    ll.r = logLik(mod.r)[[1]]
+  } else {
+    ll.r = mod.r$logLik
+  }
+  R2.lik <- 1 - exp(-2/n * (mod$logLik - ll.r))
   return(R2.lik)
 }

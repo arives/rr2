@@ -8,7 +8,7 @@ R2(mod = NULL, mod.r = NULL, phy = NULL, lik = TRUE, resid = TRUE,
   pred = TRUE)
 }
 \arguments{
-\item{mod}{a regression model with the following class: 'lmerMod', 'glmerMod', 'phylolm', and 'binaryPGLMM'}
+\item{mod}{a regression model with the following class: 'lmerMod', 'glmerMod', 'phylolm', 'binaryPGLMM', and 'communityPGLMM'}
 
 \item{mod.r}{reduced model, if not provided, will use corresponding models with intercept as the only predictor}
 

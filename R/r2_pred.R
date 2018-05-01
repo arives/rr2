@@ -9,8 +9,8 @@
 #'
 R2.pred <- function(mod = NULL, mod.r = NULL, phy = NULL) {
   
-  if (!is.element(class(mod)[1], c("lm", "glm", "lmerMod", "glmerMod", "phylolm", "binaryPGLMM"))) {
-    stop("mod must be class one of classes lm, glm, lmerMod, glmerMod, phylolm (but not phyloglm), binaryPGLMM.")
+  if (!is.element(class(mod)[1], c("lm", "glm", "lmerMod", "glmerMod", "phylolm", "binaryPGLMM", "communityPGLMM"))) {
+    stop("mod must be class one of classes lm, glm, lmerMod, glmerMod, phylolm (but not phyloglm), binaryPGLMM, communityPGLMM.")
   }
   
   if (class(mod)[1] == "lm") {
@@ -83,6 +83,19 @@ R2.pred <- function(mod = NULL, mod.r = NULL, phy = NULL) {
       stop("mod.r must be class binaryPGLMM or glm.")
     }
     return(R2.pred.binaryPGLMM(mod, mod.r)[1])
+  }
+  
+  if (class(mod)[1] == "communityPGLMM") {
+    if (!is.object(mod.r)) {
+      Y <- mod$Y
+      mod.r <- glm(Y ~ 1, family = "binomial")
+    }
+    if (!is.element(class(mod.r)[1], c("communityPGLMM", "glm"))) {
+      stop("mod.r must be class communityPGLMM or glm.")
+    }
+    if(mod$family == "gaussian")
+      stop("gaussian communityPGLMMs do not have R2.pred yet")
+    return(R2.pred.communityPGLMM(mod, mod.r))
   }
 }
 
@@ -187,6 +200,24 @@ R2.pred.binaryPGLMM <- function(mod = NULL, mod.r = NULL) {
   SSE.pred <- var(Y - Yhat)
   
   if (class(mod.r)[1] == "binaryPGLMM") {
+    Yhat.r <- mod.r$mu
+    SSE.pred.r <- var(Y - Yhat.r)
+  }
+  
+  if (class(mod.r)[1] == "glm") {
+    Yhat.r <- mod.r$fitted.values
+    SSE.pred.r <- var(Y - Yhat.r)
+  }
+  
+  return(1 - SSE.pred/SSE.pred.r)
+}
+
+R2.pred.communityPGLMM <- function(mod = NULL, mod.r = NULL) {
+  Yhat <- mod$mu
+  Y <- mod$Y
+  SSE.pred <- var(Y - Yhat)
+  
+  if (class(mod.r)[1] == "communityPGLMM") {
     Yhat.r <- mod.r$mu
     SSE.pred.r <- var(Y - Yhat.r)
   }

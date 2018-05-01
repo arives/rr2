@@ -32,16 +32,18 @@ You can calculate all three R2s at the same time with `R2(mod, mod.r)`. You can 
 
 This package also has some helper functions such as `inv.logit()`, `partialR2()`, and `partialR2adj()`.
 
-|Models             |           Available.R2s|
-|:------------------|:-----------------------------|
-|LM                 |       partialR2, partialR2adj|
-|LM                 |     R2.pred, R2.resid, R2.lik|
-|GLM                |     R2.pred, R2.resid, R2.lik|
-|LMM:  lmerMod      |     R2.pred, R2.resid, R2.lik|
-|GLMM: glmerMod     |     R2.pred, R2.resid, R2.lik|
-|PGLS: phylolm      |     R2.pred, R2.resid, R2.lik|
-|PGLMM: binaryPGLMM |     R2.pred, R2.resid,  -----|
-|PGLMM: phyloglm    |     -------, --------, R2.lik|
+| Models                           | Available.R2s              |
+| :------------------------------- | :------------------------- |
+| LM                               | partialR2, partialR2adj    |
+| LM                               | R2.pred, R2.resid, R2.lik  |
+| GLM                              | R2.pred, R2.resid, R2.lik  |
+| LMM:  lmerMod                    | R2.pred, R2.resid, R2.lik  |
+| GLMM: glmerMod                   | R2.pred, R2.resid, R2.lik  |
+| PGLS: phylolm                    | R2.pred, R2.resid, R2.lik  |
+| PGLMM: binaryPGLMM               | R2.pred, R2.resid, ------- |
+| PGLMM: phyloglm                  | -------, --------, R2.lik  |
+| PGLMM: communityPGLMM (gaussian) | -------, --------, R2.lik  |
+| PGLMM: communityPGLMM (binomial) | R2.pred, --------, ------- |
 
 # Usage: calculating R2s for regression models
 

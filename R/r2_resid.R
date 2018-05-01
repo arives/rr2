@@ -297,3 +297,34 @@ R2.resid.binaryPGLMM <- function(mod = NULL, mod.r = NULL) {
   
   return(R2.resid[1])
 }
+
+R2.resid.communityPGLMM <- function(mod = NULL, mod.r = NULL) {
+  # copied from R2.resid.binaryPGLMM; no change yet
+  y <- mod$Y
+  n <- nrow(mod$X)
+  Yhat <- mod$X %*% mod$B
+  phyV <- mod$VCV
+  s2 <- mod$s2 # which s2 to use??
+  scal <- prod(diag(s2 * phyV))^(1/n)
+  
+  sig2e <- sig2e.r <- pi^2/3
+  
+  SSE.resid <- sig2e/(var(Yhat) + scal + sig2e)
+  
+  # reduced model
+  if (class(mod.r)[1] == "binaryPGLMM") {
+    Yhat.r <- mod.r$X %*% mod.r$B
+    s2.r <- mod.r$s2
+    SSE.resid.r <- sig2e.r/(var(Yhat.r) + s2.r + sig2e.r)
+  }
+  
+  if (class(mod.r)[1] == "glm") {
+    mu.r <- mod.r$fitted.values
+    Yhat.r <- log(mu.r/(1 - mu.r))
+    SSE.resid.r <- sig2e.r/(var(Yhat.r) + sig2e.r)
+  }
+  
+  R2.resid <- 1 - SSE.resid/SSE.resid.r
+  
+  return(R2.resid[1])
+}
