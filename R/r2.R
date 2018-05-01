@@ -13,19 +13,19 @@
 R2 = function(mod = NULL, mod.r = NULL, phy = NULL, lik = TRUE, resid = TRUE, pred = TRUE){
   
   # phyloglm only have R2.lik method
-  if(class(mod) == "phyloglm"){
+  if(any(class(mod) %in% "phyloglm")){
     resid = FALSE; pred = FALSE
     message("models with class phyloglm only have R2.lik method")
   }
   
   # binaryPGLMM does not have R2.lik method
-  if(class(mod) == "binaryPGLMM"){
+  if(any(class(mod) %in% "binaryPGLMM")){
     lik = FALSE
     message("models with class binaryPGLMM do not have R2.lik method")
   }
   
   # phylolm requires phy object
-  if(class(mod) == "phylolm" & is.null(phy)) stop("phy object is required for models with class phylolm")
+  if(any(class(mod) %in% "phylolm") & is.null(phy)) stop("phy object is required for models with class phylolm")
   
   out = data.frame(R2s = c("R2_lik", "R2_resid", "R2_pred"), value = NA, stringsAsFactors = FALSE)
   
