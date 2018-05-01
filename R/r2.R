@@ -10,38 +10,47 @@
 #' @return all three R2s
 #' @export
 #'
-R2 = function(mod = NULL, mod.r = NULL, phy = NULL, lik = TRUE, resid = TRUE, pred = TRUE){
+R2 <- function(mod = NULL, mod.r = NULL, phy = NULL, lik = TRUE, resid = TRUE, pred = TRUE) {
   
   # phyloglm only have R2.lik method
-  if(any(class(mod) %in% "phyloglm")){
-    resid = FALSE; pred = FALSE
+  if (any(class(mod) %in% "phyloglm")) {
+    resid <- FALSE
+    pred <- FALSE
     message("models with class phyloglm only have R2.lik method")
   }
   
   # binaryPGLMM does not have R2.lik method
-  if(any(class(mod) %in% "binaryPGLMM")){
-    lik = FALSE
+  if (any(class(mod) %in% "binaryPGLMM")) {
+    lik <- FALSE
     message("models with class binaryPGLMM do not have R2.lik method")
   }
   
   # phylolm requires phy object
-  if(any(class(mod) %in% "phylolm") & is.null(phy)) stop("phy object is required for models with class phylolm")
+  if (any(class(mod) %in% "phylolm") & is.null(phy)) 
+    stop("phy object is required for models with class phylolm")
   
-  out = data.frame(R2s = c("R2_lik", "R2_resid", "R2_pred"), value = NA, stringsAsFactors = FALSE)
+  out <- data.frame(R2s = c("R2_lik", "R2_resid", "R2_pred"), value = NA, stringsAsFactors = FALSE)
   
-  if(is.null(phy)){
-    if(lik) out$value[1] = R2.lik(mod, mod.r)
-    if(resid) out$value[2] = R2.resid(mod, mod.r)
-    if(pred) out$value[3] = R2.pred(mod, mod.r)
+  if (is.null(phy)) {
+    if (lik) 
+      out$value[1] <- R2.lik(mod, mod.r)
+    if (resid) 
+      out$value[2] <- R2.resid(mod, mod.r)
+    if (pred) 
+      out$value[3] <- R2.pred(mod, mod.r)
   } else {
-    if(lik) out$value[1] = R2.lik(mod, mod.r)
-    if(resid) out$value[2] = R2.resid(mod, mod.r, phy)
-    if(pred) out$value[3] = R2.pred(mod, mod.r, phy)
+    if (lik) 
+      out$value[1] <- R2.lik(mod, mod.r)
+    if (resid) 
+      out$value[2] <- R2.resid(mod, mod.r, phy)
+    if (pred) 
+      out$value[3] <- R2.pred(mod, mod.r, phy)
   }
   
-  out = na.omit(out) # remove R2s not calculated
-  row.names(out) = NULL # reset row names
-  if(nrow(out) == 0) warning("at least to calculate one R2")
+  out <- na.omit(out)  # remove R2s not calculated
+  row.names(out) <- NULL  # reset row names
+  if (nrow(out) == 0) 
+    warning("at least to calculate one R2")
   
   return(out)
-} 
+}
