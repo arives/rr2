@@ -10,13 +10,15 @@ Description: Three methods to calculate R2 for models
     Logistic Regression, LMMs, and GLMM. See details in Ives preprint
     at biorxiv (https://doi.org/10.1101/144170).
 License: GPL
-Depends: R (>= 3.0), Matrix (>= 1.1.1), stats
+Depends: R (>= 3.0), stats
 Encoding: UTF-8
 LazyData: true
-Imports: lme4,
+Imports: 
+    lme4,
     phylolm,
     ape,
-    utils
+    utils,
+    Matrix
 RoxygenNote: 6.0.1
 Suggests: testthat
 URL: https://github.com/arives/rr2

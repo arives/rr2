@@ -20,10 +20,12 @@ R2 <- function(mod = NULL, mod.r = NULL, phy = NULL, lik = TRUE, resid = TRUE, p
   }
   
   # gaussian communityPGLMM only have R2.lik method
-  if (any(class(mod) %in% "communityPGLMM") & mod$family == "gaussian") {
-    resid <- FALSE
-    pred <- FALSE
-    message("models with class communityPGLMM (gaussian) only have R2.lik method")
+  if (any(class(mod) %in% "communityPGLMM")) {
+    if(mod$family == "gaussian"){
+      resid <- FALSE
+      pred <- FALSE
+      message("models with class communityPGLMM (gaussian) only have R2.lik method")
+    }
   }
   
   # binaryPGLMM does not have R2.lik method
@@ -33,10 +35,12 @@ R2 <- function(mod = NULL, mod.r = NULL, phy = NULL, lik = TRUE, resid = TRUE, p
   }
   
   # binary communityPGLMM only have R2.pred method at this moment
-  if (any(class(mod) %in% "communityPGLMM") & mod$family == "binomial") {
-    resid <- FALSE
-    lik <- FALSE
-    message("models with class communityPGLMM (binomial) only have R2.pred method")
+  if (any(class(mod) %in% "communityPGLMM")) {
+    if(mod$family == "binomial"){
+      resid <- FALSE
+      lik <- FALSE
+      message("models with class communityPGLMM (binomial) only have R2.pred method")
+    }
   }
   
   # phylolm requires phy object
