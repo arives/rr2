@@ -248,7 +248,7 @@ R2(mod = z.f.plog, mod.r = z.x.plog)
     ## models with class binaryPGLMM do not have R2.lik method
 
     ##        R2s     value
-    ## 1 R2_resid 0.7124029
+    ## 1 R2_resid 0.3950234
     ## 2  R2_pred 0.3344832
 
 ``` r

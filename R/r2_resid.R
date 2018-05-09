@@ -286,8 +286,8 @@ R2.resid.binaryPGLMM <- function(mod = NULL, mod.r = NULL) {
 		phyV.r <- mod.r$VCV
 		s2.r <- mod.r$s2
 		scal.r <- prod(diag(s2.r*phyV.r))^(1/n)
-	
-		SSE.ls.r <- sig2e.r/(var(Yhat.r) + scal.r + sig2e.r)
+		
+		SSE.resid.r <- sig2e.r/(var(Yhat.r) + scal.r + sig2e.r)
   }
   
   if (class(mod.r)[1] == "glm") {
