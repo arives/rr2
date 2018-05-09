@@ -96,7 +96,7 @@ R2.pred.lm <- function(mod = NA, mod.r = NA) {
 
 R2.pred.glm <- R2.pred.lm
 
-R2.pred.lmer <- function(mod = NA, mod.r = NA) {
+R2.pred.lmerMod <- function(mod = NA, mod.r = NA) {
   Y <- model.frame(mod)[, 1]
   SSE.pred <- var(Y - lme4::predict(mod, re.form=NA))
   SSE.pred.r <- var(Y - lme4::predict(mod.r, re.form=NA))
@@ -104,7 +104,7 @@ R2.pred.lmer <- function(mod = NA, mod.r = NA) {
   return(R2.pred)
 }
 
-R2.pred.glmerMod <- R2.pred.lmer
+R2.pred.glmerMod <- R2.pred.lmerMod
 
 R2.pred.phylolm <- function(mod = NULL, mod.r = NULL, phy = NULL) {
   Y <- mod$y
