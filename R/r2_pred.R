@@ -98,8 +98,8 @@ R2.pred.glm <- R2.pred.lm
 
 R2.pred.lmerMod <- function(mod = NA, mod.r = NA) {
   Y <- model.frame(mod)[, 1]
-  SSE.pred <- var(Y - lme4::predict(mod, re.form=NA))
-  SSE.pred.r <- var(Y - lme4::predict(mod.r, re.form=NA))
+  SSE.pred <- var(Y - predict(mod, re.form=NA))
+  SSE.pred.r <- var(Y - predict(mod.r, re.form=NA))
   R2.pred <- 1 - SSE.pred/SSE.pred.r
   return(R2.pred)
 }
