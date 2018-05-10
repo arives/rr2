@@ -97,9 +97,13 @@ R2.pred.lm <- function(mod = NA, mod.r = NA) {
 R2.pred.glm <- R2.pred.lm
 
 R2.pred.lmerMod <- function(mod = NA, mod.r = NA) {
-  Y <- model.frame(mod)[, 1]
-  SSE.pred <- var(Y - predict(mod, re.form=NA))
-  SSE.pred.r <- var(Y - predict(mod.r, re.form=NA))
+  YX <- model.frame(mod)
+  Y <- YX[, 1]
+  X <- YX[, 2:ncol(YX)]
+  YX.r <- model.frame(mod.r)
+  X.r <- YX.r[, 2:ncol(YX.r)]
+  SSE.pred <- var(Y - X %*% fixef(mod))
+  SSE.pred.r <- var(Y - X.r %*% fixef(mod.r))
   R2.pred <- 1 - SSE.pred/SSE.pred.r
   return(R2.pred)
 }
