@@ -98,9 +98,11 @@ R2.pred.glm <- R2.pred.lm
 
 R2.pred.lmerMod <- function(mod = NA, mod.r = NA) {
   Y <- model.frame(mod)[,1]
-  SSE.pred <- var(Y - model.matrix(mod) %*% fixef(mod))
-  if (!is.element(class(mod.r)[1], c("lmerMod", "glmerMod"))){
-    SSE.pred.r <- var(Y - model.matrix(mod.r) %*% fixef(mod.r))
+  #SSE.pred <- var(Y - model.matrix(mod) %*% fixef(mod))
+  SSE.pred <- var(Y - fitted(mod))
+  if (is.element(class(mod.r)[1], c("lmerMod", "glmerMod"))){  
+    #SSE.pred.r <- var(Y - model.matrix(mod.r) %*% fixef(mod.r))
+    SSE.pred.r <- var(Y - fitted(mod.r))
   }else{
     SSE.pred.r <- var(Y - stats::fitted(mod.r))
   }
