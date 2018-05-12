@@ -23,8 +23,7 @@ R2 <- function(mod = NULL, mod.r = NULL, phy = NULL, lik = TRUE, resid = TRUE, p
   if (any(class(mod) %in% "communityPGLMM")) {
     if(mod$family == "gaussian"){
       resid <- FALSE
-      pred <- FALSE
-      message("models with class communityPGLMM (gaussian) only have R2.lik method")
+      message("models with class communityPGLMM (gaussian) do not have R2.resid method")
     }
   }
   

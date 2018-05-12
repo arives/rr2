@@ -162,9 +162,9 @@ R2.lik.phyloglm <- function(mod = NULL, mod.r = NULL) {
 R2.like.communityPGLMM <- function(mod = NULL, mod.r = NULL){
   n <- nrow(mod$X)
   if(class(mod.r) == "lm"){
-    ll.r = logLik(mod.r)[[1]]
+    ll.r <- logLik(mod.r)[[1]]
   } else {
-    ll.r = mod.r$logLik
+    ll.r <- mod.r$logLik
   }
   R2.lik <- 1 - exp(-2/n * (mod$logLik - ll.r))
   return(R2.lik)
