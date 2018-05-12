@@ -1,0 +1,35 @@
+citHeader("To cite rr2 in publications use:")
+
+citEntry(entry = "Article",
+  title        = "R^2s for Correlated Data: Phylogenetic Models, LMMs, and GLMMs",
+  author       = personList(as.person("Anthony R. Ives")),
+  journal      = "Systematic Biology",
+  year         = "2018",
+  volume       = "",
+  number       = "",
+  pages        = "",
+  url          = "",
+
+  textVersion  =
+  paste("Anthony R. Ives (2018).",
+        "R^2s for Correlated Data: Phylogenetic Models, LMMs, and GLMMs.",
+        "Systematic Biology.",
+        "URL https://doi.org/10.1101/144170.")
+)
+
+citEntry(entry = "Manual",
+  title        = "rr2: an R package for R^2s of Correlated Data",
+  author       = personList(as.person("Anthony R. Ives"),
+                            as.person("Daijiang Li")),
+  year         = "2018",
+  volume       = "version 0.2.0",
+  number       = "",
+  pages        = "",
+  url          = "https://github.com/arives/rr2",
+
+  textVersion  =
+  paste("Anthony R. Ives and Daijiang Li (2018).",
+        "rr2: an R package for R^2s of Correlated Data",
+        "Version 0.2.0.",
+        "URL https://github.com/arives/rr2.")
+)

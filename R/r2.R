@@ -1,7 +1,7 @@
 #' Calculate R2.lik, R2.resid, and R2.pred
 #'
 #' Calculate all three R2s for LMM, GLMM, PGLM, and PGLMMs.
-#' @param mod a regression model with the following class: 'lmerMod', 'glmerMod', 'phylolm', and 'binaryPGLMM'
+#' @param mod a regression model with the following class: 'lmerMod', 'glmerMod', 'phylolm', 'binaryPGLMM', and 'communityPGLMM'
 #' @param mod.r reduced model, if not provided, will use corresponding models with intercept as the only predictor
 #' @param phy the phylogeny for phylogenetic models, which is not required to be specified for R2.lik.
 #' @param lik whether to calculate R2.lik, default is TRUE
@@ -19,10 +19,27 @@ R2 <- function(mod = NULL, mod.r = NULL, phy = NULL, lik = TRUE, resid = TRUE, p
     message("models with class phyloglm only have R2.lik method")
   }
   
+  # gaussian communityPGLMM only have R2.lik method
+  if (any(class(mod) %in% "communityPGLMM")) {
+    if(mod$family == "gaussian"){
+      resid <- FALSE
+      message("models with class communityPGLMM (gaussian) do not have R2.resid method")
+    }
+  }
+  
   # binaryPGLMM does not have R2.lik method
   if (any(class(mod) %in% "binaryPGLMM")) {
     lik <- FALSE
     message("models with class binaryPGLMM do not have R2.lik method")
+  }
+  
+  # binary communityPGLMM only have R2.pred method at this moment
+  if (any(class(mod) %in% "communityPGLMM")) {
+    if(mod$family == "binomial"){
+      resid <- FALSE
+      lik <- FALSE
+      message("models with class communityPGLMM (binomial) only have R2.pred method")
+    }
   }
   
   # phylolm requires phy object

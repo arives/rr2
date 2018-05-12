@@ -9,8 +9,8 @@
 #'
 R2.pred <- function(mod = NULL, mod.r = NULL, phy = NULL) {
   
-  if (!is.element(class(mod)[1], c("lm", "glm", "lmerMod", "glmerMod", "phylolm", "binaryPGLMM"))) {
-    stop("mod must be class one of classes lm, glm, lmerMod, glmerMod, phylolm (but not phyloglm), binaryPGLMM.")
+  if (!is.element(class(mod)[1], c("lm", "glm", "lmerMod", "glmerMod", "phylolm", "binaryPGLMM", "communityPGLMM"))) {
+    stop("mod must be class one of classes lm, glm, lmerMod, glmerMod, phylolm (but not phyloglm), binaryPGLMM, communityPGLMM.")
   }
   
   if (class(mod)[1] == "lm") {
@@ -83,6 +83,25 @@ R2.pred <- function(mod = NULL, mod.r = NULL, phy = NULL) {
       stop("mod.r must be class binaryPGLMM or glm.")
     }
     return(R2.pred.binaryPGLMM(mod, mod.r)[1])
+  }
+  
+  if (class(mod)[1] == "communityPGLMM") {
+    if(!is.object(mod.r)){
+      Y <- mod$Y
+      if(mod$family == "gaussian"){
+        mod.r <- lm(Y ~ 1)
+      }
+      if(mod$family == "binomial"){
+        mod.r <- glm(Y ~ 1, family = "binomial")
+      }
+    }
+    
+    if (!is.element(class(mod.r)[1], c("communityPGLMM", "lm", "glm"))) {
+      stop("mod.r must be of class communityPGLMM, lm, or glm (binomial model).")
+    }
+    
+    if(mod$family == "gaussian") return(R2.pred.communityPGLMM.gaussian(mod, mod.r))
+    if(mod$family == "binomial") return(R2.pred.communityPGLMM.binomial(mod, mod.r))
   }
 }
 
@@ -202,5 +221,144 @@ R2.pred.binaryPGLMM <- function(mod = NULL, mod.r = NULL) {
     SSE.pred.r <- var(Y - Yhat.r)
   }
   
+  return(1 - SSE.pred/SSE.pred.r)
+}
+
+pglmm.predict <- function(mod){
+  Y <- mod$Y
+  X <- mod$X
+  n <- dim(X)[1]
+  fit <- X %*% mod$B
+  R <- Y - fit
+  V <- solve(mod$iV)
+  v <- V
+  for(i in 1:n) {
+    v[i,i] <- max(V[i, -i])
+  }
+  Rhat <- v %*% mod$iV %*% R
+  Yhat <- as.numeric(fit + Rhat)
+  return(Yhat)
+}
+
+R2.pred.communityPGLMM.gaussian <- function(mod = NULL, mod.r = NULL) {
+  Yhat <- pglmm.predict(mod)
+  SSE.pred <- var(mod$Y - Yhat)
+  
+  # reduced model
+  if (class(mod.r) == "communityPGLMM") {
+    Yhat.r <- pglmm.predict(mod.r)
+    SSE.pred.r <- var(mod.r$Y - Yhat.r)
+  }
+  
+  if (class(mod.r) == "lm") {
+    Y.r <- model.frame(mod.r)[, 1]
+    Yhat.r <- stats::fitted(mod.r)
+    SSE.pred.r <- var(Y.r - Yhat.r)
+  }
+  
+  return(1 - SSE.pred/SSE.pred.r)
+}
+
+R2.pred.communityPGLMM.binomial <- function(mod = NULL, mod.r = NULL) {
+  Y <- mod$Y
+  Yhat <- mod$mu
+  SSE.pred <- var(Y - Yhat)
+  
+  if (class(mod.r)[1] == "communityPGLMM") {
+    Y.r <- mod.r$Y
+    Yhat.r <- mod.r$mu
+    SSE.pred.r <- var(Y.r - Yhat.r)
+  }
+  
+  if(class(mod.r)[1] == "glm"){
+    Y.r <- mod.r$y
+    Yhat.r <- mod.r$fitted.values
+    SSE.pred.r <- var(Y.r - Yhat.r)
+  }
+  
+  return(1 - SSE.pred/SSE.pred.r)
+}
+
+# these two versions for communitypglmm and lmer work like r2.pred for phylolm objects, 
+# in which the points are predicted for tips after removing the tip values.
+pglmm.predict.alt <- function(mod){
+  Y <- mod$Y
+  X <- mod$X
+  n <- dim(X)[1]
+  fit <- X %*% mod$B
+  R <- Y - fit
+  V <- solve(mod$iV)
+  Rhat <- matrix(0, nrow = n, ncol = 1)
+  for (j in 1:n) {
+    r <- R[-j]
+    VV <- V[-j, -j]
+    iVV <- solve(VV)
+    v <- V[j, -j]
+    Rhat[j] <- v %*% iVV %*% r
+  }
+  Yhat <- as.numeric(fit + Rhat)
+  return(Yhat)
+}
+
+R2.pred.communityPGLMM.gaussian.alt <- function(mod = NULL, mod.r = NULL) {
+  Yhat <- pglmm.predict.alt(mod)
+  SSE.pred <- var(mod$Y - Yhat)
+  
+  # reduced model
+  if (class(mod.r) == "communityPGLMM") {
+    Yhat.r <- pglmm.predict.alt(mod.r)
+    SSE.pred.r <- var(mod.r$Y - Yhat.r)
+  }
+  
+  if (class(mod.r) == "lm") {
+    Y.r <- model.frame(mod.r)[, 1]
+    Yhat.r <- stats::fitted(mod.r)
+    SSE.pred.r <- var(Y.r - Yhat.r)
+  }
+
+  return(1 - SSE.pred/SSE.pred.r)
+}
+
+mer.predict.alt <- function(mod){
+  Y <- model.frame(mod)[,1]
+  X <- model.matrix(mod)
+  n <- dim(X)[1]
+  fit <- X %*% lme4::fixef(mod)
+  R <- Y - fit
+  s2 <- lme4::getME(mod,"theta")^2
+  n.re <- length(s2)
+  Zt <- lme4::getME(mod, "Ztlist")
+  V <- diag(n)
+  for(i in 1:n.re) V <- V + s2[i] * t(Zt[[i]]) %*% Zt[[i]]
+  V <- sigma(mod)^2 * V
+  V <- V/det(V)^(1/n)
+  
+  Rhat <- matrix(0, nrow = n, ncol = 1)
+  for (j in 1:n) {
+    r <- R[-j]
+    VV <- V[-j, -j]
+    iVV <- solve(VV)
+    v <- V[j, -j]
+    Rhat[j] <- v %*% iVV %*% r
+  }
+  
+  Yhat <- as.numeric(fit + Rhat)
+}
+
+R2.pred.lmer.gaussian.alt <- function(mod = NULL, mod.r = NULL) {
+  Y <- model.frame(mod)[, 1]
+  Yhat <- mer.predict.alt(mod)
+  SSE.pred <- var(Y - Yhat)
+  
+  # reduced model
+  if (class(mod.r) == "lmerMod") {
+    Yhat.r <- mer.predict.alt(mod.r)
+  }
+  
+  if (class(mod.r) == "lm") {
+    Yhat.r <- stats::fitted(mod.r)
+  }
+  
+  SSE.pred.r <- var(Y - Yhat.r)
   return(1 - SSE.pred/SSE.pred.r)
 }
