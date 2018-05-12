@@ -42,7 +42,7 @@ This package also has some helper functions such as `inv.logit()`, `partialR2()`
 | PGLS: phylolm                    | R2.pred, R2.resid, R2.lik  |
 | PGLMM: binaryPGLMM               | R2.pred, R2.resid, ------- |
 | PGLMM: phyloglm                  | -------, --------, R2.lik  |
-| PGLMM: communityPGLMM (gaussian) | -------, --------, R2.lik  |
+| PGLMM: communityPGLMM (gaussian) | R2.pred, --------, R2.lik  |
 | PGLMM: communityPGLMM (binomial) | R2.pred, --------, ------- |
 
 # Usage: calculating R2s for regression models

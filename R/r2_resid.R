@@ -240,7 +240,7 @@ R2.resid.phylolm <- function(mod = NULL, mod.r = NULL, phy = NULL) {
     p.r <- dim(X.r)[2]
     
     if (!mod.r$model %in% c("BM", "trend")) {
-      optpar.r <- round(mod$optpar.r, digits = 4)
+      optpar.r <- round(mod.r$optpar, digits = 4)
       m.list.r <- list(x = optpar.r)
       if (mod.r$model %in% c("OUrandomRoot", "OUfixedRoot")) {
         names(m.list.r) <- "alpha"

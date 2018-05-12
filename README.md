@@ -2,11 +2,7 @@
 Goal
 ====
 
-This package provides three R2s for statistical models with correlated
-errors including classes: ‘lmerMod’ (LMM), ‘glmerMod’ (GLMM), ‘phylolm’
-(Phylogenetic GLS), and ‘binaryPGLMM/phyloglm’ (Phylogenetic Logistic
-Regression). Detailed technical descriptions can be found in [Ives 2017,
-preprint](http://www.biorxiv.org/content/early/2017/05/30/144170).
+This package provides three R2s for statistical models with correlated errors including classes: 'lmerMod' (LMM), 'glmerMod' (GLMM), 'phylolm' (Phylogenetic GLS), and 'binaryPGLMM/phyloglm' (Phylogenetic Logistic Regression). Detailed technical descriptions can be found in [Ives 2017, preprint](http://www.biorxiv.org/content/early/2017/05/30/144170).
 
 Installation
 ============
@@ -22,38 +18,29 @@ library(rr2)
 Package structure
 =================
 
-This package has three main functions: `R2.resid()`, `R2.lik()`, and
-`R2.pred()`. You can use them individually in the form of, e.g.,
-`R2.resid(mod, mod.r)` where `mod` is the full model and `mod.r` is the
-reduce model for partial R2s. If you do not include the reduced model
-`mod.r`, then the appropriate model with just the intercept is used to
-give the total R2. When using `R2.resid` and `R2.pred` with PGLS, you
-need to include the phylo object containing a phylogenetic tree, e.g.,
-`R2.resid(mod, mod.r, phy = phy)`.
+This package has three main functions: `R2.resid()`, `R2.lik()`, and `R2.pred()`. You can use them individually in the form of, e.g., `R2.resid(mod, mod.r)` where `mod` is the full model and `mod.r` is the reduce model for partial R2s. If you do not include the reduced model `mod.r`, then the appropriate model with just the intercept is used to give the total R2. When using `R2.resid` and `R2.pred` with PGLS, you need to include the phylo object containing a phylogenetic tree, e.g., `R2.resid(mod, mod.r, phy = phy)`.
 
-You can calculate all three R2s at the same time with `R2(mod, mod.r)`.
-You can also specify which R2(s) to calculate within this function by
-turning off unwanted methods, e.g., `R2(mod, mod.r, resid = FALSE)` or
-`R2(mod, mod.r, resid = FALSE)`.
+You can calculate all three R2s at the same time with `R2(mod, mod.r)`. You can also specify which R2(s) to calculate within this function by turning off unwanted methods, e.g., `R2(mod, mod.r, resid = FALSE)` or `R2(mod, mod.r, resid = FALSE)`.
 
-This package also has some helper functions such as `inv.logit()`,
-`partialR2()`, and `partialR2adj()`.
+This package also has some helper functions such as `inv.logit()`, `partialR2()`, and `partialR2adj()`.
 
-| Models             | Available.R2s             |
-|:-------------------|:--------------------------|
-| LM                 | partialR2, partialR2adj   |
-| LM                 | R2.pred, R2.resid, R2.lik |
-| GLM                | R2.pred, R2.resid, R2.lik |
-| LMM: lmerMod       | R2.pred, R2.resid, R2.lik |
-| GLMM: glmerMod     | R2.pred, R2.resid, R2.lik |
-| PGLS: phylolm      | R2.pred, R2.resid, R2.lik |
-| PGLMM: binaryPGLMM | R2.pred, R2.resid, —–     |
-| PGLMM: phyloglm    | ——-, ——–, R2.lik          |
+| Models                           | Available.R2s              |
+|:---------------------------------|:---------------------------|
+| LM                               | partialR2, partialR2adj    |
+| LM                               | R2.pred, R2.resid, R2.lik  |
+| GLM                              | R2.pred, R2.resid, R2.lik  |
+| LMM: lmerMod                     | R2.pred, R2.resid, R2.lik  |
+| GLMM: glmerMod                   | R2.pred, R2.resid, R2.lik  |
+| PGLS: phylolm                    | R2.pred, R2.resid, R2.lik  |
+| PGLMM: binaryPGLMM               | R2.pred, R2.resid, ------- |
+| PGLMM: phyloglm                  | -------, --------, R2.lik  |
+| PGLMM: communityPGLMM (gaussian) | R2.pred, --------, R2.lik  |
+| PGLMM: communityPGLMM (binomial) | R2.pred, --------, ------- |
 
 Usage: calculating R2s for regression models
 ============================================
 
-First, let’s simulate data that will be used to fit various models
+First, let's simulate data that will be used to fit various models
 
 ``` r
 # data 
@@ -119,18 +106,13 @@ head(d)
     ## t53 -1.60010819 -1.3718365            0
     ## t13 -1.52297135 -2.0347222            1
 
-Then, let’s fit some models and calculate their R2s.
+Then, let's fit some models and calculate their R2s.
 
 LMM
 ---
 
 ``` r
 library(rr2)
-```
-
-    ## Loading required package: Matrix
-
-``` r
 z.f.lmm <- lme4::lmer(y_re_intercept ~ x1 + x2 + (1 | u1) + (1 | u2), data = d, REML = F)
 z.x.lmm <- lme4::lmer(y_re_intercept ~ x1 + (1 | u1) + (1 | u2), data = d, REML = F)
 z.v.lmm <- lme4::lmer(y_re_intercept ~ 1 + (1 | u2), data = d, REML = F)
@@ -288,5 +270,4 @@ Citation
 
 Please cite the following paper if you find this package useful:
 
-> Anthony Ives. 2017. R2s for Correlated Data: Phylogenetic Models,
-> LMMs, and GLMMs. bioRxiv 144170. doi: <https://doi.org/10.1101/144170>
+> Anthony Ives. 2017. R2s for Correlated Data: Phylogenetic Models, LMMs, and GLMMs. bioRxiv 144170. doi: <https://doi.org/10.1101/144170>
