@@ -55,6 +55,36 @@ partialR2adj <- function(mod, df.f, mod.r, df.r) {
   return(list(R2 = R2, R2.adj = R2.adj))
 }
 
+#' Transform a phylogeny based on a phylolm model
+#' 
+#' Using a fitted phylolm model to transform branch lengths of a phylogeny
+#' 
+#' @param phylolmMod a fitted phylolm model
+#' @param phy a phylogeny with class "phylo"
+#' @return a transformed phylogeny
+#' @export
+#' 
+transf_phy <- function(phylolmMod, phy){
+  if (!phylolmMod$model %in% c("BM", "trend")) {
+    # optpar for BM models is NULL
+    optpar <- round(phylolmMod$optpar, digits = 4)
+    m.list <- list(x = optpar)
+    
+    if (phylolmMod$model %in% c("OUrandomRoot", "OUfixedRoot")) {
+      names(m.list) <- "alpha"
+    } else {
+      names(m.list) <- phylolmMod$model
+    }
+    
+    phy.f <- phylolm::transf.branch.lengths(phy, parameters = m.list, model = phylolmMod$model)$tree
+  } else {
+    # If model='BM' or model='trend', the output tree is the same as the input 
+    # tree except that the output tree is in pruningwise order.
+    phy.f <- phylolm::transf.branch.lengths(phy, parameters = NULL, model = phylolmMod$model)$tree
+  }
+  
+  phy.f
+}
 
 #' Phylogenetic GLM for binary data
 #'
