@@ -8,6 +8,7 @@
 #' @export
 #'
 R2.pred <- function(mod = NULL, mod.r = NULL, phy = NULL) {
+   if(class(mod)[1] == "merModLmerTest") class(mod) = "lmerMod"
   
   if (!is.element(class(mod)[1], c("lm", "glm", "lmerMod", "glmerMod", "phylolm", "binaryPGLMM", "communityPGLMM"))) {
     stop("mod must be class one of classes lm, glm, lmerMod, glmerMod, phylolm (but not phyloglm), binaryPGLMM, communityPGLMM.")
@@ -34,7 +35,7 @@ R2.pred <- function(mod = NULL, mod.r = NULL, phy = NULL) {
     }
     return(R2.pred.glm(mod, mod.r))
   }
-  
+
   if (class(mod)[1] == "lmerMod") {
     if (!is.object(mod.r)) {
       Y <- model.frame(mod)[, 1]
