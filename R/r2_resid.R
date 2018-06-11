@@ -8,7 +8,8 @@
 #' @export
 #'
 R2.resid <- function(mod = NULL, mod.r = NULL, phy = NULL) {
-  
+  if(class(mod)[1] == "merModLmerTest") class(mod) = "lmerMod"
+	
   if (!is.element(class(mod)[1], c("lm", "glm", "lmerMod", "glmerMod", "phylolm", "binaryPGLMM"))) {
     stop("mod must be class one of classes lm, glm, lmerMod, glmerMod, phylolm, binaryPGLMM.")
   }
