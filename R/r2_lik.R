@@ -8,8 +8,8 @@
 #'
 R2.lik <- function(mod = NULL, mod.r = NULL) {
   
-  if (!is.element(class(mod)[1], c("lm", "glm", "lmerMod", "glmerMod", "phylolm", "phyloglm", "communityPGLMM"))) {
-    stop("mod must be class one of classes lm, glm, lmerMod, glmerMod, phylolm, phyloglm, communityPGLMM.")
+  if (!is.element(class(mod)[1], c("lm", "glm", "lmerMod", "merModLmerTest", "glmerMod", "phylolm", "phyloglm", "communityPGLMM"))) {
+    stop("mod must be class one of classes lm, glm, lmerMod (merModLmerTest), glmerMod, phylolm, phyloglm, communityPGLMM.")
   }
   
   if (class(mod)[1] == "lm") {
@@ -33,6 +33,8 @@ R2.lik <- function(mod = NULL, mod.r = NULL) {
     }
     return(R2.lik.glm(mod, mod.r)[1])
   }
+  
+  if(class(mod)[1] == "merModLmerTest) class(mod) = "lmerMod"
   
   if (class(mod)[1] == "lmerMod") {
     if (!is.object(mod.r)) {
