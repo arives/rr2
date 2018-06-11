@@ -40,6 +40,7 @@ R2.lik <- function(mod = NULL, mod.r = NULL) {
       Y <- model.frame(mod)[, 1]
       mod.r <- lm(Y ~ 1)
     }
+    if(class(mod.r)[1] == "merModLmerTest") class(mod.r) = "lmerMod"
     if (!is.element(class(mod.r)[1], c("lmerMod", "lm"))) {
       stop("mod.r must be class lmerMod or lm.")
     }
