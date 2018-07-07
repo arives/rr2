@@ -43,7 +43,7 @@ R2 <- function(mod = NULL, mod.r = NULL, phy = NULL, lik = TRUE, resid = TRUE, p
   }
   
   # phylolm requires phy object except for R2.lik
-  if (any(class(mod) %in% "phylolm") & (is.null(phy) & (resid == T | pred == T))) 
+  if (any(class(mod) %in% "phylolm") & is.null(phy)) 
     stop("phy object is required for models with class phylolm")
   
   out <- data.frame(R2s = c("R2_lik", "R2_resid", "R2_pred"), value = NA, stringsAsFactors = FALSE)
