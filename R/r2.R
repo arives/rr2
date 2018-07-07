@@ -1,6 +1,10 @@
 #' Calculate R2.lik, R2.resid, and R2.pred
 #'
-#' This is a wrapper for calculating all three R2s -- R2.lik, R2.resid, and R2.pred -- for LMM, GLMM, PGLM, and PGLMMs. Note that the individual functions R2.lik, R2.resid, and R2.pred can be called. This is preferrable if you are only interested in one R2; for example, for 'phylolm' called from R2 you need to specify the phylo object for the phylogeny, while R2.lik does not require this.
+#' This is a wrapper for calculating all three R2s -- R2.lik, R2.resid, and 
+#' R2.pred -- for LMM, GLMM, PGLM, and PGLMMs. Note that the individual functions
+#' R2.lik, R2.resid, and R2.pred can be called. This is preferrable if you are only 
+#' interested in one R2; for example, for 'phylolm' called from R2 you need to specify 
+#' the phy (phylo object for the phylogeny), while R2.lik does not require this.
 #' @param mod a regression model with the following class: 'lmerMod', 'glmerMod', 'phylolm', 'binaryPGLMM', and 'communityPGLMM'
 #' @param mod.r reduced model, if not provided, will use corresponding models with intercept as the only predictor
 #' @param phy the phylogeny for phylogenetic models, which is not required to be specified for R2.lik.
