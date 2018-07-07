@@ -24,5 +24,9 @@ R2(mod = NULL, mod.r = NULL, phy = NULL, lik = TRUE, resid = TRUE,
 all three R2s
 }
 \description{
-Calculate all three R2s for LMM, GLMM, PGLM, and PGLMMs.
+This is a wrapper for calculating all three R2s -- R2.lik, R2.resid, and 
+R2.pred -- for LMM, GLMM, PGLM, and PGLMMs. Note that the individual functions
+R2.lik, R2.resid, and R2.pred can be called. This is preferrable if you are only 
+interested in one R2; for example, for 'phylolm' called from R2 you need to specify 
+the phy (phylo object for the phylogeny), while R2.lik does not require this.
 }
