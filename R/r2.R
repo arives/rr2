@@ -56,14 +56,14 @@ R2 <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = NULL, lik = TRUE
     if (lik) 
       out$value[1] <- R2.lik(mod, mod.r)
     if (resid) 
-      out$value[2] <- R2.resid(mod, mod.r)
+      out$value[2] <- R2.resid(mod, mod.r, sigma2_d)
     if (pred) 
       out$value[3] <- R2.pred(mod, mod.r)
   } else {
     if (lik) 
       out$value[1] <- R2.lik(mod, mod.r)
     if (resid) 
-      out$value[2] <- R2.resid(mod, mod.r, phy)
+      out$value[2] <- R2.resid(mod, mod.r, phy, sigma2_d)
     if (pred) 
       out$value[3] <- R2.pred(mod, mod.r, phy)
   }
