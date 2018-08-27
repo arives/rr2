@@ -114,7 +114,7 @@ R2.resid.lm <- function(mod = NULL, mod.r = NULL) {
 	return(R2.resid)
 }
 
-R2.resid.glm <- function(mod = NULL, mod.r = NULL, sigma2_d = "corrected") {
+R2.resid.glm <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
 	mu <- mod$fitted.values
 	Yhat <- family(mod)$linkfun(mu)
 	if (family(mod)[1] == "binomial") 
@@ -174,7 +174,7 @@ R2.resid.lmerMod <- function(mod = NULL, mod.r = NULL) {
 	return(R2.resid)
 }
 
-R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = "corrected") {
+R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
 
 	X <- model.matrix(mod)
 	n <- dim(X)[1]
@@ -292,7 +292,7 @@ R2.resid.phylolm <- function(mod = NULL, mod.r = NULL, phy = NULL) {
 	return(R2.resid)
 }
 
-R2.resid.binaryPGLMM <- function(mod = NULL, mod.r = NULL, sigma2_d = "corrected") {
+R2.resid.binaryPGLMM <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
 
 	y <- mod$y
 	n <- length(y)
