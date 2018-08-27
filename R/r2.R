@@ -14,7 +14,7 @@
 #' @return all three R2s
 #' @export
 #'
-R2 <- function(mod = NULL, mod.r = NULL, phy = NULL, lik = TRUE, resid = TRUE, pred = TRUE) {
+R2 <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = NULL, lik = TRUE, resid = TRUE, pred = TRUE) {
   
   # phyloglm only have R2.lik method
   if (any(class(mod) %in% "phyloglm")) {
