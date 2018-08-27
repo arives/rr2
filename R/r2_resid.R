@@ -7,7 +7,7 @@
 #' @return R2.resid
 #' @export
 #'
-R2.resid <- function(mod = NULL, mod.r = NULL, phy = NULL) {
+R2.resid <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = NA) {
   if(class(mod)[1] == "merModLmerTest") class(mod) = "lmerMod"
 	
   if (!is.element(class(mod)[1], c("lm", "glm", "lmerMod", "glmerMod", "phylolm", "binaryPGLMM"))) {
@@ -106,21 +106,37 @@ R2.resid.lm <- function(mod = NA, mod.r = NA) {
   return(R2.resid)
 }
 
-R2.resid.glm <- function(mod = NA, mod.r = NA) {
+R2.resid.glm <- function(mod = NA, mod.r = NA, sigma2_d = "corrected") {
   mu <- mod$fitted.values
-  if (family(mod)[1] == "binomial") 
+  if (family(mod)[1] == "binomial") {
     Yhat <- log(mu/(1 - mu))
-  if (family(mod)[1] == "poisson") 
+	if(sigma2_d == "corrected"){
+		sig2e <- pi^2/3 * 1/(1+mean(mu*(1-mu)))
+	}else{
+		sig2e <- pi^2/3
+		print("Distribution-specific variance sigma2_d from Nakagawa and Schielzeth 2013")
+	}
+	}
+  if (family(mod)[1] == "poisson") {
     Yhat <- log(mu)
-  
-  sig2e <- sig2e.r <- pi^2/3
+	sig2e <- 1/mean(1 + mu)
+	}
+	  
   SSE.resid <- sig2e/(var(Yhat) + sig2e)
   
   mu.r <- mod.r$fitted.values
-  if (family(mod.r)[1] == "binomial") 
+  if (family(mod.r)[1] == "binomial") {
     Yhat.r <- log(mu.r/(1 - mu.r))
-  if (family(mod.r)[1] == "poisson") 
+	if(sigma2_d == "corrected"){
+		sig2e.r <- pi^2/3 * 1/(1+mean(mu.r*(1-mu.r)))
+	}else{
+		sig2e.r <- pi^2/3
+	}
+	}
+  if (family(mod.r)[1] == "poisson") {
     Yhat.r <- log(mu.r)
+	sig2e <- 1/mean(1 + mu.r)
+	}	  
   
   SSE.resid.r <- sig2e.r/(var(Yhat.r) + sig2e.r)
   
@@ -163,12 +179,20 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL) {
   
   mu <- family(mod)$linkinv(X %*% lme4::fixef(mod))
   
-  if (family(mod)[1] == "binomial") 
+  if (family(mod)[1] == "binomial") {
     Yhat <- log(mu/(1 - mu))
-  if (family(mod)[1] == "poisson") 
+	if(sigma2_d == "corrected"){
+		sig2e <- pi^2/3 * 1/(1+mean(mu*(1-mu)))
+	}else{
+		sig2e <- pi^2/3
+		print("Distribution-specific variance sigma2_d from Nakagawa and Schielzeth 2013")
+	}
+	}
+ if (family(mod)[1] == "poisson") {
     Yhat <- log(mu)
-  
-  sig2e <- sig2e.r <- pi^2/3
+	sig2e <- 1/mean(1 + mu)
+	}	  
+   
   sig2a <- prod(diag(C))^(1/n)
   
   SSE.resid <- sig2e/(var(Yhat) + sig2a + sig2e)
@@ -182,10 +206,18 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL) {
     
     mu.r <- family(mod.r)$linkinv(X.r %*% lme4::fixef(mod.r))
     
-    if (family(mod.r)[1] == "binomial") 
-      Yhat.r <- log(mu.r/(1 - mu.r))
-    if (family(mod.r)[1] == "poisson") 
-      Yhat.r <- log(mu.r)
+  if (family(mod.r)[1] == "binomial") {
+    Yhat.r <- log(mu.r/(1 - mu.r))
+	if(sigma2_d == "corrected"){
+		sig2e.r <- pi^2/3 * 1/(1+mean(mu.r*(1-mu.r)))
+	}else{
+		sig2e.r <- pi^2/3
+	}
+	}
+ if (family(mod.r)[1] == "poisson") {
+    Yhat.r <- log(mu.r)
+	sig2e.r <- 1/mean(1 + mu.r)
+	}	  
     
     sig2a.r <- prod(diag(C.r))^(1/n)
     
@@ -195,10 +227,18 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL) {
   if (class(mod.r)[1] == "glm") {
     mu.r <- mod.r$fitted.values
     
-    if (family(mod.r)[1] == "binomial") 
-      Yhat.r <- log(mu.r/(1 - mu.r))
-    if (family(mod.r)[1] == "poisson") 
-      Yhat.r <- log(mu.r)
+  if (family(mod.r)[1] == "binomial") {
+    Yhat.r <- log(mu.r/(1 - mu.r))
+	if(sigma2_d == "corrected"){
+		sig2e.r <- pi^2/3 * 1/(1+mean(mu.r*(1-mu.r)))
+	}else{
+		sig2e.r <- pi^2/3
+	}
+	}
+ if (family(mod.r)[1] == "poisson") {
+    Yhat.r <- log(mu.r)
+	sig2e.r <- 1/mean(1 + mu.r)
+	}	  
     
     SSE.resid.r <- sig2e.r/(var(Yhat.r) + sig2e.r)
   }
@@ -254,8 +294,20 @@ R2.resid.binaryPGLMM <- function(mod = NULL, mod.r = NULL) {
   phyV <- mod$VCV
   s2 <- mod$s2
   scal <- prod(diag(s2 * phyV))^(1/n)
-  
-  sig2e <- sig2e.r <- pi^2/3
+  mu <- mod$mu
+  if (family(mod)[1] == "binomial") {
+    Yhat <- log(mu/(1 - mu))
+	if(sigma2_d == "corrected"){
+		sig2e <- pi^2/3 * 1/(1+mean(mu*(1-mu)))
+	}else{
+		sig2e <- pi^2/3
+		print("Distribution-specific variance sigma2_d from Nakagawa and Schielzeth 2013")
+	}
+	}
+ if (family(mod)[1] == "poisson") {
+    Yhat <- log(mu)
+	sig2e <- 1/mean(1 + mu)
+	}	  
   
   SSE.resid <- sig2e/(var(Yhat) + scal + sig2e)
   
@@ -265,13 +317,37 @@ R2.resid.binaryPGLMM <- function(mod = NULL, mod.r = NULL) {
     phyV.r <- mod.r$VCV
     s2.r <- mod.r$s2
     scal.r <- prod(diag(s2.r*phyV.r))^(1/n)
+ 	mu.r <- mod.r$mu  
+	if (family(mod.r)[1] == "binomial") {		
+    Yhat.r <- log(mu.r/(1 - mu.r))
+	if(sigma2_d == "corrected"){
+		sig2e.r <- pi^2/3 * 1/(1+mean(mu.r*(1-mu.r)))
+	}else{
+		sig2e.r <- pi^2/3
+	}
+	}
+ if (family(mod.r)[1] == "poisson") {
+   Yhat.r <- log(mu.r)
+	sig2e.r <- 1/mean(1 + mu.r)
+	}	  
 		
     SSE.resid.r <- sig2e.r/(var(Yhat.r) + scal.r + sig2e.r)
   }
   
   if (class(mod.r)[1] == "glm") {
     mu.r <- mod.r$fitted.values
+	if (family(mod.r)[1] == "binomial") {		
     Yhat.r <- log(mu.r/(1 - mu.r))
+	if(sigma2_d == "corrected"){
+		sig2e.r <- pi^2/3 * 1/(1+mean(mu.r*(1-mu.r)))
+	}else{
+		sig2e.r <- pi^2/3
+	}
+	}
+ if (family(mod.r)[1] == "poisson") {
+   Yhat.r <- log(mu.r)
+	sig2e.r <- 1/mean(1 + mu.r)
+	}	  
     SSE.resid.r <- sig2e.r/(var(Yhat.r) + sig2e.r)
   }
   
