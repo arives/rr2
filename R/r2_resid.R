@@ -7,7 +7,7 @@
 #' @return R2.resid
 #' @export
 #'
-R2.resid <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = NA) {
+R2.resid <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = NULL) {
   if(class(mod)[1] == "merModLmerTest") class(mod) = "lmerMod"
 	
   if (!is.element(class(mod)[1], c("lm", "glm", "lmerMod", "glmerMod", "phylolm", "binaryPGLMM"))) {
