@@ -50,7 +50,7 @@ R2 <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = NULL, lik = TRUE
   if (any(class(mod) %in% "phylolm") & is.null(phy)) 
     stop("phy object is required for models with class phylolm")
   
-  out <- array(rep(NA, 3))
+  out <- array(NA, dim=3)
  if (lik) 
    out[1] <- R2.lik(mod, mod.r)
  if (resid) 
@@ -60,8 +60,8 @@ R2 <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = NULL, lik = TRUE
   
   index <- !is.na(out)
   out <- out[index]  # remove R2s not calculated
-  row.names(out) <- c("R2_lik", "R2_resid", "R2_pred")[index]
-  if (nrow(out) == 0) 
+  names(out) <- c("R2_lik", "R2_resid", "R2_pred")[index]
+  if (any(is.na(out)))
     warning("at least to calculate one R2")
   
   return(out)
