@@ -166,7 +166,7 @@ R2.resid.lmerMod <- function(mod = NULL, mod.r = NULL) {
   return(R2.resid)
 }
 
-R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL) {
+R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = "corrected") {
   
   X <- model.matrix(mod)
   n <- dim(X)[1]
@@ -286,7 +286,7 @@ R2.resid.phylolm <- function(mod = NULL, mod.r = NULL, phy = NULL) {
   return(R2.resid)
 }
 
-R2.resid.binaryPGLMM <- function(mod = NULL, mod.r = NULL) {
+R2.resid.binaryPGLMM <- function(mod = NULL, mod.r = NULL, sigma2_d = "corrected") {
   
   y <- mod$y
   n <- length(y)
