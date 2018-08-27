@@ -67,7 +67,8 @@ R2 <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = NULL, lik = TRUE
 #    if (pred) 
 #      out$value[3] <- R2.pred(mod, mod.r, phy)
 #  }
-  
+  if(!is.null(sigma2_d) && !is.element(sigma2_d, c("corrected", "NS"))) stop("Please specify residual variance c('corrected', 'NS').")
+  if(is.null(sigma2_d)) sigma2_d <- "corrected"
  if (lik) 
    out$value[1] <- R2.lik(mod, mod.r)
  if (resid) 
