@@ -122,8 +122,7 @@ R2.resid.glm <- function(mod = NULL, mod.r = NULL, sigma2_d = "corrected") {
 		} else {
 			sig2e <- 1
 		}
-	if (family(mod)[1] == "poisson") 
-		sig2e <- 1/mean(1 + mu)
+	if (family(mod)[1] == "poisson") sig2e <- 1/mean(1 + mu)
 
 	SSE.resid <- sig2e/(var(Yhat) + sig2e)
 
@@ -139,8 +138,7 @@ R2.resid.glm <- function(mod = NULL, mod.r = NULL, sigma2_d = "corrected") {
 		} else {
 			sig2e.r <- 1
 		}
-	if (family(mod.r)[1] == "poisson") 
-		sig2e.r <- 1/mean(1 + mu.r)
+	if (family(mod.r)[1] == "poisson") sig2e.r <- 1/mean(1 + mu.r)
 
 	SSE.resid.r <- sig2e.r/(var(Yhat.r) + sig2e.r)
 
@@ -195,8 +193,7 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = "corrected") 
 		} else {
 			sig2e <- 1
 		}
-	if (family(mod)[1] == "poisson") 
-		sig2e <- 1/mean(1 + mu)
+	if (family(mod)[1] == "poisson") sig2e <- 1/mean(1 + mu)
 
 	sig2a <- prod(diag(C))^(1/n)
 
@@ -221,8 +218,7 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = "corrected") 
 			} else {
 				sig2e.r <- 1
 			}
-		if (family(mod.r)[1] == "poisson") 
-			sig2e.r <- 1/mean(1 + mu.r)
+		if (family(mod.r)[1] == "poisson") sig2e.r <- 1/mean(1 + mu.r)
 
 		sig2a.r <- prod(diag(C.r))^(1/n)
 
@@ -242,8 +238,7 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = "corrected") 
 			} else {
 				sig2e.r <- 1
 			}
-		if (family(mod.r)[1] == "poisson") 
-			sig2e.r <- 1/mean(1 + mu.r)
+		if (family(mod.r)[1] == "poisson") sig2e.r <- 1/mean(1 + mu.r)
 
 		SSE.resid.r <- sig2e.r/(var(Yhat.r) + sig2e.r)
 	}
