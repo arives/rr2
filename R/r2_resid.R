@@ -92,7 +92,7 @@ R2.resid <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = NULL) {
   }
 }
 
-R2.resid.lm <- function(mod = NA, mod.r = NA) {
+R2.resid.lm <- function(mod = NULL, mod.r = NULL) {
   X <- model.matrix(mod)
   n <- dim(X)[1]
   p <- dim(X)[2]
@@ -106,11 +106,11 @@ R2.resid.lm <- function(mod = NA, mod.r = NA) {
   return(R2.resid)
 }
 
-R2.resid.glm <- function(mod = NA, mod.r = NA, sigma2_d = "corrected") {
+R2.resid.glm <- function(mod = NULL, mod.r = NULL, sigma2_d = NULL) {
   mu <- mod$fitted.values
   if (family(mod)[1] == "binomial") {
     Yhat <- log(mu/(1 - mu))
-	if(sigma2_d == "corrected"){
+	if(is.null(sigma2_d)){
 		sig2e <- pi^2/3 * 1/(1+mean(mu*(1-mu)))
 	}else{
 		sig2e <- pi^2/3
@@ -127,7 +127,7 @@ R2.resid.glm <- function(mod = NA, mod.r = NA, sigma2_d = "corrected") {
   mu.r <- mod.r$fitted.values
   if (family(mod.r)[1] == "binomial") {
     Yhat.r <- log(mu.r/(1 - mu.r))
-	if(sigma2_d == "corrected"){
+	if(is.null(sigma2_d)){
 		sig2e.r <- pi^2/3 * 1/(1+mean(mu.r*(1-mu.r)))
 	}else{
 		sig2e.r <- pi^2/3
@@ -166,7 +166,7 @@ R2.resid.lmerMod <- function(mod = NULL, mod.r = NULL) {
   return(R2.resid)
 }
 
-R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = "corrected") {
+R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = NULL) {
   
   X <- model.matrix(mod)
   n <- dim(X)[1]
@@ -181,7 +181,7 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = "corrected") 
   
   if (family(mod)[1] == "binomial") {
     Yhat <- log(mu/(1 - mu))
-	if(sigma2_d == "corrected"){
+	if(is.null(sigma2_d)){
 		sig2e <- pi^2/3 * 1/(1+mean(mu*(1-mu)))
 	}else{
 		sig2e <- pi^2/3
@@ -208,7 +208,7 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = "corrected") 
     
   if (family(mod.r)[1] == "binomial") {
     Yhat.r <- log(mu.r/(1 - mu.r))
-	if(sigma2_d == "corrected"){
+	if(is.null(sigma2_d)){
 		sig2e.r <- pi^2/3 * 1/(1+mean(mu.r*(1-mu.r)))
 	}else{
 		sig2e.r <- pi^2/3
@@ -229,7 +229,7 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = "corrected") 
     
   if (family(mod.r)[1] == "binomial") {
     Yhat.r <- log(mu.r/(1 - mu.r))
-	if(sigma2_d == "corrected"){
+	if(is.null(sigma2_d)){
 		sig2e.r <- pi^2/3 * 1/(1+mean(mu.r*(1-mu.r)))
 	}else{
 		sig2e.r <- pi^2/3
@@ -286,7 +286,7 @@ R2.resid.phylolm <- function(mod = NULL, mod.r = NULL, phy = NULL) {
   return(R2.resid)
 }
 
-R2.resid.binaryPGLMM <- function(mod = NULL, mod.r = NULL, sigma2_d = "corrected") {
+R2.resid.binaryPGLMM <- function(mod = NULL, mod.r = NULL, sigma2_d = NULL) {
   
   y <- mod$y
   n <- length(y)
@@ -297,7 +297,7 @@ R2.resid.binaryPGLMM <- function(mod = NULL, mod.r = NULL, sigma2_d = "corrected
   mu <- mod$mu
   if (family(mod)[1] == "binomial") {
     Yhat <- log(mu/(1 - mu))
-	if(sigma2_d == "corrected"){
+	if(is.null(sigma2_d)){
 		sig2e <- pi^2/3 * 1/(1+mean(mu*(1-mu)))
 	}else{
 		sig2e <- pi^2/3
@@ -320,7 +320,7 @@ R2.resid.binaryPGLMM <- function(mod = NULL, mod.r = NULL, sigma2_d = "corrected
  	mu.r <- mod.r$mu  
 	if (family(mod.r)[1] == "binomial") {		
     Yhat.r <- log(mu.r/(1 - mu.r))
-	if(sigma2_d == "corrected"){
+	if(is.null(sigma2_d)){
 		sig2e.r <- pi^2/3 * 1/(1+mean(mu.r*(1-mu.r)))
 	}else{
 		sig2e.r <- pi^2/3
@@ -338,7 +338,7 @@ R2.resid.binaryPGLMM <- function(mod = NULL, mod.r = NULL, sigma2_d = "corrected
     mu.r <- mod.r$fitted.values
 	if (family(mod.r)[1] == "binomial") {		
     Yhat.r <- log(mu.r/(1 - mu.r))
-	if(sigma2_d == "corrected"){
+	if(is.null(sigma2_d)){
 		sig2e.r <- pi^2/3 * 1/(1+mean(mu.r*(1-mu.r)))
 	}else{
 		sig2e.r <- pi^2/3
