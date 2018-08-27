@@ -32,13 +32,13 @@ R2 <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = NULL, lik = TRUE
   }
   
   # binaryPGLMM does not have R2.lik method
-  if (any(class(mod) %in% "binaryPGLMM")) {
+  if (any(class(mod) %in% "binaryPGLMM") & lik == TRUE) {
     lik <- FALSE
     message("models with class binaryPGLMM do not have R2.lik method")
   }
   
   # binary communityPGLMM only have R2.pred method at this moment
-  if (any(class(mod) %in% "communityPGLMM")) {
+  if (any(class(mod) %in% "communityPGLMM") & (lik == TRUE | resid == TRUE)) {
     if(mod$family == "binomial"){
       resid <- FALSE
       lik <- FALSE
