@@ -36,7 +36,7 @@ R2.resid <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = NULL) {
     if (family(mod)[[1]] != family(mod.r)[[1]]) {
       stop("Sorry, but mod and mod.r must be from the same family of distributions.")
     }
-    return(R2.resid.glm(mod, mod.r))
+    return(R2.resid.glm(mod, mod.r, sigma2_d = sigma2_d))
   }
   
   if (class(mod)[1] == "lmerMod") {
@@ -63,7 +63,7 @@ R2.resid <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = NULL) {
     if (family(mod)[[1]] != family(mod.r)[[1]]) {
       stop("Sorry, but mod and mod.r must be from the same family of distributions.")
     }
-    return(R2.resid.glmerMod(mod, mod.r))
+    return(R2.resid.glmerMod(mod, mod.r, sigma2_d = sigma2_d))
   }
   
   if (class(mod)[1] == "phylolm") {
@@ -88,7 +88,7 @@ R2.resid <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = NULL) {
     if (!is.element(class(mod.r)[1], c("binaryPGLMM", "glm"))) {
       stop("mod.r must be class binaryPGLMM or glm.")
     }
-    return(R2.resid.binaryPGLMM(mod, mod.r))
+    return(R2.resid.binaryPGLMM(mod, mod.r, sigma2_d = sigma2_d))
   }
 }
 
