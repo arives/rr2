@@ -123,7 +123,7 @@ R2.resid.glm <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
 				sig2e <- pi^2/3 * 1/(1 + mean(mu * (1 - mu)))
 			} else {
 				sig2e <- pi^2/3
-				print("Distribution-specific variance sigma2_d from Nakagawa and Schielzeth 2013")
+				message("Distribution-specific variance sigma2_d from Nakagawa and Schielzeth 2013")
 			}
 		} else {
 			sig2e <- 1
@@ -194,7 +194,7 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
 				sig2e <- pi^2/3 * 1/(1 + mean(mu * (1 - mu)))
 			} else {
 				sig2e <- pi^2/3
-				print("Distribution-specific variance sigma2_d from Nakagawa and Schielzeth 2013")
+				message("Distribution-specific variance sigma2_d from Nakagawa and Schielzeth 2013")
 			}
 		} else {
 			sig2e <- 1
@@ -306,7 +306,7 @@ R2.resid.binaryPGLMM <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) 
 		sig2e <- pi^2/3 * 1/(1 + mean(mu * (1 - mu)))
 	} else {
 		sig2e <- pi^2/3
-		print("Distribution-specific variance sigma2_d from Nakagawa and Schielzeth 2013")
+		message("Distribution-specific variance sigma2_d from Nakagawa and Schielzeth 2013")
 	}
 
 	SSE.resid <- sig2e/(var(Yhat) + scal + sig2e)
