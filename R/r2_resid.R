@@ -140,7 +140,7 @@ R2.resid.glm <- function(mod = NULL, mod.r = NULL, sigma2_d = NULL) {
 			sig2e.r <- 1
 		}
 	if (family(mod.r)[1] == "poisson") 
-		sig2e <- 1/mean(1 + mu.r)
+		sig2e.r <- 1/mean(1 + mu.r)
 
 	SSE.resid.r <- sig2e.r/(var(Yhat.r) + sig2e.r)
 
@@ -222,7 +222,7 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = NULL) {
 				sig2e.r <- 1
 			}
 		if (family(mod.r)[1] == "poisson") 
-			sig2e <- 1/mean(1 + mu.r)
+			sig2e.r <- 1/mean(1 + mu.r)
 
 		sig2a.r <- prod(diag(C.r))^(1/n)
 
@@ -243,7 +243,7 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = NULL) {
 				sig2e.r <- 1
 			}
 		if (family(mod.r)[1] == "poisson") 
-			sig2e <- 1/mean(1 + mu.r)
+			sig2e.r <- 1/mean(1 + mu.r)
 
 		SSE.resid.r <- sig2e.r/(var(Yhat.r) + sig2e.r)
 	}
