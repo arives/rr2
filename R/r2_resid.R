@@ -37,6 +37,8 @@ R2.resid <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = NULL) {
 		if (family(mod)[[1]] != family(mod.r)[[1]]) {
 			stop("Sorry, but mod and mod.r must be from the same family of distributions.")
 		}
+  		if(!is.null(sigma2_d) && !is.element(sigma2_d, c("corrected", "NS"))) stop("Please specify residual variance c('corrected', 'NS').")
+  		if(is.null(sigma2_d)) sigma2_d <- "corrected"
 		return(R2.resid.glm(mod, mod.r, sigma2_d = sigma2_d))
 	}
 
@@ -65,6 +67,8 @@ R2.resid <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = NULL) {
 		if (family(mod)[[1]] != family(mod.r)[[1]]) {
 			stop("Sorry, but mod and mod.r must be from the same family of distributions.")
 		}
+  		if(!is.null(sigma2_d) && !is.element(sigma2_d, c("corrected", "NS"))) stop("Please specify residual variance c('corrected', 'NS').")
+  		if(is.null(sigma2_d)) sigma2_d <- "corrected"
 		return(R2.resid.glmerMod(mod, mod.r, sigma2_d = sigma2_d))
 	}
 
@@ -90,6 +94,8 @@ R2.resid <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = NULL) {
 		if (!is.element(class(mod.r)[1], c("binaryPGLMM", "glm"))) {
 			stop("mod.r must be class binaryPGLMM or glm.")
 		}
+  		if(!is.null(sigma2_d) && !is.element(sigma2_d, c("corrected", "NS"))) stop("Please specify residual variance c('corrected', 'NS').")
+  		if(is.null(sigma2_d)) sigma2_d <- "corrected"
 		return(R2.resid.binaryPGLMM(mod, mod.r, sigma2_d = sigma2_d))
 	}
 }
