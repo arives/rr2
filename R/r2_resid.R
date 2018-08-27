@@ -198,7 +198,7 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = "corrected") 
 	sig2a <- prod(diag(C))^(1/n)
 
 	SSE.resid <- sig2e/(var(Yhat) + sig2a + sig2e)
-
+browser()
 	# reduced model
 	if (class(mod.r)[1] == "glmerMod") {
 		AVAg.r <- crossprod(attr(mod.r, "pp")$LamtUt)
