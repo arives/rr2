@@ -1,13 +1,15 @@
 #' Calculate R2.lik
 #'
 #' Calculate R2.lik for LMM, GLMM, PGLM, and PGLMMs.
-#' @param mod a regression model with the following class: 'lmerMod', 'glmerMod', 'phylolm', and 'phyloglm'
-#' @param mod.r reduced model, if not provided, will use corresponding models with intercept as the only predictor
+#' 
+#' @param mod A regression model with the following class: 'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', and 'communityPGLMM'.
+#' @param mod.r A reduced model, if not provided, will use corresponding models with intercept as the only predictor.
 #' @return R2.lik
 #' @export
 #'
 R2.lik <- function(mod = NULL, mod.r = NULL) {
-  if(class(mod)[1] == "merModLmerTest") class(mod) = "lmerMod"
+  if(class(mod)[1] == "merModLmerTest") 
+    class(mod) = "lmerMod"
   
   if (!is.element(class(mod)[1], c("lm", "glm", "lmerMod", "glmerMod", "phylolm", "phyloglm", "communityPGLMM"))) {
     stop("mod must be class one of classes lm, glm, lmerMod, glmerMod, phylolm, phyloglm, communityPGLMM.")
