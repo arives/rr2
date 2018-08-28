@@ -62,7 +62,7 @@ R2 <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = NULL, lik = TRUE
   out <- out[index]  # remove R2s not calculated
   names(out) <- c("R2_lik", "R2_resid", "R2_pred")[index]
   if (any(is.na(out)))
-    warning("at least to calculate one R2")
+    warning("Specify at least one of 'lik', 'resid', or 'pred' for R2")
   
   return(out)
 }
