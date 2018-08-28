@@ -1,9 +1,10 @@
 #' Calculate R2.pred
 #'
 #' Calculate R2.pred for LMM, GLMM, PGLM, and PGLMMs.
-#' @param mod a regression model with the following class: 'lmerMod', 'glmerMod', 'phylolm', and 'binaryPGLMM'
-#' @param mod.r reduced model, if not provided, will use corresponding models with intercept as the only predictor
-#' @param phy a phylogeny with tip labels and branch length
+#' 
+#' @param mod A regression model with the following class: 'lmerMod', 'glmerMod', 'phylolm', 'binaryPGLMM', and 'communityPGLMM'.
+#' @param mod.r A reduced model, if not provided, will use corresponding models with intercept as the only predictor.
+#' @param phy A phylogeny with tip labels and branch length.
 #' @return R2.pred
 #' @export
 #'
