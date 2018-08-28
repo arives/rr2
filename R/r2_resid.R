@@ -179,13 +179,8 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
   X.r <- model.matrix(mod.r)
   
   # full model
-  AVAg <- crossprod(attr(mod, "pp")$LamtUt)
-  Ag <- diag(1/attr(mod, "pp")$Xwts)
-  C <- Ag %*% AVAg %*% Ag
-  
-  mu <- family(mod)$linkinv(X %*% lme4::fixef(mod))
-  
-  Yhat <- family(mod)$linkfun(mu)
+  mu <- fitted(mod)
+  Yhat <- X %*% lme4::fixef(mod)
   if (family(mod)[1] == "binomial") 
     if (family(mod)[2] == "logit") {
       if (sigma2_d == "corrected") sig2e <- pi^2/3 * 1/(1 + mean(mu * (1 - mu)))
@@ -194,20 +189,16 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
       sig2e <- 1
     }
   if (family(mod)[1] == "poisson") sig2e <- 1/mean(1 + mu)
-  
-  sig2a <- prod(diag(C))^(1/n)
+  sig2a <- VarCorr(mod)[[1]][1]
+  nranef <-  length(VarCorr(mod))
+  if(nranef > 1) for(i in 2:nranef) sig2a <- sig2a + VarCorr(mod)[[i]][1]
   
   SSE.resid <- sig2e/(var(Yhat) + sig2a + sig2e)
   
   # reduced model
   if (class(mod.r)[1] == "glmerMod") {
-    AVAg.r <- crossprod(attr(mod.r, "pp")$LamtUt)
-    Ag.r <- diag(1/attr(mod.r, "pp")$Xwts)
-    
-    C.r <- Ag.r %*% AVAg.r %*% Ag.r
-    
-    mu.r <- family(mod.r)$linkinv(X.r %*% lme4::fixef(mod.r))
-    Yhat.r <- family(mod.r)$linkfun(mu.r)
+    mu <- fitted(mod)
+    Yhat <- X %*% lme4::fixef(mod)
     if (family(mod.r)[1] == "binomial") 
       if (family(mod.r)[2] == "logit") {
         if (sigma2_d == "corrected") sig2e.r <- pi^2/3 * 1/(1 + mean(mu.r * (1 - mu.r)))
@@ -217,7 +208,9 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
       }
     if (family(mod.r)[1] == "poisson") sig2e.r <- 1/mean(1 + mu.r)
     
-    sig2a.r <- prod(diag(C.r))^(1/n)
+    sig2a <- VarCorr(mod.r)[[1]][1]
+    nranef <-  length(VarCorr(mod.r))
+    if(nranef > 1) for(i in 2:nranef) sig2a <- sig2a + VarCorr(mod.r)[[i]][1]
     
     SSE.resid.r <- sig2e.r/(var(Yhat.r) + sig2a.r + sig2e.r)
   }
