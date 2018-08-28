@@ -18,6 +18,11 @@ R2.resid <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = c('correct
     stop("mod must be class one of classes lm, glm, lmerMod, glmerMod, phylolm, binaryPGLMM.")
   }
   
+  sigma2_d <- match.arg(sigma2_d)
+  if(!is.null(sigma2_d) && !is.element(sigma2_d, c("corrected", "NS"))) 
+    stop("Please specify residual variance c('corrected', 'NS').")
+  if(is.null(sigma2_d)) sigma2_d <- "corrected"
+  
   if (class(mod)[1] == "lm") {
     if (!is.object(mod.r)) {
       Y <- model.frame(mod)[, 1]
@@ -40,8 +45,7 @@ R2.resid <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = c('correct
     if (family(mod)[[1]] != family(mod.r)[[1]]) {
       stop("Sorry, but mod and mod.r must be from the same family of distributions.")
     }
-    if(!is.null(sigma2_d) && !is.element(sigma2_d, c("corrected", "NS"))) stop("Please specify residual variance c('corrected', 'NS').")
-    if(is.null(sigma2_d)) sigma2_d <- "corrected"
+
     return(R2.resid.glm(mod, mod.r, sigma2_d = sigma2_d))
   }
   
@@ -70,8 +74,7 @@ R2.resid <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = c('correct
     if (family(mod)[[1]] != family(mod.r)[[1]]) {
       stop("Sorry, but mod and mod.r must be from the same family of distributions.")
     }
-    if(!is.null(sigma2_d) && !is.element(sigma2_d, c("corrected", "NS"))) stop("Please specify residual variance c('corrected', 'NS').")
-    if(is.null(sigma2_d)) sigma2_d <- "corrected"
+
     return(R2.resid.glmerMod(mod, mod.r, sigma2_d = sigma2_d))
   }
   
@@ -97,8 +100,7 @@ R2.resid <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = c('correct
     if (!is.element(class(mod.r)[1], c("binaryPGLMM", "glm"))) {
       stop("mod.r must be class binaryPGLMM or glm.")
     }
-    if(!is.null(sigma2_d) && !is.element(sigma2_d, c("corrected", "NS"))) stop("Please specify residual variance c('corrected', 'NS').")
-    if(is.null(sigma2_d)) sigma2_d <- "corrected"
+    
     return(R2.resid.binaryPGLMM(mod, mod.r, sigma2_d = sigma2_d))
   }
 }
@@ -122,12 +124,8 @@ R2.resid.glm <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
   Yhat <- family(mod)$linkfun(mu)
   if (family(mod)[1] == "binomial") 
     if (family(mod)[2] == "logit") {
-      if (sigma2_d == "corrected") {
-        sig2e <- pi^2/3 * 1/(1 + mean(mu * (1 - mu)))
-      } else {
-        sig2e <- pi^2/3
-        message("Distribution-specific variance sigma2_d from Nakagawa and Schielzeth 2013")
-      }
+      if (sigma2_d == "corrected") sig2e <- pi^2/3 * 1/(1 + mean(mu * (1 - mu)))
+      if (sigma2_d == 'NS')        sig2e <- pi^2/3
     } else {
       sig2e <- 1
     }
@@ -139,11 +137,8 @@ R2.resid.glm <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
   Yhat.r <- family(mod.r)$linkfun(mu.r)
   if (family(mod.r)[1] == "binomial") 
     if (family(mod.r)[2] == "logit") {
-      if (sigma2_d == "corrected") {
-        sig2e.r <- pi^2/3 * 1/(1 + mean(mu.r * (1 - mu.r)))
-      } else {
-        sig2e.r <- pi^2/3
-      }
+      if (sigma2_d == "corrected") sig2e.r <- pi^2/3 * 1/(1 + mean(mu.r * (1 - mu.r)))
+      if (sigma2_d == 'NS')        sig2e.r <- pi^2/3
     } else {
       sig2e.r <- 1
     }
@@ -193,12 +188,8 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
   Yhat <- family(mod)$linkfun(mu)
   if (family(mod)[1] == "binomial") 
     if (family(mod)[2] == "logit") {
-      if (sigma2_d == "corrected") {
-        sig2e <- pi^2/3 * 1/(1 + mean(mu * (1 - mu)))
-      } else {
-        sig2e <- pi^2/3
-        message("Distribution-specific variance sigma2_d from Nakagawa and Schielzeth 2013")
-      }
+      if (sigma2_d == "corrected") sig2e <- pi^2/3 * 1/(1 + mean(mu * (1 - mu)))
+      if (sigma2_d == 'NS')        sig2e <- pi^2/3
     } else {
       sig2e <- 1
     }
@@ -219,11 +210,8 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
     Yhat.r <- family(mod.r)$linkfun(mu.r)
     if (family(mod.r)[1] == "binomial") 
       if (family(mod.r)[2] == "logit") {
-        if (sigma2_d == "corrected") {
-          sig2e.r <- pi^2/3 * 1/(1 + mean(mu.r * (1 - mu.r)))
-        } else {
-          sig2e.r <- pi^2/3
-        }
+        if (sigma2_d == "corrected") sig2e.r <- pi^2/3 * 1/(1 + mean(mu.r * (1 - mu.r)))
+        if (sigma2_d == 'NS')        sig2e.r <- pi^2/3
       } else {
         sig2e.r <- 1
       }
@@ -239,11 +227,8 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
     Yhat.r <- family(mod.r)$linkfun(mu.r)
     if (family(mod.r)[1] == "binomial") 
       if (family(mod.r)[2] == "logit") {
-        if (sigma2_d == "corrected") {
-          sig2e.r <- pi^2/3 * 1/(1 + mean(mu.r * (1 - mu.r)))
-        } else {
-          sig2e.r <- pi^2/3
-        }
+        if (sigma2_d == "corrected") sig2e.r <- pi^2/3 * 1/(1 + mean(mu.r * (1 - mu.r)))
+        if (sigma2_d == 'NS')        sig2e.r <- pi^2/3
       } else {
         sig2e.r <- 1
       }
@@ -305,12 +290,8 @@ R2.resid.binaryPGLMM <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) 
   scal <- prod(diag(s2 * phyV))^(1/n)
   mu <- mod$mu
   Yhat <- log(mu/(1 - mu))
-  if (sigma2_d == "corrected") {
-    sig2e <- pi^2/3 * 1/(1 + mean(mu * (1 - mu)))
-  } else {
-    sig2e <- pi^2/3
-    message("Distribution-specific variance sigma2_d from Nakagawa and Schielzeth 2013")
-  }
+  if (sigma2_d == "corrected") sig2e <- pi^2/3 * 1/(1 + mean(mu * (1 - mu)))
+  if (sigma2_d == 'NS')        sig2e <- pi^2/3
   
   SSE.resid <- sig2e/(var(Yhat) + scal + sig2e)
   
@@ -322,11 +303,8 @@ R2.resid.binaryPGLMM <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) 
     scal.r <- prod(diag(s2.r * phyV.r))^(1/n)
     mu.r <- mod.r$mu
     Yhat.r <- log(mu.r/(1 - mu.r))
-    if (sigma2_d == "corrected") {
-      sig2e.r <- pi^2/3 * 1/(1 + mean(mu.r * (1 - mu.r)))
-    } else {
-      sig2e.r <- pi^2/3
-    }
+    if (sigma2_d == "corrected") sig2e.r <- pi^2/3 * 1/(1 + mean(mu.r * (1 - mu.r)))
+    if (sigma2_d == 'NS')        sig2e.r <- pi^2/3
     
     SSE.resid.r <- sig2e.r/(var(Yhat.r) + scal.r + sig2e.r)
   }
@@ -334,11 +312,8 @@ R2.resid.binaryPGLMM <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) 
   if (class(mod.r)[1] == "glm") {
     mu.r <- mod.r$fitted.values
     Yhat.r <- log(mu.r/(1 - mu.r))
-    if (sigma2_d == "corrected") {
-      sig2e.r <- pi^2/3 * 1/(1 + mean(mu.r * (1 - mu.r)))
-    } else {
-      sig2e.r <- pi^2/3
-    }
+    if (sigma2_d == "corrected") sig2e.r <- pi^2/3 * 1/(1 + mean(mu.r * (1 - mu.r)))
+    if (sigma2_d == 'NS')        sig2e.r <- pi^2/3
     SSE.resid.r <- sig2e.r/(var(Yhat.r) + sig2e.r)
   }
   
