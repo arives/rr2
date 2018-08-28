@@ -1,20 +1,29 @@
 #' Calculate R2.lik, R2.resid, and R2.pred
 #'
-#' This is a wrapper for calculating all three R2s -- R2.lik, R2.resid, and 
-#' R2.pred -- for LMM, GLMM, PGLM, and PGLMMs. Note that the individual functions
-#' R2.lik, R2.resid, and R2.pred can be called. This is preferrable if you are only 
-#' interested in one R2; for example, for 'phylolm' called from R2 you need to specify 
-#' the phy (phylo object for the phylogeny), while R2.lik does not require this.
-#' @param mod a regression model with the following class: 'lmerMod', 'glmerMod', 'phylolm', 'binaryPGLMM', and 'communityPGLMM'
-#' @param mod.r reduced model, if not provided, will use corresponding models with intercept as the only predictor
-#' @param phy the phylogeny for phylogenetic models, which is not required to be specified for R2.lik.
-#' @param lik whether to calculate R2.lik, default is TRUE
-#' @param resid whether to calculate R2.resid, default is TRUE
-#' @param pred whether to calculate R2.pred, default is TRUE
-#' @return all three R2s
+#' This is a wrapper for calculating all three R2s -- `R2.lik`, `R2.resid`, and 
+#' `R2.pred` -- for LMM, GLMM, PGLM, and PGLMMs. Note that the individual functions
+#' `R2.lik`, `R2.resid`, and `R2.pred` can be called. This is preferrable if you are only 
+#' interested in one R2; for example, for 'phylolm' called from `R2` you need to specify 
+#' the phy (phylo object for the phylogeny), while `R2.lik` does not require this.
+#'   
+#' @param mod A regression model with the following class: 'lmerMod', 'glmerMod', 'phylolm', 'binaryPGLMM', and 'communityPGLMM'.
+#' @param mod.r A reduced model, if not provided, will use corresponding models with intercept as the only predictor.
+#' @param phy The phylogeny for phylogenetic models, which is not required to be specified for R2.lik.
+#' @param sigma2_d Distribution-specific variance for logistic regressions (GLM, GLMM, and PGLMM). 
+#'    Available options are 'corrected' and 'NS' (stands for Nakagawa and Schielzeth 2013).
+#' @param lik Whether to calculate R2.lik, default is TRUE.
+#' @param resid Whether to calculate R2.resid, default is TRUE.
+#' @param pred Whether to calculate R2.pred, default is TRUE.
+#' @return A vector, with all three R2s by default.
 #' @export
 #'
-R2 <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = NULL, lik = TRUE, resid = TRUE, pred = TRUE) {
+R2 <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = c('corrected', 'NS'), 
+               lik = TRUE, resid = TRUE, pred = TRUE) {
+  
+  if(all(!lik, !resid, !pred)) 
+    stop("Specify at least one of 'lik', 'resid', or 'pred' for R2")
+  
+  sigma2_d <- match.arg(sigma2_d)
   
   # phyloglm only have R2.lik method
   if (any(class(mod) %in% "phyloglm")) {
@@ -50,19 +59,16 @@ R2 <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = NULL, lik = TRUE
   if (any(class(mod) %in% "phylolm") & is.null(phy)) 
     stop("Phy object is required for models with class phylolm")
   
-  out <- array(NA, dim=3)
- if (lik) 
-   out[1] <- R2.lik(mod, mod.r)
- if (resid) 
-   out[2] <- R2.resid(mod, mod.r, phy, sigma2_d)
- if (pred) 
-   out[3] <- R2.pred(mod, mod.r, phy)
+  out <- rep(NA, 3)
+  names(out) <- c("R2_lik", "R2_resid", "R2_pred")
+  if (lik) 
+    out[1] <- R2.lik(mod, mod.r)
+  if (resid) 
+    out[2] <- R2.resid(mod, mod.r, phy, sigma2_d)
+  if (pred) 
+    out[3] <- R2.pred(mod, mod.r, phy)
   
-  index <- !is.na(out)
-  out <- out[index]  # remove R2s not calculated
-  names(out) <- c("R2_lik", "R2_resid", "R2_pred")[index]
-  if (any(is.na(out)))
-    warning("Specify at least one of 'lik', 'resid', or 'pred' for R2")
+  out <- out[!is.na(out)] # remove R2s not calculated
   
   return(out)
 }
