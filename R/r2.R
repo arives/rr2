@@ -20,21 +20,21 @@ R2 <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = NULL, lik = TRUE
   if (any(class(mod) %in% "phyloglm")) {
     resid <- FALSE
     pred <- FALSE
-    message("models with class phyloglm only have R2.lik method")
+    message("Models of class phyloglm only have R2.lik method")
   }
   
   # gaussian communityPGLMM only have R2.lik method
   if (any(class(mod) %in% "communityPGLMM")) {
     if(mod$family == "gaussian"){
       resid <- FALSE
-      message("models with class communityPGLMM (gaussian) do not have R2.resid method")
+      message("Models of class communityPGLMM (gaussian) do not have R2.resid method")
     }
   }
   
   # binaryPGLMM does not have R2.lik method
   if (any(class(mod) %in% "binaryPGLMM") & lik == TRUE) {
     lik <- FALSE
-    message("models with class binaryPGLMM do not have R2.lik method")
+    message("Models of class binaryPGLMM do not have R2.lik method")
   }
   
   # binary communityPGLMM only have R2.pred method at this moment
@@ -42,13 +42,13 @@ R2 <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = NULL, lik = TRUE
     if(mod$family == "binomial"){
       resid <- FALSE
       lik <- FALSE
-      message("models with class communityPGLMM (binomial) only have R2.pred method")
+      message("Models of class communityPGLMM (binomial) only have R2.pred method")
     }
   }
   
   # phylolm requires phy object except for R2.lik
   if (any(class(mod) %in% "phylolm") & is.null(phy)) 
-    stop("phy object is required for models with class phylolm")
+    stop("Phy object is required for models with class phylolm")
   
   out <- array(NA, dim=3)
  if (lik) 
