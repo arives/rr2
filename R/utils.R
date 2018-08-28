@@ -17,9 +17,9 @@ inv.logit <- function(x) {
 #'
 #' Get partial R2 by comparing a model and its reduced model.
 #'
-#' @param mod a linear regression model
-#' @param mod.r a reduced model based on \code{mod}
-#' @return R2 value between 0 and 1
+#' @param mod A linear regression model.
+#' @param mod.r A reduced model based on \code{mod}.
+#' @return R2 value between 0 and 1.
 #' @export
 partialR2 <- function(mod, mod.r) {
   anova.full <- anova(mod)
@@ -35,10 +35,10 @@ partialR2 <- function(mod, mod.r) {
 #'
 #' Get adjusted partial R2 by comparing a model and its reduced model.
 #'
-#' @param mod a linear regression model
-#' @param df.f degree of freedom of the \code{mod}
-#' @param mod.r a reduced model based on \code{mod}
-#' @param df.r degree of freedom of the reduced \code{mod.r}
+#' @param mod A linear regression model.
+#' @param df.f Degree of freedom of the \code{mod}.
+#' @param mod.r A reduced model based on \code{mod}.
+#' @param df.r Degree of freedom of the reduced \code{mod.r}.
 #' @return A list of both R2 and adjusted R2 , the latter is not necessary to be between 0 and 1.
 #' @export
 partialR2adj <- function(mod, df.f, mod.r, df.r) {
@@ -59,9 +59,9 @@ partialR2adj <- function(mod, df.f, mod.r, df.r) {
 #' 
 #' Using a fitted phylolm model to transform branch lengths of a phylogeny
 #' 
-#' @param phylolmMod a fitted phylolm model
-#' @param phy a phylogeny with class "phylo"
-#' @return a transformed phylogeny
+#' @param phylolmMod A fitted phylolm model.
+#' @param phy A phylogeny with class "phylo".
+#' @return A transformed phylogeny.
 #' @export
 #' 
 transf_phy <- function(phylolmMod, phy){
@@ -90,15 +90,15 @@ transf_phy <- function(phylolmMod, phy){
 #'
 #' Fitting phylogenetic generalized linear models for binary data (0 and 1).
 #'
-#' @param formula regression formula
-#' @param data data frame to fit the model with
-#' @param phy phylogenetic tree of type phylo with branch lengths
-#' @param s2.init initial variance values for random terms, default is 0.1
-#' @param B.init initial coefficient values for fixed terms, if not provided, will use those from \code{lm}
-#' @param tol.pql tolerance value, default is 10^-6
-#' @param maxit.pql the number of iterations, default is 200
-#' @param maxit.reml the number of iterations for optim, default is 100
-#' @return a large list with class as \code{binaryPGLMM}
+#' @param formula Regression formula.
+#' @param data Data frame to fit the model with.
+#' @param phy Phylogenetic tree of type phylo with branch lengths.
+#' @param s2.init Initial variance values for random terms, default is 0.1.
+#' @param B.init Initial coefficient values for fixed terms, if not provided, will use those from \code{lm}.
+#' @param tol.pql Tolerance value, default is 10^-6.
+#' @param maxit.pql The number of iterations, default is 200.
+#' @param maxit.reml The number of iterations for optim, default is 100.
+#' @return A large list with class as \code{binaryPGLMM}.
 #' @export
 #'
 binaryPGLMM <- function(formula, data = list(), phy, s2.init = 0.1, B.init = NULL, tol.pql = 10^-6, maxit.pql = 200, maxit.reml = 100) {
