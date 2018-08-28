@@ -80,12 +80,15 @@ test_that("when missing mod.r, the functions will automatically creat one", {
   z.v.glmm <- glm(y_binary ~ 1, data = d, family = "binomial")
   expect_equal(R2(mod = z.f.glmm, mod.r = z.v.glmm),
                R2(mod = z.f.glmm))
+})
+
+test_that("when missing mod.r, the functions will automatically creat one, long-run analyses", {
+  testthat::skip_on_cran() # don't run on CRAN since these are time consuming
   
   # PGLS
   z.x.pgls <- phylolm::phylolm(y_pgls ~ 1, phy = phy, data = d, model = "lambda")
   lam.x.pgls <- round(z.x.pgls$optpar, digits = 4)
-  z.f.pgls <- phylolm::phylolm(y_pgls ~ x_trait, phy = phy, data = d, model = "lambda", 
-                               starting.value = 0.98 * lam.x.pgls + 0.01)
+  z.f.pgls <- phylolm::phylolm(y_pgls ~ x_trait, phy = phy, data = d, model = "lambda")
   z.v.pgls <- lm(y_pgls ~ 1, data = d)
   expect_equal(R2(mod = z.f.pgls, mod.r = z.v.pgls, phy = phy),
                R2(mod = z.f.pgls, phy = phy))
@@ -103,17 +106,17 @@ test_that("when missing mod.r, the functions will automatically creat one", {
   z.v.plog <- glm(y_phy_binary ~ 1, data = d, family = "binomial")
   # R2.lik can't be used with binaryPGLMM because it is not a ML method
   expect_message(t1 <- R2(mod = z.f.plog, mod.r = z.v.plog), 
-                 "models with class binaryPGLMM do not have R2.lik method")
+                 "Models of class binaryPGLMM do not have R2.lik method")
   expect_message(t2 <- R2(mod = z.f.plog, mod.r = z.v.plog), 
-                 "models with class binaryPGLMM do not have R2.lik method")
+                 "Models of class binaryPGLMM do not have R2.lik method")
   expect_equal(t1, t2)
   
   z.f.plog2 <- phylolm::phyloglm(y_phy_binary ~ x1, data = d, start.alpha = 1, phy = phy)
   z.v.plog2 <- glm(y_phy_binary ~ 1, data = d, family = "binomial")
   expect_message(t11 <- R2(z.f.plog2, z.v.plog2),
-                 "models with class phyloglm only have R2.lik method")
+                 "Models of class phyloglm only have R2.lik method")
   expect_message(t12 <- R2(z.f.plog2),
-                 "models with class phyloglm only have R2.lik method")
+                 "Models of class phyloglm only have R2.lik method")
   expect_equal(t11, t12)
   
   # # communityPGLMM
@@ -122,6 +125,7 @@ test_that("when missing mod.r, the functions will automatically creat one", {
   # mod.r <- lm(freq ~ 1, dat)
   # expect_equal(R2(mod, mod.r), R2(mod))
 })
+
 
 test_that("when lmer models were fitted with REML = T, 
           R2.lr (but not R2.ls and R2.ce) will change it to FALSE", {
