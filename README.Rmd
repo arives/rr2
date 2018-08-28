@@ -130,10 +130,7 @@ R2(mod = z.f.glmm)
 ## PGLS 
 
 ```{r pgls}
-z.x.pgls <- phylolm::phylolm(y_pgls ~ 1, phy = phy, data = d, model = "lambda")
-lam.x.pgls <- round(z.x.pgls$optpar, digits = 4)
-z.f.pgls <- phylolm::phylolm(y_pgls ~ x_trait, phy = phy, data = d, model = "lambda", 
-                             starting.value = 0.98 * lam.x.pgls + 0.01)
+z.f.pgls <- phylolm::phylolm(y_pgls ~ x_trait, phy = phy, data = d, model = "lambda")
 z.v.pgls <- lm(y_pgls ~ x_trait, data = d)
 
 # phy is needed for phylogenetic models' R2.resid and R2.pred
