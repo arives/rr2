@@ -7,13 +7,13 @@
 partialR2adj(mod, df.f, mod.r, df.r)
 }
 \arguments{
-\item{mod}{a linear regression model}
+\item{mod}{A linear regression model.}
 
-\item{df.f}{degree of freedom of the \code{mod}}
+\item{df.f}{Degree of freedom of the \code{mod}.}
 
-\item{mod.r}{a reduced model based on \code{mod}}
+\item{mod.r}{A reduced model based on \code{mod}.}
 
-\item{df.r}{degree of freedom of the reduced \code{mod.r}}
+\item{df.r}{Degree of freedom of the reduced \code{mod.r}.}
 }
 \value{
 A list of both R2 and adjusted R2 , the latter is not necessary to be between 0 and 1.

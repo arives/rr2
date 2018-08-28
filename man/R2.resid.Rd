@@ -4,17 +4,21 @@
 \alias{R2.resid}
 \title{Calculate R2.resid}
 \usage{
-R2.resid(mod = NULL, mod.r = NULL, phy = NULL)
+R2.resid(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = c("corrected",
+  "NS"))
 }
 \arguments{
-\item{mod}{a regression model with the following class: 'lmerMod', 'glmerMod', 'phylolm', and 'binaryPGLMM'}
+\item{mod}{A regression model with the following class: 'lmerMod', 'glmerMod', 'phylolm', and 'binaryPGLMM'.}
 
-\item{mod.r}{reduced model, if not provided, will use corresponding models with intercept as the only predictor}
+\item{mod.r}{A reduced model, if not provided, will use corresponding models with intercept as the only predictor.}
 
-\item{phy}{a phylogeny with tip labels and branch length}
+\item{phy}{A phylogeny with tip labels and branch length.}
+
+\item{sigma2_d}{Distribution-specific variance for logistic regressions (GLM, GLMM, and PGLMM). 
+Available options are 'corrected' and 'NS' (stands for Nakagawa and Schielzeth 2013).}
 }
 \value{
-R2.resid
+R2.resid.
 }
 \description{
 Calculate R2.resid for LMM, GLMM, PGLM, and PGLMMs.

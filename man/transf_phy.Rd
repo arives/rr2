@@ -7,12 +7,12 @@
 transf_phy(phylolmMod, phy)
 }
 \arguments{
-\item{phylolmMod}{a fitted phylolm model}
+\item{phylolmMod}{A fitted phylolm model.}
 
-\item{phy}{a phylogeny with class "phylo"}
+\item{phy}{A phylogeny with class "phylo".}
 }
 \value{
-a transformed phylogeny
+A transformed phylogeny.
 }
 \description{
 Using a fitted phylolm model to transform branch lengths of a phylogeny

@@ -7,9 +7,9 @@
 R2.lik(mod = NULL, mod.r = NULL)
 }
 \arguments{
-\item{mod}{a regression model with the following class: 'lmerMod', 'glmerMod', 'phylolm', and 'phyloglm'}
+\item{mod}{A regression model with the following class: 'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', and 'communityPGLMM'.}
 
-\item{mod.r}{reduced model, if not provided, will use corresponding models with intercept as the only predictor}
+\item{mod.r}{A reduced model, if not provided, will use corresponding models with intercept as the only predictor.}
 }
 \value{
 R2.lik

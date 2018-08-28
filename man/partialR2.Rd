@@ -7,12 +7,12 @@
 partialR2(mod, mod.r)
 }
 \arguments{
-\item{mod}{a linear regression model}
+\item{mod}{A linear regression model.}
 
-\item{mod.r}{a reduced model based on \code{mod}}
+\item{mod.r}{A reduced model based on \code{mod}.}
 }
 \value{
-R2 value between 0 and 1
+R2 value between 0 and 1.
 }
 \description{
 Get partial R2 by comparing a model and its reduced model.

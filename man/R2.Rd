@@ -4,29 +4,32 @@
 \alias{R2}
 \title{Calculate R2.lik, R2.resid, and R2.pred}
 \usage{
-R2(mod = NULL, mod.r = NULL, phy = NULL, lik = TRUE, resid = TRUE,
-  pred = TRUE)
+R2(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = c("corrected",
+  "NS"), lik = TRUE, resid = TRUE, pred = TRUE)
 }
 \arguments{
-\item{mod}{a regression model with the following class: 'lmerMod', 'glmerMod', 'phylolm', 'binaryPGLMM', and 'communityPGLMM'}
+\item{mod}{A regression model with the following class: 'lmerMod', 'glmerMod', 'phylolm', 'binaryPGLMM', and 'communityPGLMM'.}
 
-\item{mod.r}{reduced model, if not provided, will use corresponding models with intercept as the only predictor}
+\item{mod.r}{A reduced model, if not provided, will use corresponding models with intercept as the only predictor.}
 
-\item{phy}{the phylogeny for phylogenetic models, which is not required to be specified for R2.lik.}
+\item{phy}{The phylogeny for phylogenetic models, which is not required to be specified for R2.lik.}
 
-\item{lik}{whether to calculate R2.lik, default is TRUE}
+\item{sigma2_d}{Distribution-specific variance for logistic regressions (GLM, GLMM, and PGLMM). 
+Available options are 'corrected' and 'NS' (stands for Nakagawa and Schielzeth 2013).}
 
-\item{resid}{whether to calculate R2.resid, default is TRUE}
+\item{lik}{Whether to calculate R2.lik, default is TRUE.}
 
-\item{pred}{whether to calculate R2.pred, default is TRUE}
+\item{resid}{Whether to calculate R2.resid, default is TRUE.}
+
+\item{pred}{Whether to calculate R2.pred, default is TRUE.}
 }
 \value{
-all three R2s
+A vector, with all three R2s by default.
 }
 \description{
-This is a wrapper for calculating all three R2s -- R2.lik, R2.resid, and 
-R2.pred -- for LMM, GLMM, PGLM, and PGLMMs. Note that the individual functions
-R2.lik, R2.resid, and R2.pred can be called. This is preferrable if you are only 
-interested in one R2; for example, for 'phylolm' called from R2 you need to specify 
-the phy (phylo object for the phylogeny), while R2.lik does not require this.
+This is a wrapper for calculating all three R2s -- `R2.lik`, `R2.resid`, and 
+`R2.pred` -- for LMM, GLMM, PGLM, and PGLMMs. Note that the individual functions
+`R2.lik`, `R2.resid`, and `R2.pred` can be called. This is preferrable if you are only 
+interested in one R2; for example, for 'phylolm' called from `R2` you need to specify 
+the phy (phylo object for the phylogeny), while `R2.lik` does not require this.
 }

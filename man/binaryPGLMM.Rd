@@ -8,24 +8,24 @@ binaryPGLMM(formula, data = list(), phy, s2.init = 0.1, B.init = NULL,
   tol.pql = 10^-6, maxit.pql = 200, maxit.reml = 100)
 }
 \arguments{
-\item{formula}{regression formula}
+\item{formula}{Regression formula.}
 
-\item{data}{data frame to fit the model with}
+\item{data}{Data frame to fit the model with.}
 
-\item{phy}{phylogenetic tree of type phylo with branch lengths}
+\item{phy}{Phylogenetic tree of type phylo with branch lengths.}
 
-\item{s2.init}{initial variance values for random terms, default is 0.1}
+\item{s2.init}{Initial variance values for random terms, default is 0.1.}
 
-\item{B.init}{initial coefficient values for fixed terms, if not provided, will use those from \code{lm}}
+\item{B.init}{Initial coefficient values for fixed terms, if not provided, will use those from \code{lm}.}
 
-\item{tol.pql}{tolerance value, default is 10^-6}
+\item{tol.pql}{Tolerance value, default is 10^-6.}
 
-\item{maxit.pql}{the number of iterations, default is 200}
+\item{maxit.pql}{The number of iterations, default is 200.}
 
-\item{maxit.reml}{the number of iterations for optim, default is 100}
+\item{maxit.reml}{The number of iterations for optim, default is 100.}
 }
 \value{
-a large list with class as \code{binaryPGLMM}
+A large list with class as \code{binaryPGLMM}.
 }
 \description{
 Fitting phylogenetic generalized linear models for binary data (0 and 1).
