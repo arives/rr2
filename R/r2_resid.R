@@ -124,7 +124,7 @@ R2.resid.glm <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
   Yhat <- family(mod)$linkfun(mu)
   if (family(mod)[1] == "binomial") 
     if (family(mod)[2] == "logit") {
-      if (sigma2_d == "corrected") sig2e <- pi^2/3 * 1/(1 + mean(mu * (1 - mu)))
+      if (sigma2_d == "corrected") sig2e <- 0.8 * pi^2/3
       if (sigma2_d == 'NS')        sig2e <- pi^2/3
     } else {
       sig2e <- 1
@@ -137,7 +137,7 @@ R2.resid.glm <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
   Yhat.r <- family(mod.r)$linkfun(mu.r)
   if (family(mod.r)[1] == "binomial") 
     if (family(mod.r)[2] == "logit") {
-      if (sigma2_d == "corrected") sig2e.r <- pi^2/3 * 1/(1 + mean(mu.r * (1 - mu.r)))
+      if (sigma2_d == "corrected") sig2e.r <- 0.8 * pi^2/3
       if (sigma2_d == 'NS')        sig2e.r <- pi^2/3
     } else {
       sig2e.r <- 1
@@ -183,7 +183,7 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
   Yhat <- X %*% lme4::fixef(mod)
   if (family(mod)[1] == "binomial") 
     if (family(mod)[2] == "logit") {
-      if (sigma2_d == "corrected") sig2e <- pi^2/3 * 1/(1 + mean(mu * (1 - mu)))
+      if (sigma2_d == "corrected") sig2e <- 0.8 * pi^2/3
       if (sigma2_d == 'NS')        sig2e <- pi^2/3
     } else {
       sig2e <- 1
@@ -201,7 +201,7 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
     Yhat <- X %*% lme4::fixef(mod)
     if (family(mod.r)[1] == "binomial") 
       if (family(mod.r)[2] == "logit") {
-        if (sigma2_d == "corrected") sig2e.r <- pi^2/3 * 1/(1 + mean(mu.r * (1 - mu.r)))
+        if (sigma2_d == "corrected") sig2e.r <- 0.8 * pi^2/3
         if (sigma2_d == 'NS')        sig2e.r <- pi^2/3
       } else {
         sig2e.r <- 1
@@ -220,7 +220,7 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
     Yhat.r <- family(mod.r)$linkfun(mu.r)
     if (family(mod.r)[1] == "binomial") 
       if (family(mod.r)[2] == "logit") {
-        if (sigma2_d == "corrected") sig2e.r <- pi^2/3 * 1/(1 + mean(mu.r * (1 - mu.r)))
+        if (sigma2_d == "corrected") sig2e.r <- 0.8 * pi^2/3
         if (sigma2_d == 'NS')        sig2e.r <- pi^2/3
       } else {
         sig2e.r <- 1
@@ -283,7 +283,7 @@ R2.resid.binaryPGLMM <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) 
   scal <- prod(diag(s2 * phyV))^(1/n)
   mu <- mod$mu
   Yhat <- log(mu/(1 - mu))
-  if (sigma2_d == "corrected") sig2e <- pi^2/3 * 1/(1 + mean(mu * (1 - mu)))
+  if (sigma2_d == "corrected") sig2e <- 0.8 * pi^2/3
   if (sigma2_d == 'NS')        sig2e <- pi^2/3
   
   SSE.resid <- sig2e/(var(Yhat) + scal + sig2e)
@@ -296,7 +296,7 @@ R2.resid.binaryPGLMM <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) 
     scal.r <- prod(diag(s2.r * phyV.r))^(1/n)
     mu.r <- mod.r$mu
     Yhat.r <- log(mu.r/(1 - mu.r))
-    if (sigma2_d == "corrected") sig2e.r <- pi^2/3 * 1/(1 + mean(mu.r * (1 - mu.r)))
+    if (sigma2_d == "corrected") sig2e.r <- 0.8 * pi^2/3
     if (sigma2_d == 'NS')        sig2e.r <- pi^2/3
     
     SSE.resid.r <- sig2e.r/(var(Yhat.r) + scal.r + sig2e.r)
@@ -305,7 +305,7 @@ R2.resid.binaryPGLMM <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) 
   if (class(mod.r)[1] == "glm") {
     mu.r <- mod.r$fitted.values
     Yhat.r <- log(mu.r/(1 - mu.r))
-    if (sigma2_d == "corrected") sig2e.r <- pi^2/3 * 1/(1 + mean(mu.r * (1 - mu.r)))
+    if (sigma2_d == "corrected") sig2e.r <- 0.8 * pi^2/3
     if (sigma2_d == 'NS')        sig2e.r <- pi^2/3
     SSE.resid.r <- sig2e.r/(var(Yhat.r) + sig2e.r)
   }
