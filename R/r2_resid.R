@@ -209,9 +209,9 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
       }
     if (family(mod.r)[1] == "poisson") sig2e.r <- 1/mean(1 + mu.r)
     
-    sig2a <- VarCorr(mod.r)[[1]][1]
+    sig2a.r <- VarCorr(mod.r)[[1]][1]
     nranef <-  length(VarCorr(mod.r))
-    if(nranef > 1) for(i in 2:nranef) sig2a <- sig2a + VarCorr(mod.r)[[i]][1]
+    if(nranef > 1) for(i in 2:nranef) sig2a.r <- sig2a.r + VarCorr(mod.r)[[i]][1]
     
     SSE.resid.r <- sig2e.r/(var(Yhat.r) + sig2a.r + sig2e.r)
   }
