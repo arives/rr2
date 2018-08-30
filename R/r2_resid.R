@@ -199,7 +199,7 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
   if (class(mod.r)[1] == "glmerMod") {
     X.r <- model.matrix(mod.r)
     mu.r <- fitted(mod.r)
-    Yhat <- X.r %*% lme4::fixef(mod.r)
+    Yhat.r <- X.r %*% lme4::fixef(mod.r)
     if (family(mod.r)[1] == "binomial") 
       if (family(mod.r)[2] == "logit") {
         if (sigma2_d == "corrected") sig2e.r <- 0.8 * pi^2/3
