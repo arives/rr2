@@ -8,6 +8,7 @@
 #' @param sigma2_d Distribution-specific variance for logistic regressions (GLM, GLMM, and PGLMM). 
 #'    Available options are 'corrected' and 'NS' (stands for Nakagawa and Schielzeth 2013).
 #' @return R2.resid.
+#' @importFrom lme4 VarCorr
 #' @export
 #'
 R2.resid <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = c('corrected', 'NS')) {
@@ -210,8 +211,8 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
     if (family(mod.r)[1] == "poisson") sig2e.r <- 1/mean(1 + mu.r)
     
     sig2a.r <- VarCorr(mod.r)[[1]][1]
-    nranef <-  length(VarCorr(mod.r))
-    if(nranef > 1) for(i in 2:nranef) sig2a.r <- sig2a.r + VarCorr(mod.r)[[i]][1]
+    nranef.r <-  length(VarCorr(mod.r))
+    if(nranef.r > 1) for(i in 2:nranef.r) sig2a.r <- sig2a.r + VarCorr(mod.r)[[i]][1]
     
     SSE.resid.r <- sig2e.r/(var(Yhat.r) + sig2a.r + sig2e.r)
   }
