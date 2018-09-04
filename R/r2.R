@@ -6,8 +6,8 @@
 #'   
 #' @param mod A regression model with the following class: 'lmerMod', 'glmerMod', 'phylolm', 'binaryPGLMM', and 'communityPGLMM'.
 #' @param mod.r A reduced model, if not provided, will use corresponding models with intercept as the only predictor.
-#' @param phy The phylogeny for phylogenetic models, which is not required to be specified for R2.lik.
-#' @param sigma2_d Distribution-specific variance σ2d (see Details) used in `R2.resid`. For binomial GLMs, GLMMs and PGLMMs with logit link functions, options are c("s2w", "NS", "rNS"). For binomial GLMs, GLMMs and PGLMMs with probit link functions, options are c("s2w", "NS"). Other families use "s2w".
+#' @param phy The phylogeny for phylogenetic models, which is not required to be specified for `R2.lik`.
+#' @param sigma2_d Distribution-specific variance σ2d (see Details) used in `R2.resid`. For binomial GLMs, GLMMs and PGLMMs with logit link functions, options are `c("s2w", "NS", "rNS")`. For binomial GLMs, GLMMs and PGLMMs with probit link functions, options are `c("s2w", "NS")`. Other families use `"s2w"`.
 #' @param lik Whether to calculate R2.lik, default is TRUE.
 #' @param resid Whether to calculate R2.resid, default is TRUE.
 #' @param pred Whether to calculate R2.pred, default is TRUE.
@@ -35,11 +35,12 @@
 #' 
 #' d$x1 <- rnorm(n=n)
 #' d$x2 <- rnorm(n=n)
-#' d$y <- b1 * d$x1 + b2 * d$x2 + rep(rnorm(n=p1, sd=sd1), each=nsample) + rep(rnorm(n=p1, sd=sd1), times=nsample) + rnorm(n=n)
+#' d$y <- b1 * d$x1 + b2 * d$x2 + rep(rnorm(n=p1, sd=sd1), each=nsample) + 
+#'        rep(rnorm(n=p1, sd=sd1), times=nsample) + rnorm(n=n)
 #' 
-#' z.f <- lmer(y ~ x1 + x2 + (1 | u1) + (1 | u2), data=d, REML = F)
-#' z.x <- lmer(y ~ x1 + (1 | u1) + (1 | u2), data=d, REML = F)
-#' z.v <- lmer(y ~ 1 + (1 | u2), data=d, REML = F)
+#' z.f <- lmer(y ~ x1 + x2 + (1 | u1) + (1 | u2), data=d, REML = FALSE)
+#' z.x <- lmer(y ~ x1 + (1 | u1) + (1 | u2), data=d, REML = FALSE)
+#' z.v <- lmer(y ~ 1 + (1 | u2), data=d, REML = FALSE)
 #' z.0 <- lm(y ~ 1, data=d)
 #' 
 #' R2(z.f, z.x)

@@ -69,11 +69,12 @@
 #' 
 #' d$x1 <- rnorm(n=n)
 #' d$x2 <- rnorm(n=n)
-#' d$y <- b1 * d$x1 + b2 * d$x2 + rep(rnorm(n=p1, sd=sd1), each=nsample) + rep(rnorm(n=p1, sd=sd1), times=nsample) + rnorm(n=n)
+#' d$y <- b1 * d$x1 + b2 * d$x2 + rep(rnorm(n=p1, sd=sd1), each=nsample) + 
+#'        rep(rnorm(n=p1, sd=sd1), times=nsample) + rnorm(n=n)
 #' 
-#' z.f <- lmer(y ~ x1 + x2 + (1 | u1) + (1 | u2), data=d, REML = F)
-#' z.x <- lmer(y ~ x1 + (1 | u1) + (1 | u2), data=d, REML = F)
-#' z.v <- lmer(y ~ 1 + (1 | u2), data=d, REML = F)
+#' z.f <- lmer(y ~ x1 + x2 + (1 | u1) + (1 | u2), data=d, REML = FALSE)
+#' z.x <- lmer(y ~ x1 + (1 | u1) + (1 | u2), data=d, REML = FALSE)
+#' z.v <- lmer(y ~ 1 + (1 | u2), data=d, REML = FALSE)
 #' z.0 <- lm(y ~ 1, data=d)
 #' 
 #' R2.resid(z.f, z.x)
