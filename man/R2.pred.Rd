@@ -7,15 +7,156 @@
 R2.pred(mod = NULL, mod.r = NULL, phy = NULL)
 }
 \arguments{
-\item{mod}{A regression model with the following class: 'lmerMod', 'glmerMod', 'phylolm', 'binaryPGLMM', and 'communityPGLMM'.}
+\item{mod}{A model with the following class: 'lmerMod', 'glmerMod', 'phylolm', 'binaryPGLMM', or 'communityPGLMM'.}
 
-\item{mod.r}{A reduced model, if not provided, will use corresponding models with intercept as the only predictor.}
+\item{mod.r}{A reduced model. If a reduced model is not provided, the total R2 will be computed using the corresponding reduced model with the intercept as the only predictor.}
 
-\item{phy}{A phylogeny with tip labels and branch length.}
+\item{phy}{A phylogeny with tip labels and branch length which must be specified for models of class `phylolm`.}
 }
 \value{
 R2.pred
 }
 \description{
-Calculate R2.pred for LMM, GLMM, PGLM, and PGLMMs.
+Calculate partial and total R2s for LMM, GLMM, PGLS, and PGLMMs using R2.pred, an R2 based on the variance of the difference between the observed and predicted values of a fitted model.
+}
+\details{
+R2.pred works with classes lmerMod (LMM), glmerMod (GLMM), phylolm (PGLS), binaryPGLMM (PGLMM), and communityPGLMM (Gaussian PLMM or binary PGLMM).
+
+\strong{LMM (lmerMod), GLMM (glmerMod), PGLMM (binaryPGLMM and communityPGLMM):}
+
+\deqn{partial R2 = 1 - var(Y - y.fitted[mod.f])/var(Y - y.fitted[mod.r])}
+
+where Y are the observed data, and y.fitted[mod.f] and y.fitted[mod.r] are the fitted (predicted) values from the full and reduced models. For GLMMs and PGLMMs, the values of y.fitted are in the space of the raw data (as opposed to the "Normal" or "latent" space). When the reduced model mod.r is not specified, the total R2 is computing using the reduced model with only the intercept.
+
+Note that the version of binaryPGLMM in the package {ape} is replaced by a version contained within {rr2} that outputs all of the required information for the calculation of R2.resid.
+
+\strong{PGLS (phylolm):}
+
+For PGLS, the total R2.pred is computed by removing each datum one at a time, predicting its value from the fitted model, and then calculating the variance of the difference between observed and fitted values. The predictions are calculated as
+
+\deqn{R.predicted[j] = V[j, -j] solve(V[-j, -j]) R[-j]}
+
+where R[-j] is a vector of residuals with datum j removed, V[-j,-j] is the phylogenetic covariance matrix with row and column j removed, and V[j, -j] is column j of covariance matrix V with element j removed. The partial R2.pred are calculated from the total R2.pred from full and predicted models as
+
+\deqn{partial R2 = 1 - (1 - R2.pred[mod.f])/(1 - R2.pred[mod.r])}
+}
+\examples{
+library(ape)
+library(phylolm)
+library(lme4)
+
+#################
+# LMM with two fixed and two random effects 
+p1 <- 10
+nsample <- 10
+n <- p1 * nsample
+
+d <- data.frame(x1=0, x2=0, y=0, u1=rep(1:p1, each=nsample), u2=rep(1:p1, times=nsample))
+d$u1 <- as.factor(d$u1)
+d$u2 <- as.factor(d$u2)
+
+b1 <- 1
+b2 <- -1
+sd1 <- 1.5
+
+d$x1 <- rnorm(n=n)
+d$x2 <- rnorm(n=n)
+d$y <- b1 * d$x1 + b2 * d$x2 + rep(rnorm(n=p1, sd=sd1), each=nsample) + rep(rnorm(n=p1, sd=sd1), times=nsample) + rnorm(n=n)
+
+z.f <- lmer(y ~ x1 + x2 + (1 | u1) + (1 | u2), data=d, REML = F)
+z.x <- lmer(y ~ x1 + (1 | u1) + (1 | u2), data=d, REML = F)
+z.v <- lmer(y ~ 1 + (1 | u2), data=d, REML = F)
+z.0 <- lm(y ~ 1, data=d)
+
+R2.pred(z.f, z.x)
+R2.pred(z.f, z.v)
+R2.pred(z.f)
+
+#################
+# GLMM with one fixed and one random effect
+
+p1 <- 10
+nsample <- 10
+n <- p1 * nsample
+
+d <- data.frame(x=0, y=0, u=rep(1:p1, each=nsample))
+d$u <- as.factor(d$u)
+
+b1 <- 1
+sd1 <- 1.5
+
+d$x <- rnorm(n=n)
+prob <- inv.logit(b1 * d$x + rep(rnorm(n=p1, sd=sd1), each=nsample))
+d$y <- rbinom(n=n, size=1, prob=prob)
+
+z.f <- glmer(y ~ x + (1 | u), data=d, family="binomial")
+z.x <- glmer(y ~ 1 + (1 | u), data=d, family="binomial")
+z.v <- glm(y ~ x, data=d, family="binomial")
+
+R2.pred(z.f, z.x)
+R2.pred(z.f, z.v)
+R2.pred(z.f)
+
+#################
+# PGLS with a single fixed effect
+
+n <- 100
+d <- data.frame(x=array(0, dim=n), y=0)
+
+b1 <- 1.5
+signal <- 0.7
+
+phy <- compute.brlen(rtree(n=n), method = "Grafen", power = 1)
+phy.x <- compute.brlen(phy, method = "Grafen", power = .0001)
+
+# Generate random data
+x <- rTraitCont(phy.x, model = "BM", sigma = 1)
+e <- signal^0.5 * rTraitCont(phy, model = "BM", sigma = 1) + (1-signal)^0.5 * rnorm(n=n)
+d$x <- x[match(names(e), names(x))]
+d$y <- b1 * x + e
+rownames(d) <- phy$tip.label	
+
+z.x <- phylolm(y ~ 1, phy=phy, data=d, model="lambda")
+lam.x <- round(z.x$optpar, digits=4)
+z.f <- phylolm(y ~ x, phy=phy, data=d, model="lambda")
+z.v <- lm(y ~ x, data=d)
+
+R2.pred(z.f, z.x, phy=phy)
+R2.pred(z.f, z.v, phy=phy)
+R2.pred(z.f, phy=phy)
+
+#################
+# PGLMM with one fixed effect
+
+n <- 100
+b1 <- 1.5
+signal <- 2
+
+phy <- compute.brlen(rtree(n=n), method = "Grafen", power = 1)
+phy.x <- compute.brlen(phy, method = "Grafen", power = .0001)
+
+# Generate random data
+x <- rnorm(n)
+d <- data.frame(x=x, y=0)
+
+e <- signal * rTraitCont(phy, model = "BM", sigma = 1)
+e <- e[match(phy$tip.label, names(e))]
+
+d$y <- rbinom(n=n, size=1, prob=inv.logit(b1 * d$x + e))
+rownames(d) <- phy$tip.label	
+
+z.f <- binaryPGLMM(y ~ x, data=d, phy=phy)
+z.x <- binaryPGLMM(y ~ 1, data=d, phy=phy)
+z.v <- glm(y ~ x, data=d, family="binomial")
+
+R2.pred(z.f, z.x)
+R2.pred(z.f, z.v)
+R2.pred(z.f)
+
+}
+\references{
+Ives A. in press. R2s for Correlated Data: Phylogenetic Models, LMMs, and GLMMs. Systematic Biology.
+}
+\author{
+Anthony R. Ives
 }
