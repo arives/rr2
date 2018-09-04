@@ -145,8 +145,8 @@ e <- e[match(phy$tip.label, names(e))]
 d$y <- rbinom(n=n, size=1, prob=inv.logit(b1 * d$x + e))
 rownames(d) <- phy$tip.label	
 
-z.f <- binaryPGLMM(y ~ x, data=d, phy=phy)
-z.x <- binaryPGLMM(y ~ 1, data=d, phy=phy)
+z.f <- rr2::binaryPGLMM(y ~ x, data=d, phy=phy)
+z.x <- rr2::binaryPGLMM(y ~ 1, data=d, phy=phy)
 z.v <- glm(y ~ x, data=d, family="binomial")
 
 R2.pred(z.f, z.x)

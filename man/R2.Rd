@@ -114,7 +114,7 @@ rownames(d) <- phy$tip.label
 
 z.x <- phylolm(y ~ 1, phy=phy, data=d, model="lambda")
 lam.x <- round(z.x$optpar, digits=4)
-z.f <- phylolm(y ~ x, phy=phy, data=d, model="lambda", starting.value=.98*lam.x+.01)
+z.f <- phylolm(y ~ x, phy=phy, data=d, model="lambda")
 z.v <- lm(y ~ x, data=d)
 
 R2(z.f, z.x, phy = phy)
