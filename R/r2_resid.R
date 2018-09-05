@@ -208,7 +208,7 @@ R2.resid <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = c("s2w", "
       stop("Sorry, but mod and mod.r must be from the same family of distributions.")
     }
     if (!is.element(family(mod)[[1]], c("binomial","poisson"))) {
-      stop("Sorry, but R2.resid only works for family = binomial or poisson.)
+      stop("Sorry, but R2.resid only works for family = binomial or poisson.")
     }
 
     return(R2.resid.glm(mod, mod.r, sigma2_d = sigma2_d))
@@ -240,7 +240,7 @@ R2.resid <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = c("s2w", "
       stop("Sorry, but mod and mod.r must be from the same family of distributions.")
     }
     if (!is.element(family(mod)[[1]], c("binomial","poisson"))) {
-      stop("Sorry, but R2.resid only works for family = binomial or poisson.)
+      stop("Sorry, but R2.resid only works for family = binomial or poisson.")
     }
 
     return(R2.resid.glmerMod(mod, mod.r, sigma2_d = sigma2_d))
