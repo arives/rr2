@@ -2,19 +2,19 @@
 #'
 #' Calculate partial and total R2s for LMM, GLMM, PGLS, and PGLMM using R2.pred, an R2 based on the variance of the difference between the observed and predicted values of a fitted model.
 #' 
-#' @param mod A model with the following class: 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'binaryPGLMM', or 'communityPGLMM'.
+#' @param mod A regression model with one of the following classes: 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'binaryPGLMM', or 'communityPGLMM'.
 #' @param mod.r A reduced model; if not provided, the total R2 will be given by setting 'mod.r' to the model corresponding to 'mod' with the intercept as the only predictor.
 #' @param phy The phylogeny for phylogenetic models (as a 'phylo' object), which must be specified for models of class `phylolm`.
 #' @return R2.pred
 #' @export
 #'
-#' @details  R2.pred works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', 'binaryPGLMM', and 'communityPGLMM' (family = Gaussian and binary).
+#' @details  R2.pred works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', 'binaryPGLMM', and 'communityPGLMM' (family = gaussian and binomial).
 #' 
 #' \strong{LMM (lmerMod), GLMM (glmerMod), PGLMM (binaryPGLMM and communityPGLMM):}
 #' 
-#' \deqn{partial R2 = 1 - var(y - y.fitted[mod.f])/var(y - y.fitted[mod.r])}
+#' \deqn{partial R2 = 1 - var(y - y.fitted.f)/var(y - y.fitted.r)}
 #' 
-#' where y are the observed data, and y.fitted[mod.f] and y.fitted[mod.r] are the fitted (predicted) values from the full and reduced models. For GLMMs and PGLMMs, the values of y.fitted are in the space of the raw data (as opposed to the "Normal" or "latent" space). When the reduced model 'mod.r' is not specified, the total R2 is computing using the reduced model with only the intercept.
+#' where y are the observed data, and y.fitted.f and y.fitted.r are the fitted (predicted) values from the full and reduced models. For GLMMs and PGLMMs, the values of y.fitted are in the space of the raw data (as opposed to the "Normal" or "latent" space). When the reduced model 'mod.r' is not specified, the total R2 is computing using the reduced model with only the intercept.
 #' 
 #' Note that the version of binaryPGLMM() in the package ape is replaced by a version contained within {rr2} that outputs all of the required information for the calculation of R2.resid.
 #' 
@@ -22,11 +22,11 @@
 #' 
 #' For PGLS, the total R2.pred is computed by removing each datum one at a time, predicting its value from the fitted model, repeating this for all data points, and then calculating the variance of the difference between observed and fitted values. The predictions are calculated as
 #' 
-#' \deqn{R.predicted[j] = V[j, -j] solve(V[-j, -j]) R[-j]}
+#' \deqn{res.predicted[j] = V[j, -j] solve(V[-j, -j]) res[-j]}
 #' 
-#' where R[-j] is a vector of residuals with datum j removed, V[-j,-j] is the phylogenetic covariance matrix with row and column j removed, and V[j, -j] is column j of covariance matrix V with element j removed. The partial R2.pred is calculated from the total R2.pred from full and reduced models as
+#' where res[-j] is a vector of residuals with datum j removed, V[-j,-j] is the phylogenetic covariance matrix with row and column j removed, and V[j, -j] is column j of covariance matrix V with element j removed. The partial R2.pred is calculated from the total R2.pred from full and reduced models as
 #' 
-#' \deqn{partial R2 = 1 - (1 - R2.pred[mod.f])/(1 - R2.pred[mod.r])}
+#' \deqn{partial R2 = 1 - (1 - R2.pred.f)/(1 - R2.pred.r)}
 #' 
 #' \strong{LM (lm) and GLM (glm):} 
 #' 
@@ -34,6 +34,7 @@
 #' 
 #' @author Anthony R. Ives
 #' @references Ives A. in press. R2s for Correlated Data: Phylogenetic Models, LMMs, and GLMMs. Systematic Biology.
+#' @seealso MuMIn, lme4, ape, phylolm, pez
 #' 
 #' @examples library(ape)
 #' library(phylolm)

@@ -1,19 +1,20 @@
 #' Calculate R2.lik, R2.resid, and R2.pred
 #'
-#' This is a wrapper for calculating all three R2s -- R2.lik, R2.resid, and R2.pred -- for LMM, GLMM, PGLM, and PGLMM. Note that the individual functions R2.lik(), R2.resid(), and R2.pred() can be called separately. This is preferrable if you are only  interested in one R2; for example, for phylolm() called from `R2` you need to specify 'phy' (phylo object for the phylogeny), while R2.lik() does not require this.
+#' This is a wrapper for calculating three R2s -- R2.lik, R2.resid, and R2.pred -- for LMM, GLMM, PGLM, and PGLMM. Note that the individual functions R2.lik(), R2.resid(), and R2.pred() can be called separately. This is preferrable if you are only  interested in one R2; for example, for phylolm() called from `R2` you need to specify 'phy' (phylo object for the phylogeny), while R2.lik() does not require this.
 #' 
 #' Details about the methods are provided under the separate functions for `R2.lik`, `R2.resid`, and `R2.pred`. There are also many worked examples. 
 #'   
-#' @param mod A regression model with the following class: 'lm', 'glm', lmerMod', glmerMod', 'phylolm', 'binaryPGLMM', or 'communityPGLMM'.
-#' @param mod.r A reduced model; if not provided, the total R2 will be given by setting 'mod.r' to the model corresponding to 'mod' with intercept as the only predictor.
+#' @param mod A regression model with one of the following classes: 'lm', 'glm', lmerMod', glmerMod', 'phylolm', 'binaryPGLMM', or 'communityPGLMM'.
+#' @param mod.r A reduced model; if not provided, the total R2 will be given by setting 'mod.r' to the model corresponding to 'mod' with the intercept as the only predictor.
 #' @param phy The phylogeny for phylogenetic models (as a 'phylo' object), which is not required to be specified for R2.lik().
-#' @param sigma2_d Distribution-specific variance σ2d (see Details) used in R2.resid(). For binomial GLMs, GLMMs and PGLMMs with logit link functions, options are `c("s2w", "NS", "rNS")`. For binomial GLMs, GLMMs and PGLMMs with probit link functions, options are `c("s2w", "NS")`. Other families use `"s2w"`.
+#' @param sigma2_d Distribution-specific variance σ2d (see Details) used in R2.resid(). For binomial GLMs, GLMMs and PGLMMs with logit link functions, options are c("s2w", "NS", "rNS"). For binomial GLMs, GLMMs and PGLMMs with probit link functions, options are c("s2w", "NS"). Other families use "s2w".
 #' @param lik Whether to calculate R2.lik; default is TRUE.
 #' @param resid Whether to calculate R2.resid; default is TRUE.
 #' @param pred Whether to calculate R2.pred; default is TRUE.
 #' @return An array, with all three R2s by default.
 #' @author Daijiang Li and Anthony R. Ives
 #' @references Ives A. in press. R2s for Correlated Data: Phylogenetic Models, LMMs, and GLMMs. Systematic Biology.
+#' @seealso MuMIn, lme4, ape, phylolm, pez
 #' @export
 #' @examples library(ape)
 #' library(phylolm)

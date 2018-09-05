@@ -2,12 +2,12 @@
 #'
 #' Calculate partial and total R2s for LMM, GLMM, PGLS, and PGLMM using R2.lik, an R2 based on the likelihood of observing the data.
 #' 
-#' @param mod A model with the following class: 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', or 'communityPGLMM'.
+#' @param mod A regression model with one of the following classes: 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', or 'communityPGLMM'.
 #' @param mod.r A reduced model; if not provided, the total R2 will be given by setting 'mod.r' to the model corresponding to 'mod' with the intercept as the only predictor.
 #' @return R2.lik
 #' @export
 #'
-#' @details  R2.lik works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', and 'communityPGLMM' (family= Gaussian only). 
+#' @details  R2.lik works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', and 'communityPGLMM' (family= gaussian only). 
 #' 
 #' \deqn{partial R2 = 1 - exp(-2/n*(logLik(mod.f) - logLik(mod.r)))}
 #' 
@@ -15,7 +15,7 @@
 #' 
 #' R2.lik is also computed for LMMs and GLMMs in the {MuMIn} package.
 #' 
-#' @seealso MuMIn
+#' @seealso MuMIn, lme4, ape, phylolm, pez
 #' @author Anthony R. Ives
 #' @references Ives A. in press. R2s for Correlated Data: Phylogenetic Models, LMMs, and GLMMs. Systematic Biology.
 #' 

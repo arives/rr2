@@ -8,7 +8,7 @@ R2.resid(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = c("s2w",
   "NS", "rNS"))
 }
 \arguments{
-\item{mod}{A model with the following class: 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', or 'binaryPGLMM'. For 'glmerMod', only family= c("binomial" , "poisson") are supported.}
+\item{mod}{A regression model with one of the following classes: 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', or 'binaryPGLMM'. For 'glmerMod', only family= c("binomial" , "poisson") are supported.}
 
 \item{mod.r}{A reduced model; if not provided, the total R2 will be given by setting 'mod.r' to the model corresponding to 'mod' with the intercept as the only predictor.}
 
@@ -23,7 +23,7 @@ R2.resid.
 Calculate partial and total R2s for LMM, GLMM, PGLS, and PGLMM using R2.resid, an extension of ordinary least-squares (OLS) R2s. For LMMs and GLMMs, R2.resid is related to the method proposed by Nakagawa and Schielzeth (2013).
 }
 \details{
-R2.resid works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm, and 'binaryPGLMM'.
+R2.resid works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', and 'binaryPGLMM'.
 
 \strong{LMM (lmerMod):}
 
@@ -191,6 +191,8 @@ Nakagawa S., Schielzeth H. 2013. A general and simple method for obtaining R2 fr
 Nakagawa S., Johnson P. C. D., Schielzeth H. 2017. The coefficient of determination R-2 and intra-class correlation coefficient from generalized linear mixed-effects models revisited and expanded. Journal of the Royal Society Interface, 14.
 }
 \seealso{
+MuMIn, lme4, ape, phylolm, pez
+
 MuMIn
 }
 \author{
