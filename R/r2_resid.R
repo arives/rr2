@@ -373,7 +373,8 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
       if (sigma2_d == 's2w') sig2e <- exp(mean(log(size*mu*(1-mu)/dnorm(qnorm(mu))^2)))
       if (sigma2_d == 'NS') sig2e <- 1
     }
-  }  if (family(mod)[1] == "poisson") sig2e <- exp(-mean(log(mu)))
+  }  
+  if (family(mod)[1] == "poisson") sig2e <- exp(-mean(log(mu)))
   
   sig2a <- VarCorr(mod)[[1]][1]
   nranef <-  length(VarCorr(mod))
