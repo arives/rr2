@@ -303,6 +303,7 @@ R2.resid.glm <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
     } else {
       if (sigma2_d == 's2w') sig2e <- exp(mean(log(size*mu*(1-mu)/dnorm(qnorm(mu))^2)))
       if (sigma2_d == 'NS') sig2e <- 1
+      if (sigma2_d == 'rNS') sig2e <- 1
     }
   }
   if (family(mod)[1] == "poisson") sig2e <- exp(-mean(log(mu)))
@@ -319,6 +320,7 @@ R2.resid.glm <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
     } else {
       if (sigma2_d == 's2w') sig2e.r <- exp(mean(log(size*mu.r*(1-mu.r)/dnorm(qnorm(mu.r))^2)))
       if (sigma2_d == 'NS') sig2e.r <- 1
+      if (sigma2_d == 'rNS') sig2e.r <- 1
     }
   if (family(mod.r)[1] == "poisson") sig2e.r <- exp(-mean(log(mu.r)))
   
@@ -372,6 +374,7 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
     } else {
       if (sigma2_d == 's2w') sig2e <- exp(mean(log(size*mu*(1-mu)/dnorm(qnorm(mu))^2)))
       if (sigma2_d == 'NS') sig2e <- 1
+      if (sigma2_d == 'rNS') sig2e <- 1
     }
   }  
   if (family(mod)[1] == "poisson") sig2e <- exp(-mean(log(mu)))
@@ -395,6 +398,7 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
       } else {
         if (sigma2_d == 's2w') sig2e.r <- exp(mean(log(size*mu.r*(1-mu.r)/dnorm(qnorm(mu.r))^2)))
         if (sigma2_d == 'NS') sig2e.r <- 1
+       if (sigma2_d == 'rNS') sig2e.r <- 1
       }
     if (family(mod.r)[1] == "poisson") sig2e.r <- exp(-mean(log(mu.r)))
     
@@ -416,6 +420,7 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
       } else {
         if (sigma2_d == 's2w') sig2e.r <- exp(mean(log(mu.r*(1-mu.r)/dnorm(qnorm(mu.r))^2)))
         if (sigma2_d == 'NS') sig2e.r <- 1
+       if (sigma2_d == 'rNS') sig2e.r <- 1
       }
     if (family(mod.r)[1] == "poisson") sig2e.r <- exp(-mean(log(mu.r)))
     
