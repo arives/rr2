@@ -207,6 +207,9 @@ R2.resid <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = c("s2w", "
     if (family(mod)[[1]] != family(mod.r)[[1]]) {
       stop("Sorry, but mod and mod.r must be from the same family of distributions.")
     }
+    if (!is.element(family(mod)[[1]], c("binomial","poisson"))) {
+      stop("Sorry, but R2.resid only works for family = "binomial" or "poisson".)
+    }
 
     return(R2.resid.glm(mod, mod.r, sigma2_d = sigma2_d))
   }
@@ -235,6 +238,9 @@ R2.resid <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = c("s2w", "
     }
     if (family(mod)[[1]] != family(mod.r)[[1]]) {
       stop("Sorry, but mod and mod.r must be from the same family of distributions.")
+    }
+    if (!is.element(family(mod)[[1]], c("binomial","poisson"))) {
+      stop("Sorry, but R2.resid only works for family = "binomial" or "poisson".)
     }
 
     return(R2.resid.glmerMod(mod, mod.r, sigma2_d = sigma2_d))
@@ -284,15 +290,21 @@ R2.resid.lm <- function(mod = NULL, mod.r = NULL) {
 R2.resid.glm <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
   mu <- mod$fitted.values
   Yhat <- family(mod)$linkfun(mu)
-  if (family(mod)[1] == "binomial") 
+  if (family(mod)[1] == "binomial") {
+    if(is.matrix(model.frame(mod)[,1])){
+      size <- rowSums(model.frame(mod)[,1])
+    }else{
+      size <- 1
+    }
     if (family(mod)[2] == "logit") {
-      if (sigma2_d == 's2w') sig2e <- exp(-mean(log(mu*(1-mu))))
+      if (sigma2_d == 's2w') sig2e <- exp(mean(log(size/(mu*(1-mu)))))
       if (sigma2_d == 'NS') sig2e <- pi^2/3
       if (sigma2_d == "rNS") sig2e <- 0.8768809 * pi^2/3
     } else {
-      if (sigma2_d == 's2w') sig2e <- exp(mean(log(mu*(1-mu)/dnorm(qnorm(mu))^2)))
+      if (sigma2_d == 's2w') sig2e <- exp(mean(log(size*mu*(1-mu)/dnorm(qnorm(mu))^2)))
       if (sigma2_d == 'NS') sig2e <- 1
     }
+  }
   if (family(mod)[1] == "poisson") sig2e <- exp(-mean(log(mu)))
   
   SSE.resid <- sig2e/(var(Yhat) + sig2e)
@@ -301,11 +313,11 @@ R2.resid.glm <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
   Yhat.r <- family(mod.r)$linkfun(mu.r)
   if (family(mod.r)[1] == "binomial") 
     if (family(mod.r)[2] == "logit") {
-      if (sigma2_d == 's2w') sig2e.r <- exp(-mean(log(mu.r*(1-mu.r))))
+      if (sigma2_d == 's2w') sig2e.r <- exp(mean(log(size/(mu.r*(1-mu.r)))))
       if (sigma2_d == 'NS') sig2e.r <- pi^2/3
       if (sigma2_d == "rNS") sig2e.r <- 0.8768809 * pi^2/3
     } else {
-      if (sigma2_d == 's2w') sig2e.r <- exp(mean(log(mu.r*(1-mu.r)/dnorm(qnorm(mu.r))^2)))
+      if (sigma2_d == 's2w') sig2e.r <- exp(mean(log(size*mu.r*(1-mu.r)/dnorm(qnorm(mu.r))^2)))
       if (sigma2_d == 'NS') sig2e.r <- 1
     }
   if (family(mod.r)[1] == "poisson") sig2e.r <- exp(-mean(log(mu.r)))
@@ -347,16 +359,21 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
   # full model
   mu <- fitted(mod)
   Yhat <- X %*% lme4::fixef(mod)
-  if (family(mod)[1] == "binomial") 
+  if (family(mod)[1] == "binomial") {
+    if(is.matrix(model.frame(mod)[,1])){
+      size <- rowSums(model.frame(mod)[,1])
+    }else{
+      size <- 1
+    }
     if (family(mod)[2] == "logit") {
-      if (sigma2_d == 's2w') sig2e <- exp(-mean(log(mu*(1-mu))))
+      if (sigma2_d == 's2w') sig2e <- exp(mean(log(size/(mu*(1-mu)))))
       if (sigma2_d == 'NS') sig2e <- pi^2/3
       if (sigma2_d == "rNS") sig2e <- 0.8768809 * pi^2/3
     } else {
-      if (sigma2_d == 's2w') sig2e <- exp(mean(log(mu*(1-mu)/dnorm(qnorm(mu))^2)))
+      if (sigma2_d == 's2w') sig2e <- exp(mean(log(size*mu*(1-mu)/dnorm(qnorm(mu))^2)))
       if (sigma2_d == 'NS') sig2e <- 1
     }
-  if (family(mod)[1] == "poisson") sig2e <- exp(-mean(log(mu)))
+  }  if (family(mod)[1] == "poisson") sig2e <- exp(-mean(log(mu)))
   
   sig2a <- VarCorr(mod)[[1]][1]
   nranef <-  length(VarCorr(mod))
@@ -371,11 +388,11 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
     Yhat.r <- X.r %*% lme4::fixef(mod.r)
     if (family(mod.r)[1] == "binomial") 
       if (family(mod.r)[2] == "logit") {
-        if (sigma2_d == 's2w') sig2e.r <- exp(-mean(log(mu.r*(1-mu.r))))
+        if (sigma2_d == 's2w') sig2e.r <- exp(mean(size/(log(mu.r*(1-mu.r)))))
         if (sigma2_d == 'NS') sig2e.r <- pi^2/3
         if (sigma2_d == "rNS") sig2e.r <- 0.8768809 * pi^2/3
       } else {
-        if (sigma2_d == 's2w') sig2e.r <- exp(mean(log(mu.r*(1-mu.r)/dnorm(qnorm(mu.r))^2)))
+        if (sigma2_d == 's2w') sig2e.r <- exp(mean(log(size*mu.r*(1-mu.r)/dnorm(qnorm(mu.r))^2)))
         if (sigma2_d == 'NS') sig2e.r <- 1
       }
     if (family(mod.r)[1] == "poisson") sig2e.r <- exp(-mean(log(mu.r)))
