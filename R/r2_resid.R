@@ -389,7 +389,7 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
     Yhat.r <- X.r %*% lme4::fixef(mod.r)
     if (family(mod.r)[1] == "binomial") 
       if (family(mod.r)[2] == "logit") {
-        if (sigma2_d == 's2w') sig2e.r <- exp(mean(size/(log(mu.r*(1-mu.r)))))
+        if (sigma2_d == 's2w') sig2e.r <- exp(mean(log(size/(mu.r*(1-mu.r)))))
         if (sigma2_d == 'NS') sig2e.r <- pi^2/3
         if (sigma2_d == "rNS") sig2e.r <- 0.8768809 * pi^2/3
       } else {
