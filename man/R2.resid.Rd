@@ -8,11 +8,11 @@ R2.resid(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = c("s2w",
   "NS", "rNS"))
 }
 \arguments{
-\item{mod}{A model with the following class: 'lmerMod', 'glmerMod', 'phylolm', or 'binaryPGLMM'.}
+\item{mod}{A model with the following class: 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', or 'binaryPGLMM'. For 'glmerMod', only family= c("binomial" , "poisson") are supported.}
 
-\item{mod.r}{A reduced model. If a reduced model is not provided, the total R2 will be computed using the corresponding reduced model with the intercept as the only predictor.}
+\item{mod.r}{A reduced model; if not provided, the total R2 will be given by setting 'mod.r' to the model corresponding to 'mod' with the intercept as the only predictor.}
 
-\item{phy}{A phylogeny with tip labels and branch length which must be specified for models of class `phylolm`.}
+\item{phy}{The phylogeny for phylogenetic models (as a 'phylo' object), which must be specified for models of class `phylolm`.}
 
 \item{sigma2_d}{Distribution-specific variance σ2d (see Details). For binomial GLMs, GLMMs and PGLMMs with logit link functions, options are c("s2w", "NS", "rNS"). For binomial GLMs, GLMMs and PGLMMs with probit link functions, options are c("s2w", "NS"). Other families use "s2w".}
 }
@@ -20,16 +20,16 @@ R2.resid(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = c("s2w",
 R2.resid.
 }
 \description{
-Calculate partial and total R2s for LMM, GLMM, PGLS, and PGLMMs using R2.resid, an extension of ordinary least-squares (OLS) R2s. For LMMs and GLMMs, R2.resid is related to the method proposed by Nakagawa and Schielzeth (2013).
+Calculate partial and total R2s for LMM, GLMM, PGLS, and PGLMM using R2.resid, an extension of ordinary least-squares (OLS) R2s. For LMMs and GLMMs, R2.resid is related to the method proposed by Nakagawa and Schielzeth (2013).
 }
 \details{
-R2.resid works with classes lmerMod (LMM), glmerMod (GLMM), phylolm (PGLS), and binaryPGLMM (PGLMM).
+R2.resid works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm, and 'binaryPGLMM'.
 
 \strong{LMM (lmerMod):}
 
 \deqn{partial R2 = 1 - σ2e/σ2e.r}
    
-\deqn{total R2 = 1 - σ2e/var(Y)}
+\deqn{total R2 = 1 - σ2e/var(y)}
    
 where σ2e and σ2e.r are the estimated residual variances from the full and reduced LMM, and var(Y) is the total variance of the response (dependent) variable.
 
@@ -39,9 +39,9 @@ where σ2e and σ2e.r are the estimated residual variances from the full and red
    
 where σ2x and σ2b are the estimated variances associated with the fixed and random effects. σ2d is a term that scales the implied "residual variance" of the GLMM (see Ives 2018, Appendix 1). The default used for σ2d is σ2w which is computed from the iterative weights of the GLMM. Specifically,
 
-\deqn{σ2w = exp(mean(log(g'(μ)(y – μ))))}
+\deqn{σ2w = exp(mean(log(g'(μ)*var(y – μ))))}
 
-where g'() is the derivative of the link function, y are the data, and μ are the predicted values of y. This is the default option specified by sigma2_d = "s2w". For compatibility, sigma2_d = "NS" gives the scaling σ2d =  π^2/3, and sigma2_d = "rNS" gives σ2d = 0.8768809*π^2/3 for binomial models with a logit link function. For binomial models with a probit link function, sigma2_d = "NS" gives the scaling σ2d = 1. For other form of sigma2_d from Nakagawa and Schielzeth (2013) and Nakagawa et al. (2017), see the MuMIn package.
+where g'() is the derivative of the link function and var(y – μ) is the expected variance in the difference between the data y and their predicted values μ. This is the default option specified by sigma2_d = "s2w". For binomial models with a logit link function, sigma2_d = "NS" gives the scaling σ2d =  π^2/3, and sigma2_d = "rNS" gives σ2d = 0.8768809*π^2/3. For binomial models with a probit link function, sigma2_d = "NS" gives the scaling σ2d = 1. For other forms of sigma2_d from Nakagawa and Schielzeth (2013) and Nakagawa et al. (2017), see the MuMIn package.
 
 Partial R2s are given by the standard formula
 
@@ -59,7 +59,11 @@ where σ2.f and σ2.r are the variances estimated for the PGLS full and reduced 
 
 The binary PGLMM is computed in the same way as the binomial GLMM, with options sigma_d = c("s2w", "NS", "rNS"). The estimated variance of the random effect associated with the phylogeny, σ2b, is multiplied by the diagonal elements of the phylogenetic covariance matrix. For binary models, this covariance matrix should be standardized so that all diagonal elements are the same (a contemporaneous or ultrametric phylogenetic tree) (Ives and Garland 2014). In case this is not done, however, the code takes the geometric average of the diagonal elements.
 
-Note that the version of binaryPGLMM in the package {ape} is replaced by a version contained within {rr2} that outputs all of the required information for the calculation of R2.resid.
+Note that the version of binaryPGLMM() in the package ape is replaced by a version contained within {rr2} that outputs all of the required information for the calculation of R2.resid.
+
+\strong{LM (lm) and GLM (glm):} 
+
+For compatibility and generating reduced models, rr2 will compute R2.resid for LM and GLM that correspond to LMM/PGLS and GLMM/PGLMM.
 }
 \examples{
 library(ape)
@@ -167,6 +171,7 @@ e <- e[match(phy$tip.label, names(e))]
 d$y <- rbinom(n=n, size=1, prob=inv.logit(b1 * d$x + e))
 rownames(d) <- phy$tip.label	
 
+# Use the function binaryPGLMM() from the rr2 package rather than ape.
 z.f <- rr2::binaryPGLMM(y ~ x, data=d, phy=phy)
 z.x <- rr2::binaryPGLMM(y ~ 1, data=d, phy=phy)
 z.v <- glm(y ~ x, data=d, family="binomial")

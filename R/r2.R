@@ -1,16 +1,16 @@
 #' Calculate R2.lik, R2.resid, and R2.pred
 #'
-#' This is a wrapper for calculating all three R2s -- `R2.lik`, `R2.resid`, and `R2.pred` -- for LMM, GLMM, PGLM, and PGLMMs. Note that the individual functions `R2.lik`, `R2.resid`, and `R2.pred` can be called separately. This is preferrable if you are only  interested in one R2; for example, for 'phylolm' called from `R2` you need to specify  the phy (phylo object for the phylogeny), while `R2.lik` does not require this.
+#' This is a wrapper for calculating all three R2s -- R2.lik, R2.resid, and R2.pred -- for LMM, GLMM, PGLM, and PGLMM. Note that the individual functions R2.lik(), R2.resid(), and R2.pred() can be called separately. This is preferrable if you are only  interested in one R2; for example, for phylolm() called from `R2` you need to specify 'phy' (phylo object for the phylogeny), while R2.lik() does not require this.
 #' 
 #' Details about the methods are provided under the separate functions for `R2.lik`, `R2.resid`, and `R2.pred`. There are also many worked examples. 
 #'   
-#' @param mod A regression model with the following class: 'lmerMod', 'glmerMod', 'phylolm', 'binaryPGLMM', and 'communityPGLMM'.
-#' @param mod.r A reduced model, if not provided, will use corresponding models with intercept as the only predictor.
-#' @param phy The phylogeny for phylogenetic models, which is not required to be specified for `R2.lik`.
-#' @param sigma2_d Distribution-specific variance σ2d (see Details) used in `R2.resid`. For binomial GLMs, GLMMs and PGLMMs with logit link functions, options are `c("s2w", "NS", "rNS")`. For binomial GLMs, GLMMs and PGLMMs with probit link functions, options are `c("s2w", "NS")`. Other families use `"s2w"`.
-#' @param lik Whether to calculate R2.lik, default is TRUE.
-#' @param resid Whether to calculate R2.resid, default is TRUE.
-#' @param pred Whether to calculate R2.pred, default is TRUE.
+#' @param mod A regression model with the following class: 'lm', 'glm', lmerMod', glmerMod', 'phylolm', 'binaryPGLMM', or 'communityPGLMM'.
+#' @param mod.r A reduced model; if not provided, the total R2 will be given by setting 'mod.r' to the model corresponding to 'mod' with intercept as the only predictor.
+#' @param phy The phylogeny for phylogenetic models (as a 'phylo' object), which is not required to be specified for R2.lik().
+#' @param sigma2_d Distribution-specific variance σ2d (see Details) used in R2.resid(). For binomial GLMs, GLMMs and PGLMMs with logit link functions, options are `c("s2w", "NS", "rNS")`. For binomial GLMs, GLMMs and PGLMMs with probit link functions, options are `c("s2w", "NS")`. Other families use `"s2w"`.
+#' @param lik Whether to calculate R2.lik; default is TRUE.
+#' @param resid Whether to calculate R2.resid; default is TRUE.
+#' @param pred Whether to calculate R2.pred; default is TRUE.
 #' @return An array, with all three R2s by default.
 #' @author Daijiang Li and Anthony R. Ives
 #' @references Ives A. in press. R2s for Correlated Data: Phylogenetic Models, LMMs, and GLMMs. Systematic Biology.
@@ -101,6 +101,36 @@
 #' z.f <- phylolm(y ~ x, phy=phy, data=d, model="lambda")
 #' z.v <- lm(y ~ x, data=d)
 #' 
+#' R2(z.f, z.x, phy = phy)
+#' R2(z.f, z.v, phy = phy)
+#' R2(z.f, phy = phy)
+#' 
+#' #################
+#' # PGLMM with one fixed effect
+#' 
+#' n <- 100
+#' b1 <- 1.5
+#' signal <- 2
+#' 
+#' phy <- compute.brlen(rtree(n=n), method = "Grafen", power = 1)
+#' phy.x <- compute.brlen(phy, method = "Grafen", power = .0001)
+#' 
+#' # Generate random data
+#' x <- rnorm(n)
+#' d <- data.frame(x=x, y=0)
+#' 
+#' e <- signal * rTraitCont(phy, model = "BM", sigma = 1)
+#' e <- e[match(phy$tip.label, names(e))]
+#' 
+#' d$y <- rbinom(n=n, size=1, prob=inv.logit(b1 * d$x + e))
+#' rownames(d) <- phy$tip.label	
+#' 
+#' # Use the function binaryPGLMM() from the rr2 package rather than ape.
+#' z.f <- rr2::binaryPGLMM(y ~ x, data=d, phy=phy)
+#' z.x <- rr2::binaryPGLMM(y ~ 1, data=d, phy=phy)
+#' z.v <- glm(y ~ x, data=d, family="binomial")
+#' 
+#' # R2.lik is not produced, because binaryPGLMM() does not generate a likelihood.
 #' R2(z.f, z.x, phy = phy)
 #' R2(z.f, z.v, phy = phy)
 #' R2(z.f, phy = phy)

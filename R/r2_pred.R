@@ -1,33 +1,36 @@
 #' Calculate R2.pred
 #'
-#' Calculate partial and total R2s for LMM, GLMM, PGLS, and PGLMMs using R2.pred, an R2 based on the variance of the difference between the observed and predicted values of a fitted model.
+#' Calculate partial and total R2s for LMM, GLMM, PGLS, and PGLMM using R2.pred, an R2 based on the variance of the difference between the observed and predicted values of a fitted model.
 #' 
-#' @param mod A model with the following class: 'lmerMod', 'glmerMod', 'phylolm', 'binaryPGLMM', or 'communityPGLMM'.
-#' @param mod.r A reduced model. If a reduced model is not provided, the total R2 will be computed using the corresponding reduced model with the intercept as the only predictor.
-#' @param phy A phylogeny with tip labels and branch length which must be specified for models of class `phylolm`.
+#' @param mod A model with the following class: 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'binaryPGLMM', or 'communityPGLMM'.
+#' @param mod.r A reduced model; if not provided, the total R2 will be given by setting 'mod.r' to the model corresponding to 'mod' with the intercept as the only predictor.
+#' @param phy The phylogeny for phylogenetic models (as a 'phylo' object), which must be specified for models of class `phylolm`.
 #' @return R2.pred
 #' @export
 #'
-#' @details  R2.pred works with classes lmerMod (LMM), glmerMod (GLMM), phylolm (PGLS), binaryPGLMM (PGLMM), and communityPGLMM (Gaussian PLMM or binary PGLMM).
+#' @details  R2.pred works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', 'binaryPGLMM', and 'communityPGLMM' (family = Gaussian and binary).
 #' 
 #' \strong{LMM (lmerMod), GLMM (glmerMod), PGLMM (binaryPGLMM and communityPGLMM):}
 #' 
-#' \deqn{partial R2 = 1 - var(Y - y.fitted[mod.f])/var(Y - y.fitted[mod.r])}
+#' \deqn{partial R2 = 1 - var(y - y.fitted[mod.f])/var(y - y.fitted[mod.r])}
 #' 
-#' where Y are the observed data, and y.fitted[mod.f] and y.fitted[mod.r] are the fitted (predicted) values from the full and reduced models. For GLMMs and PGLMMs, the values of y.fitted are in the space of the raw data (as opposed to the "Normal" or "latent" space). When the reduced model mod.r is not specified, the total R2 is computing using the reduced model with only the intercept.
+#' where y are the observed data, and y.fitted[mod.f] and y.fitted[mod.r] are the fitted (predicted) values from the full and reduced models. For GLMMs and PGLMMs, the values of y.fitted are in the space of the raw data (as opposed to the "Normal" or "latent" space). When the reduced model 'mod.r' is not specified, the total R2 is computing using the reduced model with only the intercept.
 #' 
-#' Note that the version of binaryPGLMM in the package {ape} is replaced by a version contained within {rr2} that outputs all of the required information for the calculation of R2.resid.
+#' Note that the version of binaryPGLMM() in the package ape is replaced by a version contained within {rr2} that outputs all of the required information for the calculation of R2.resid.
 #' 
 #' \strong{PGLS (phylolm):}
 #' 
-#' For PGLS, the total R2.pred is computed by removing each datum one at a time, predicting its value from the fitted model, and then calculating the variance of the difference between observed and fitted values. The predictions are calculated as
+#' For PGLS, the total R2.pred is computed by removing each datum one at a time, predicting its value from the fitted model, repeating this for all data points, and then calculating the variance of the difference between observed and fitted values. The predictions are calculated as
 #' 
 #' \deqn{R.predicted[j] = V[j, -j] solve(V[-j, -j]) R[-j]}
 #' 
-#' where R[-j] is a vector of residuals with datum j removed, V[-j,-j] is the phylogenetic covariance matrix with row and column j removed, and V[j, -j] is column j of covariance matrix V with element j removed. The partial R2.pred are calculated from the total R2.pred from full and predicted models as
+#' where R[-j] is a vector of residuals with datum j removed, V[-j,-j] is the phylogenetic covariance matrix with row and column j removed, and V[j, -j] is column j of covariance matrix V with element j removed. The partial R2.pred is calculated from the total R2.pred from full and reduced models as
 #' 
 #' \deqn{partial R2 = 1 - (1 - R2.pred[mod.f])/(1 - R2.pred[mod.r])}
 #' 
+#' \strong{LM (lm) and GLM (glm):} 
+#' 
+#' For compatibility and generating reduced models, rr2 will compute R2.pred for LM and GLM that correspond to LMM/PGLS and GLMM/PGLMM.
 #' 
 #' @author Anthony R. Ives
 #' @references Ives A. in press. R2s for Correlated Data: Phylogenetic Models, LMMs, and GLMMs. Systematic Biology.
@@ -137,6 +140,7 @@
 #' d$y <- rbinom(n=n, size=1, prob=inv.logit(b1 * d$x + e))
 #' rownames(d) <- phy$tip.label	
 #' 
+#' # Use the function binaryPGLMM() from the rr2 package rather than ape.
 #' z.f <- rr2::binaryPGLMM(y ~ x, data=d, phy=phy)
 #' z.x <- rr2::binaryPGLMM(y ~ 1, data=d, phy=phy)
 #' z.v <- glm(y ~ x, data=d, family="binomial")
@@ -171,6 +175,9 @@ R2.pred <- function(mod = NULL, mod.r = NULL, phy = NULL) {
     if (!is.element(class(mod.r)[1], c("glm"))) {
       stop("mod.r must be class glm.")
     }
+    if (family(mod)[[1]] != family(mod.r)[[1]]) {
+      stop("Sorry, but mod and mod.r must be from the same family of distributions.")
+    }
     return(R2.pred.glm(mod, mod.r))
   }
 
@@ -196,6 +203,9 @@ R2.pred <- function(mod = NULL, mod.r = NULL, phy = NULL) {
     }
     if (!is.element(class(mod.r)[1], c("glmerMod", "glm"))) {
       stop("mod.r must be class glmerMod or glm.")
+    }
+    if (family(mod)[[1]] != family(mod.r)[[1]]) {
+      stop("Sorry, but mod and mod.r must be from the same family of distributions.")
     }
     return(R2.pred.glmerMod(mod, mod.r)[1])
   }

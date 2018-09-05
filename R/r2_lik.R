@@ -1,13 +1,13 @@
 #' Calculate R2.lik
 #'
-#' Calculate partial and total R2s for LMM, GLMM, PGLS, and PGLMMs using R2.lik, an R2 based on the likelihood of observing the data.
+#' Calculate partial and total R2s for LMM, GLMM, PGLS, and PGLMM using R2.lik, an R2 based on the likelihood of observing the data.
 #' 
-#' @param mod A model with the following class: 'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', or 'communityPGLMM'.
-#' @param mod.r A reduced model. If a reduced model is not provided, the total R2 will be computed using the corresponding reduced model with the intercept as the only predictor.
+#' @param mod A model with the following class: 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', or 'communityPGLMM'.
+#' @param mod.r A reduced model; if not provided, the total R2 will be given by setting 'mod.r' to the model corresponding to 'mod' with the intercept as the only predictor.
 #' @return R2.lik
 #' @export
 #'
-#' @details  R2.lik works with classes lmerMod (LMM), glmerMod (GLMM), phylolm (PGLS), phyloglm (PGLMM), and communityPGLMM (Gaussian PLMM). 
+#' @details  R2.lik works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', and 'communityPGLMM' (family= Gaussian only). 
 #' 
 #' \deqn{partial R2 = 1 - exp(-2/n*(logLik(mod.f) - logLik(mod.r)))}
 #' 
@@ -165,6 +165,9 @@ R2.lik <- function(mod = NULL, mod.r = NULL) {
     if (!is.element(class(mod.r)[1], c("glm"))) {
       stop("mod.r must be class glm.")
     }
+    if (family(mod)[[1]] != family(mod.r)[[1]]) {
+      stop("Sorry, but mod and mod.r must be from the same family of distributions.")
+    }
     return(R2.lik.glm(mod, mod.r)[1])
   }
   
@@ -195,6 +198,9 @@ R2.lik <- function(mod = NULL, mod.r = NULL) {
     }
     if (!is.element(class(mod.r)[1], c("glmerMod", "glm"))) {
       stop("mod.r must be class glmerMod or glm.")
+    }
+    if (family(mod)[[1]] != family(mod.r)[[1]]) {
+      stop("Sorry, but mod and mod.r must be from the same family of distributions.")
     }
     return(R2.lik.glmerMod(mod, mod.r)[1])
   }
