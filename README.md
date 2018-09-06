@@ -2,10 +2,11 @@
 Goal
 ====
 
-This package provides three R2s for statistical models with correlated
-errors including classes: ‘lmerMod’ (LMM), ‘glmerMod’ (GLMM), ‘phylolm’
-(Phylogenetic GLS), and ‘binaryPGLMM/phyloglm’ (Phylogenetic Logistic
-Regression). Detailed technical descriptions can be found in [Ives 2017,
+This package provides three R<sup>2</sup>s for statistical models with
+correlated errors including classes: ‘lmerMod’ (LMM), ‘glmerMod’ (GLMM),
+‘phylolm’ (Phylogenetic GLS), and ‘binaryPGLMM/phyloglm/communityPGLMM’
+(Phylogenetic Logistic Regression). Detailed technical descriptions can
+be found in [Ives 2017,
 preprint](http://www.biorxiv.org/content/early/2017/05/30/144170).
 
 Installation
@@ -14,9 +15,8 @@ Installation
 This package can be installed with:
 
 ``` r
-install.packages("devtools")
+# install.packages("devtools")
 devtools::install_github("arives/rr2")
-library(rr2)
 ```
 
 Package structure
@@ -27,14 +27,14 @@ This package has three main functions: `R2.resid()`, `R2.lik()`, and
 `R2.resid(mod, mod.r)` where `mod` is the full model and `mod.r` is the
 reduce model for partial R2s. If you do not include the reduced model
 `mod.r`, then the appropriate model with just the intercept is used to
-give the total R2. When using `R2.resid` and `R2.pred` with PGLS, you
-need to include the phylo object containing a phylogenetic tree, e.g.,
-`R2.resid(mod, mod.r, phy = phy)`.
+give the total R<sup>2</sup>. When using `R2.resid` and `R2.pred` with
+PGLS, you need to include the phylo object containing a phylogenetic
+tree, e.g., `R2.resid(mod, mod.r, phy = phy)`.
 
-You can calculate all three R2s at the same time with `R2(mod, mod.r)`.
-You can also specify which R2(s) to calculate within this function by
-turning off unwanted methods, e.g., `R2(mod, mod.r, resid = FALSE)` or
-`R2(mod, mod.r, resid = FALSE)`.
+You can calculate all three R<sup>2</sup>s at the same time with
+`R2(mod, mod.r)`. You can also specify which R<sup>2</sup>(s) to
+calculate within this function by turning off unwanted methods, e.g.,
+`R2(mod, mod.r, resid = FALSE)` or `R2(mod, mod.r, pred = FALSE)`.
 
 This package also has some helper functions such as `inv.logit()`,
 `partialR2()`, and `partialR2adj()`.
@@ -52,10 +52,10 @@ This package also has some helper functions such as `inv.logit()`,
 | PGLMM: communityPGLMM (gaussian) | R2.pred, ——–, R2.lik      |
 | PGLMM: communityPGLMM (binomial) | R2.pred, ——–, ——-         |
 
-Usage: calculating R2s for regression models
-============================================
+Usage: calculating R<sup>2</sup>s for regression models
+=======================================================
 
-First, let’s simulate data that will be used to fit various models
+First, let’s simulate data that will be used to fit various models.
 
 ``` r
 # data 
@@ -121,7 +121,7 @@ head(d)
     ## t53 -1.60010819 -1.3718365            0
     ## t13 -1.52297135 -2.0347222            1
 
-Then, let’s fit some models and calculate their R2s.
+Then, let’s fit some models and calculate their R<sup>2</sup>s.
 
 LMM
 ---
@@ -172,21 +172,21 @@ R2(mod = z.f.glmm, mod.r = z.x.glmm)
 ```
 
     ##    R2_lik  R2_resid   R2_pred 
-    ## 0.1170588 0.2441750 0.1373521
+    ## 0.1170588 0.1248502 0.1373521
 
 ``` r
 R2(mod = z.f.glmm, mod.r = z.v.glmm)
 ```
 
     ##    R2_lik  R2_resid   R2_pred 
-    ## 0.1990563 0.4702986 0.3545240
+    ## 0.1990563 0.2859669 0.3545240
 
 ``` r
 R2(mod = z.f.glmm)
 ```
 
     ##    R2_lik  R2_resid   R2_pred 
-    ## 0.2406380 0.5022192 0.3792381
+    ## 0.2406380 0.3138128 0.3792381
 
 PGLS
 ----
@@ -223,8 +223,8 @@ R2(mod = z.f.plog, mod.r = z.x.plog)
 
     ## Models of class binaryPGLMM do not have R2.lik method
 
-    ##  R2_resid   R2_pred 
-    ## 0.3953144 0.3344832
+    ##   R2_resid    R2_pred 
+    ## 0.01341341 0.33448315
 
 ``` r
 R2(mod = z.f.plog)
@@ -233,7 +233,7 @@ R2(mod = z.f.plog)
     ## Models of class binaryPGLMM do not have R2.lik method
 
     ##  R2_resid   R2_pred 
-    ## 0.7739227 0.5531285
+    ## 0.3598461 0.5531285
 
 ``` r
 z.f.plog2 <- phylolm::phyloglm(y_phy_binary ~ x1, data = d, start.alpha = 1, phy = phy)
