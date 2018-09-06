@@ -3,10 +3,10 @@
 #' Calculate partial and total R2s for LMM, GLMM, PGLS, and PGLMM using R2.resid, an extension of ordinary least-squares (OLS) R2s. For LMMs and GLMMs, R2.resid is related to the method proposed by Nakagawa and Schielzeth (2013).
 #' 
 
-#' @param mod A regression model with one of the following classes: 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', or 'binaryPGLMM'. For 'glmerMod', only family= c("binomial" , "poisson") are supported.
+#' @param mod A regression model with one of the following classes: 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', or 'binaryPGLMM'. For 'glmerMod', only family= c('binomial', 'poisson') are supported.
 #' @param mod.r A reduced model; if not provided, the total R2 will be given by setting 'mod.r' to the model corresponding to 'mod' with the intercept as the only predictor.
 #' @param phy The phylogeny for phylogenetic models (as a 'phylo' object), which must be specified for models of class `phylolm`.
-#' @param sigma2_d Distribution-specific variance σ2d (see Details). For binomial GLMs, GLMMs and PGLMMs with logit link functions, options are c("s2w", "NS", "rNS"). For binomial GLMs, GLMMs and PGLMMs with probit link functions, options are c("s2w", "NS"). Other families use "s2w".
+#' @param sigma2_d Distribution-specific variance σ2d (see Details). For binomial GLMs, GLMMs and PGLMMs with logit link functions, options are c('s2w', 'NS', 'rNS'). For binomial GLMs, GLMMs and PGLMMs with probit link functions, options are c('s2w', 'NS'). Other families use 's2w'.
 #' 
 #' @details  R2.resid works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', and 'binaryPGLMM'.
 #' 
@@ -22,11 +22,11 @@
 #' 
 #' \deqn{total R2 = 1 - σ2d/(σ2x + σ2b + σ2d)}
 #'    
-#' where σ2x and σ2b are the estimated variances associated with the fixed and random effects. σ2d is a term that scales the implied "residual variance" of the GLMM (see Ives 2018, Appendix 1). The default used for σ2d is σ2w which is computed from the iterative weights of the GLMM. Specifically,
+#' where σ2x and σ2b are the estimated variances associated with the fixed and random effects. σ2d is a term that scales the implied 'residual variance' of the GLMM (see Ives 2018, Appendix 1). The default used for σ2d is σ2w which is computed from the iterative weights of the GLMM. Specifically,
 #' 
-#' \deqn{σ2w = exp(mean(log(g'(μ)*var(y – μ))))}
+#' \deqn{σ2w = exp(mean(log(g'(μ) * var(y – μ))))}
 #' 
-#' where g'() is the derivative of the link function and var(y – μ) is the expected variance in the difference between the data y and their predicted values μ. This is the default option specified by sigma2_d = "s2w". For binomial models with a logit link function, sigma2_d = "NS" gives the scaling σ2d =  π^2/3, and sigma2_d = "rNS" gives σ2d = 0.8768809*π^2/3. For binomial models with a probit link function, sigma2_d = "NS" gives the scaling σ2d = 1. For other forms of sigma2_d from Nakagawa and Schielzeth (2013) and Nakagawa et al. (2017), see the MuMIn package.
+#' where g'() is the derivative of the link function and var(y – μ) is the expected variance in the difference between the data y and their predicted values μ. This is the default option specified by sigma2_d = 's2w'. For binomial models with a logit link function, sigma2_d = 'NS' gives the scaling σ2d =  π^2/3, and sigma2_d = 'rNS' gives σ2d = 0.8768809 * π^2/3. For binomial models with a probit link function, sigma2_d = 'NS' gives the scaling σ2d = 1. For other forms of sigma2_d from Nakagawa and Schielzeth (2013) and Nakagawa et al. (2017), see the MuMIn package.
 #' 
 #' Partial R2s are given by the standard formula
 #' 
@@ -36,21 +36,21 @@
 #' 
 #' \strong{PGLS (phyloglm):} 
 #' 
-#' \deqn{partial R2 = 1 - c.f*σ2.f/(c.r*σ2.r)}
+#' \deqn{partial R2 = 1 - c.f * σ2.f/(c.r * σ2.r)}
 #' 
 #' where σ2.f and σ2.r are the variances estimated for the PGLS full and reduced models, and c.f and c.r are the scaling values for full and reduce models that equal the total sum of phylogenetic branch length estimates. Note that the phylogeny needs to be specified in R2.resid.
 #' 
 #' \strong{PGLMM (binaryPGLMM):} 
 #' 
-#' The binary PGLMM is computed in the same way as the binomial GLMM, with options sigma_d = c("s2w", "NS", "rNS"). The estimated variance of the random effect associated with the phylogeny, σ2b, is multiplied by the diagonal elements of the phylogenetic covariance matrix. For binary models, this covariance matrix should be standardized so that all diagonal elements are the same (a contemporaneous or ultrametric phylogenetic tree) (Ives and Garland 2014). In case this is not done, however, the code takes the geometric average of the diagonal elements.
+#' The binary PGLMM is computed in the same way as the binomial GLMM, with options sigma_d = c('s2w', 'NS', 'rNS'). The estimated variance of the random effect associated with the phylogeny, σ2b, is multiplied by the diagonal elements of the phylogenetic covariance matrix. For binary models, this covariance matrix should be standardized so that all diagonal elements are the same (a contemporaneous or ultrametric phylogenetic tree) (Ives and Garland 2014). In case this is not done, however, the code takes the geometric average of the diagonal elements.
 #' 
-#' Note that the version of binaryPGLMM() in the package ape is replaced by a version contained within {rr2} that outputs all of the required information for the calculation of R2.resid.
+#' Note that the version of \code{binaryPGLMM()} in the package ape is replaced by a version contained within {rr2} that outputs all of the required information for the calculation of R2.resid.
 #' 
 #' \strong{LM (lm) and GLM (glm):} 
 #' 
 #' For compatibility and generating reduced models, rr2 will compute R2.resid for LM and GLM that correspond to LMM/PGLS and GLMM/PGLMM.
 #' 
-#' @return R2.resid.
+#' @return R2.resid value.
 #' @importFrom lme4 VarCorr
 #' @seealso MuMIn, lme4, ape, phylolm, pez
 #' @export
@@ -64,7 +64,7 @@
 #' nsample <- 10
 #' n <- p1 * nsample
 #' 
-#' d <- data.frame(x1=0, x2=0, y=0, u1=rep(1:p1, each=nsample), u2=rep(1:p1, times=nsample))
+#' d <- data.frame(x1 = 0, x2 = 0, y = 0, u1 = rep(1:p1, each = nsample), u2 = rep(1:p1, times = nsample))
 #' d$u1 <- as.factor(d$u1)
 #' d$u2 <- as.factor(d$u2)
 #' 
@@ -72,15 +72,15 @@
 #' b2 <- -1
 #' sd1 <- 1.5
 #' 
-#' d$x1 <- rnorm(n=n)
-#' d$x2 <- rnorm(n=n)
-#' d$y <- b1 * d$x1 + b2 * d$x2 + rep(rnorm(n=p1, sd=sd1), each=nsample) + 
-#'        rep(rnorm(n=p1, sd=sd1), times=nsample) + rnorm(n=n)
+#' d$x1 <- rnorm(n = n)
+#' d$x2 <- rnorm(n = n)
+#' d$y <- b1 * d$x1 + b2 * d$x2 + rep(rnorm(n = p1, sd = sd1), each = nsample) + 
+#'        rep(rnorm(n = p1, sd = sd1), times = nsample) + rnorm(n = n)
 #' 
-#' z.f <- lmer(y ~ x1 + x2 + (1 | u1) + (1 | u2), data=d, REML = FALSE)
-#' z.x <- lmer(y ~ x1 + (1 | u1) + (1 | u2), data=d, REML = FALSE)
-#' z.v <- lmer(y ~ 1 + (1 | u2), data=d, REML = FALSE)
-#' z.0 <- lm(y ~ 1, data=d)
+#' z.f <- lmer(y ~ x1 + x2 + (1 | u1) + (1 | u2), data = d, REML = FALSE)
+#' z.x <- lmer(y ~ x1 + (1 | u1) + (1 | u2), data = d, REML = FALSE)
+#' z.v <- lmer(y ~ 1 + (1 | u2), data = d, REML = FALSE)
+#' z.0 <- lm(y ~ 1, data = d)
 #' 
 #' R2.resid(z.f, z.x)
 #' R2.resid(z.f, z.v)
@@ -93,19 +93,19 @@
 #' nsample <- 10
 #' n <- p1 * nsample
 #' 
-#' d <- data.frame(x=0, y=0, u=rep(1:p1, each=nsample))
+#' d <- data.frame(x = 0, y = 0, u = rep(1:p1, each = nsample))
 #' d$u <- as.factor(d$u)
 #' 
 #' b1 <- 1
 #' sd1 <- 1.5
 #' 
-#' d$x <- rnorm(n=n)
-#' prob <- inv.logit(b1 * d$x + rep(rnorm(n=p1, sd=sd1), each=nsample))
-#' d$y <- rbinom(n=n, size=1, prob=prob)
+#' d$x <- rnorm(n = n)
+#' prob <- inv.logit(b1 * d$x + rep(rnorm(n = p1, sd = sd1), each = nsample))
+#' d$y <- rbinom(n = n, size = 1, prob = prob)
 #' 
-#' z.f <- glmer(y ~ x + (1 | u), data=d, family="binomial")
-#' z.x <- glmer(y ~ 1 + (1 | u), data=d, family="binomial")
-#' z.v <- glm(y ~ x, data=d, family="binomial")
+#' z.f <- glmer(y ~ x + (1 | u), data = d, family = 'binomial')
+#' z.x <- glmer(y ~ 1 + (1 | u), data = d, family = 'binomial')
+#' z.v <- glm(y ~ x, data = d, family = 'binomial')
 #' 
 #' R2.resid(z.f, z.x)
 #' R2.resid(z.f, z.v)
@@ -115,25 +115,25 @@
 #' # PGLS with a single fixed effect
 #' 
 #' n <- 100
-#' d <- data.frame(x=array(0, dim=n), y=0)
+#' d <- data.frame(x = array(0, dim = n), y = 0)
 #' 
 #' b1 <- 1.5
 #' signal <- 0.7
 #' 
-#' phy <- compute.brlen(rtree(n=n), method = "Grafen", power = 1)
-#' phy.x <- compute.brlen(phy, method = "Grafen", power = .0001)
+#' phy <- compute.brlen(rtree(n = n), method = 'Grafen', power = 1)
+#' phy.x <- compute.brlen(phy, method = 'Grafen', power = .0001)
 #' 
 #' # Generate random data
-#' x <- rTraitCont(phy.x, model = "BM", sigma = 1)
-#' e <- signal^0.5 * rTraitCont(phy, model = "BM", sigma = 1) + (1-signal)^0.5 * rnorm(n=n)
+#' x <- rTraitCont(phy.x, model = 'BM', sigma = 1)
+#' e <- signal^0.5 * rTraitCont(phy, model = 'BM', sigma = 1) + (1-signal)^0.5 * rnorm(n = n)
 #' d$x <- x[match(names(e), names(x))]
 #' d$y <- b1 * x + e
-#' rownames(d) <- phy$tip.label	
+#' rownames(d) <- phy$tip.label
 #' 
-#' z.x <- phylolm(y ~ 1, phy=phy, data=d, model="lambda")
-#' lam.x <- round(z.x$optpar, digits=4)
-#' z.f <- phylolm(y ~ x, phy=phy, data=d, model="lambda")
-#' z.v <- lm(y ~ x, data=d)
+#' z.x <- phylolm(y ~ 1, phy = phy, data = d, model = 'lambda')
+#' lam.x <- round(z.x$optpar, digits = 4)
+#' z.f <- phylolm(y ~ x, phy = phy, data = d, model = 'lambda')
+#' z.v <- lm(y ~ x, data = d)
 #' 
 #' R2.resid(z.f, z.x, phy = phy)
 #' R2.resid(z.f, z.v, phy = phy)
@@ -146,23 +146,23 @@
 #' b1 <- 1.5
 #' signal <- 2
 #' 
-#' phy <- compute.brlen(rtree(n=n), method = "Grafen", power = 1)
-#' phy.x <- compute.brlen(phy, method = "Grafen", power = .0001)
+#' phy <- compute.brlen(rtree(n = n), method = 'Grafen', power = 1)
+#' phy.x <- compute.brlen(phy, method = 'Grafen', power = .0001)
 #' 
 #' # Generate random data
 #' x <- rnorm(n)
-#' d <- data.frame(x=x, y=0)
+#' d <- data.frame(x = x, y = 0)
 #' 
-#' e <- signal * rTraitCont(phy, model = "BM", sigma = 1)
+#' e <- signal * rTraitCont(phy, model = 'BM', sigma = 1)
 #' e <- e[match(phy$tip.label, names(e))]
 #' 
-#' d$y <- rbinom(n=n, size=1, prob=inv.logit(b1 * d$x + e))
-#' rownames(d) <- phy$tip.label	
+#' d$y <- rbinom(n = n, size = 1, prob = inv.logit(b1 * d$x + e))
+#' rownames(d) <- phy$tip.label
 #' 
 #' # Use the function binaryPGLMM() from the rr2 package rather than ape.
-#' z.f <- rr2::binaryPGLMM(y ~ x, data=d, phy=phy)
-#' z.x <- rr2::binaryPGLMM(y ~ 1, data=d, phy=phy)
-#' z.v <- glm(y ~ x, data=d, family="binomial")
+#' z.f <- rr2::binaryPGLMM(y ~ x, data = d, phy = phy)
+#' z.x <- rr2::binaryPGLMM(y ~ 1, data = d, phy = phy)
+#' z.v <- glm(y ~ x, data = d, family = 'binomial')
 #' 
 #' R2.resid(z.f, z.x, phy = phy)
 #' R2.resid(z.f, z.v, phy = phy)
@@ -178,346 +178,396 @@
 #' 
 #' Nakagawa S., Johnson P. C. D., Schielzeth H. 2017. The coefficient of determination R-2 and intra-class correlation coefficient from generalized linear mixed-effects models revisited and expanded. Journal of the Royal Society Interface, 14.
 #' 
-R2.resid <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = c("s2w", "NS", "rNS")) {
-  if (class(mod)[1] == "merModLmerTest") 
-    class(mod) = "lmerMod"
-  
-  if (!is.element(class(mod)[1], c("lm", "glm", "lmerMod", "glmerMod", "phylolm", "binaryPGLMM"))) {
-    stop("mod must be class one of classes lm, glm, lmerMod, glmerMod, phylolm, binaryPGLMM.")
-  }
-  
-  sigma2_d <- match.arg(sigma2_d)
-  if(!is.null(sigma2_d) && !is.element(sigma2_d, c("s2w", "NS", "rNS"))) 
-    stop("Please specify residual variance c('s2w', 'NS', 'rNS').")
-  if(is.null(sigma2_d)) sigma2_d <- "s2w"
-  
-  if (class(mod)[1] == "lm") {
-    if (!is.object(mod.r)) {
-      Y <- model.frame(mod)[, 1]
-      mod.r <- lm(Y ~ 1)
-    }
-    if (!is.element(class(mod.r)[1], c("lm"))) {
-      stop("mod.r must be class lm.")
-    }
-    return(R2.resid.lm(mod, mod.r))
-  }
-  
-  if (class(mod)[1] == "glm") {
-    if (!is.object(mod.r)) {
-      Y <- model.frame(mod)[, 1]
-      mod.r <- glm(Y ~ 1, family = family(mod)[[1]])
-    }
-    if (!is.element(class(mod.r)[1], c("glm"))) {
-      stop("mod.r must be class glm.")
-    }
-    if (family(mod)[[1]] != family(mod.r)[[1]]) {
-      stop("Sorry, but mod and mod.r must be from the same family of distributions.")
-    }
-    if (!is.element(family(mod)[[1]], c("binomial","poisson"))) {
-      stop("Sorry, but R2.resid only works for family = binomial or poisson.")
-    }
-
-    return(R2.resid.glm(mod, mod.r, sigma2_d = sigma2_d))
-  }
-  
-  if (class(mod)[1] == "lmerMod") {
-    if (!is.object(mod.r)) {
-      # exists()?
-      Y <- model.frame(mod)[, 1]
-      mod.r <- lm(Y ~ 1)
-    }
-    if (class(mod.r)[1] == "merModLmerTest") 
-      class(mod.r) = "lmerMod"
-    if (!is.element(class(mod)[1], c("lmerMod", "lm"))) {
-      stop("mod.r must be class lmerMod or lm.")
-    }
-    return(R2.resid.lmerMod(mod, mod.r))
-  }
-  
-  if (class(mod)[1] == "glmerMod") {
-    if (!is.object(mod.r)) {
-      Y <- model.frame(mod)[, 1]
-      mod.r <- glm(Y ~ 1, family = family(mod)[[1]])
-    }
-    if (!is.element(class(mod.r)[1], c("glmerMod", "glm"))) {
-      stop("mod.r must be class glmerMod or glm.")
-    }
-    if (family(mod)[[1]] != family(mod.r)[[1]]) {
-      stop("Sorry, but mod and mod.r must be from the same family of distributions.")
-    }
-    if (!is.element(family(mod)[[1]], c("binomial","poisson"))) {
-      stop("Sorry, but R2.resid only works for family = binomial or poisson.")
-    }
-
-    return(R2.resid.glmerMod(mod, mod.r, sigma2_d = sigma2_d))
-  }
-  
-  if (class(mod)[1] == "phylolm") {
-    if (!is.object(phy)) {
-      stop("For phylolm you must provide the phylo object")
-    }
-    if (!is.object(mod.r)) {
-      Y <- mod$y
-      mod.r <- lm(Y ~ 1)
-    }
-    if (!is.element(class(mod.r)[1], c("phylolm", "lm"))) {
-      stop("mod.r must be class phylolm or lm.")
-    }
-    return(R2.resid.phylolm(mod, mod.r, phy))
-  }
-  
-  if (class(mod)[1] == "binaryPGLMM") {
-    if (!is.object(mod.r)) {
-      Y <- mod$y
-      mod.r <- glm(Y ~ 1, family = "binomial")
-    }
-    if (!is.element(class(mod.r)[1], c("binaryPGLMM", "glm"))) {
-      stop("mod.r must be class binaryPGLMM or glm.")
+R2.resid <- function(mod = NULL, mod.r = NULL, phy = NULL, 
+                     sigma2_d = c("s2w", "NS", "rNS")) {
+    if (class(mod)[1] == "merModLmerTest") 
+        class(mod) <- "lmerMod"
+    
+    if (!is.element(class(mod)[1], c("lm", "glm", "lmerMod", "glmerMod", "phylolm", "binaryPGLMM"))) {
+        stop("mod must be class one of classes lm, glm, lmerMod, glmerMod, phylolm, binaryPGLMM.")
     }
     
-    return(R2.resid.binaryPGLMM(mod, mod.r, sigma2_d = sigma2_d))
-  }
+    sigma2_d <- match.arg(sigma2_d)
+    if (!is.null(sigma2_d) && !is.element(sigma2_d, c("s2w", "NS", "rNS"))) 
+        stop("Please specify residual variance c('s2w', 'NS', 'rNS').")
+    if (is.null(sigma2_d)) 
+        sigma2_d <- "s2w"
+    
+    if (class(mod)[1] == "lm") {
+        if (!is.object(mod.r)) {
+            Y <- model.frame(mod)[, 1]
+            mod.r <- lm(Y ~ 1)
+        }
+        if (!is.element(class(mod.r)[1], c("lm"))) {
+            stop("mod.r must be class lm.")
+        }
+        return(R2.resid.lm(mod, mod.r))
+    }
+    
+    if (class(mod)[1] == "glm") {
+        if (!is.object(mod.r)) {
+            Y <- model.frame(mod)[, 1]
+            mod.r <- glm(Y ~ 1, family = family(mod)[[1]])
+        }
+        if (!is.element(class(mod.r)[1], c("glm"))) {
+            stop("mod.r must be class glm.")
+        }
+        if (family(mod)[[1]] != family(mod.r)[[1]]) {
+            stop("Sorry, but mod and mod.r must be from the same family of distributions.")
+        }
+        if (!is.element(family(mod)[[1]], c("binomial", "poisson"))) {
+            stop("Sorry, but R2.resid only works for family = binomial or poisson.")
+        }
+        
+        return(R2.resid.glm(mod, mod.r, sigma2_d = sigma2_d))
+    }
+    
+    if (class(mod)[1] == "lmerMod") {
+        if (!is.object(mod.r)) {
+            # exists()?
+            Y <- model.frame(mod)[, 1]
+            mod.r <- lm(Y ~ 1)
+        }
+        if (class(mod.r)[1] == "merModLmerTest") 
+            class(mod.r) <- "lmerMod"
+        if (!is.element(class(mod)[1], c("lmerMod", "lm"))) {
+            stop("mod.r must be class lmerMod or lm.")
+        }
+        return(R2.resid.lmerMod(mod, mod.r))
+    }
+    
+    if (class(mod)[1] == "glmerMod") {
+        if (!is.object(mod.r)) {
+            Y <- model.frame(mod)[, 1]
+            mod.r <- glm(Y ~ 1, family = family(mod)[[1]])
+        }
+        if (!is.element(class(mod.r)[1], c("glmerMod", "glm"))) {
+            stop("mod.r must be class glmerMod or glm.")
+        }
+        if (family(mod)[[1]] != family(mod.r)[[1]]) {
+            stop("Sorry, but mod and mod.r must be from the same family of distributions.")
+        }
+        if (!is.element(family(mod)[[1]], c("binomial", "poisson"))) {
+            stop("Sorry, but R2.resid only works for family = binomial or poisson.")
+        }
+        
+        return(R2.resid.glmerMod(mod, mod.r, sigma2_d = sigma2_d))
+    }
+    
+    if (class(mod)[1] == "phylolm") {
+        if (!is.object(phy)) {
+            stop("For phylolm you must provide the phylo object")
+        }
+        if (!is.object(mod.r)) {
+            Y <- mod$y
+            mod.r <- lm(Y ~ 1)
+        }
+        if (!is.element(class(mod.r)[1], c("phylolm", "lm"))) {
+            stop("mod.r must be class phylolm or lm.")
+        }
+        return(R2.resid.phylolm(mod, mod.r, phy))
+    }
+    
+    if (class(mod)[1] == "binaryPGLMM") {
+        if (!is.object(mod.r)) {
+            Y <- mod$y
+            mod.r <- glm(Y ~ 1, family = "binomial")
+        }
+        if (!is.element(class(mod.r)[1], c("binaryPGLMM", "glm"))) {
+            stop("mod.r must be class binaryPGLMM or glm.")
+        }
+        
+        return(R2.resid.binaryPGLMM(mod, mod.r, sigma2_d = sigma2_d))
+    }
 }
 
 R2.resid.lm <- function(mod = NULL, mod.r = NULL) {
-  X <- model.matrix(mod)
-  n <- dim(X)[1]
-  p <- dim(X)[2]
-  
-  X.r <- model.matrix(mod.r)
-  p.r <- dim(X.r)[2]
-  
-  sigma2 <- (n - p)/n * stats::sigma(mod)^2
-  sigma2.r <- (n - p.r)/n * stats::sigma(mod.r)^2
-  R2.resid <- 1 - sigma2/sigma2.r
-  return(R2.resid)
+    X <- model.matrix(mod)
+    n <- dim(X)[1]
+    p <- dim(X)[2]
+    
+    X.r <- model.matrix(mod.r)
+    p.r <- dim(X.r)[2]
+    
+    sigma2 <- (n - p)/n * stats::sigma(mod)^2
+    sigma2.r <- (n - p.r)/n * stats::sigma(mod.r)^2
+    R2.resid <- 1 - sigma2/sigma2.r
+    return(R2.resid)
 }
 
 R2.resid.glm <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
-  mu <- mod$fitted.values
-  Yhat <- family(mod)$linkfun(mu)
-  if (family(mod)[1] == "binomial") {
-    if(is.matrix(model.frame(mod)[,1])){
-      size <- rowSums(model.frame(mod)[,1])
-    }else{
-      size <- 1
+    mu <- mod$fitted.values
+    Yhat <- family(mod)$linkfun(mu)
+    if (family(mod)[1] == "binomial") {
+        if (is.matrix(model.frame(mod)[, 1])) {
+            size <- rowSums(model.frame(mod)[, 1])
+        } else {
+            size <- 1
+        }
+        if (family(mod)[2] == "logit") {
+            if (sigma2_d == "s2w") 
+                sig2e <- exp(mean(log(size/(mu * (1 - mu)))))
+            if (sigma2_d == "NS") 
+                sig2e <- pi^2/3
+            if (sigma2_d == "rNS") 
+                sig2e <- 0.8768809 * pi^2/3
+        } else {
+            if (sigma2_d == "s2w") 
+                sig2e <- exp(mean(log(size * mu * (1 - mu)/dnorm(qnorm(mu))^2)))
+            if (sigma2_d == "NS") 
+                sig2e <- 1
+            if (sigma2_d == "rNS") 
+                sig2e <- 1
+        }
     }
-    if (family(mod)[2] == "logit") {
-      if (sigma2_d == 's2w') sig2e <- exp(mean(log(size/(mu*(1-mu)))))
-      if (sigma2_d == 'NS') sig2e <- pi^2/3
-      if (sigma2_d == "rNS") sig2e <- 0.8768809 * pi^2/3
-    } else {
-      if (sigma2_d == 's2w') sig2e <- exp(mean(log(size*mu*(1-mu)/dnorm(qnorm(mu))^2)))
-      if (sigma2_d == 'NS') sig2e <- 1
-      if (sigma2_d == 'rNS') sig2e <- 1
-    }
-  }
-  if (family(mod)[1] == "poisson") sig2e <- exp(-mean(log(mu)))
-  
-  SSE.resid <- sig2e/(var(Yhat) + sig2e)
-  
-  mu.r <- mod.r$fitted.values
-  Yhat.r <- family(mod.r)$linkfun(mu.r)
-  if (family(mod.r)[1] == "binomial") 
-    if (family(mod.r)[2] == "logit") {
-      if (sigma2_d == 's2w') sig2e.r <- exp(mean(log(size/(mu.r*(1-mu.r)))))
-      if (sigma2_d == 'NS') sig2e.r <- pi^2/3
-      if (sigma2_d == "rNS") sig2e.r <- 0.8768809 * pi^2/3
-    } else {
-      if (sigma2_d == 's2w') sig2e.r <- exp(mean(log(size*mu.r*(1-mu.r)/dnorm(qnorm(mu.r))^2)))
-      if (sigma2_d == 'NS') sig2e.r <- 1
-      if (sigma2_d == 'rNS') sig2e.r <- 1
-    }
-  if (family(mod.r)[1] == "poisson") sig2e.r <- exp(-mean(log(mu.r)))
-  
-  SSE.resid.r <- sig2e.r/(var(Yhat.r) + sig2e.r)
-  
-  R2.resid <- 1 - SSE.resid/SSE.resid.r
-  return(R2.resid[1])
-}
-
-R2.resid.lmerMod <- function(mod = NULL, mod.r = NULL) {
-  X <- model.matrix(mod)
-  n <- dim(X)[1]
-  X.r <- model.matrix(mod.r)
-  p.r <- dim(X.r)[2]
-  
-  vcov <- as.data.frame(lme4::VarCorr(mod))$vcov
-  sigma2 <- vcov[length(vcov)]
-  
-  if (class(mod.r) == "lmerMod") {
-    vcov.r <- as.data.frame(lme4::VarCorr(mod.r))$vcov
-    sigma2.r <- vcov.r[length(vcov.r)]
-  }
-  
-  if (class(mod.r) == "lm") {
-    sigma2.r <- (n - p.r)/n * stats::sigma(mod.r)^2
-  }
-  
-  R2.resid <- 1 - sigma2/sigma2.r
-  return(R2.resid)
-}
-
-R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
-  
-  X <- model.matrix(mod)
-  n <- dim(X)[1]
-  X.r <- model.matrix(mod.r)
-  
-  # full model
-  mu <- fitted(mod)
-  Yhat <- X %*% lme4::fixef(mod)
-  if (family(mod)[1] == "binomial") {
-    if(is.matrix(model.frame(mod)[,1])){
-      size <- rowSums(model.frame(mod)[,1])
-    }else{
-      size <- 1
-    }
-    if (family(mod)[2] == "logit") {
-      if (sigma2_d == 's2w') sig2e <- exp(mean(log(size/(mu*(1-mu)))))
-      if (sigma2_d == 'NS') sig2e <- pi^2/3
-      if (sigma2_d == "rNS") sig2e <- 0.8768809 * pi^2/3
-    } else {
-      if (sigma2_d == 's2w') sig2e <- exp(mean(log(size*mu*(1-mu)/dnorm(qnorm(mu))^2)))
-      if (sigma2_d == 'NS') sig2e <- 1
-      if (sigma2_d == 'rNS') sig2e <- 1
-    }
-  }  
-  if (family(mod)[1] == "poisson") sig2e <- exp(-mean(log(mu)))
-  
-  sig2a <- VarCorr(mod)[[1]][1]
-  nranef <-  length(VarCorr(mod))
-  if(nranef > 1) for(i in 2:nranef) sig2a <- sig2a + VarCorr(mod)[[i]][1]
-  
-  SSE.resid <- sig2e/(var(Yhat) + sig2a + sig2e)
-  
-  # reduced model
-  if (class(mod.r)[1] == "glmerMod") {
-    X.r <- model.matrix(mod.r)
-    mu.r <- fitted(mod.r)
-    Yhat.r <- X.r %*% lme4::fixef(mod.r)
-    if (family(mod.r)[1] == "binomial") 
-      if (family(mod.r)[2] == "logit") {
-        if (sigma2_d == 's2w') sig2e.r <- exp(mean(log(size/(mu.r*(1-mu.r)))))
-        if (sigma2_d == 'NS') sig2e.r <- pi^2/3
-        if (sigma2_d == "rNS") sig2e.r <- 0.8768809 * pi^2/3
-      } else {
-        if (sigma2_d == 's2w') sig2e.r <- exp(mean(log(size*mu.r*(1-mu.r)/dnorm(qnorm(mu.r))^2)))
-        if (sigma2_d == 'NS') sig2e.r <- 1
-       if (sigma2_d == 'rNS') sig2e.r <- 1
-      }
-    if (family(mod.r)[1] == "poisson") sig2e.r <- exp(-mean(log(mu.r)))
+    if (family(mod)[1] == "poisson") 
+        sig2e <- exp(-mean(log(mu)))
     
-    sig2a.r <- VarCorr(mod.r)[[1]][1]
-    nranef.r <-  length(VarCorr(mod.r))
-    if(nranef.r > 1) for(i in 2:nranef.r) sig2a.r <- sig2a.r + VarCorr(mod.r)[[i]][1]
+    SSE.resid <- sig2e/(var(Yhat) + sig2e)
     
-    SSE.resid.r <- sig2e.r/(var(Yhat.r) + sig2a.r + sig2e.r)
-  }
-  
-  if (class(mod.r)[1] == "glm") {
     mu.r <- mod.r$fitted.values
     Yhat.r <- family(mod.r)$linkfun(mu.r)
     if (family(mod.r)[1] == "binomial") 
-      if (family(mod.r)[2] == "logit") {
-        if (sigma2_d == 's2w') sig2e.r <- exp(-mean(log(mu.r*(1-mu.r))))
-        if (sigma2_d == 'NS') sig2e.r <- pi^2/3
-        if (sigma2_d == "rNS") sig2e.r <- 0.8768809 * pi^2/3
-      } else {
-        if (sigma2_d == 's2w') sig2e.r <- exp(mean(log(mu.r*(1-mu.r)/dnorm(qnorm(mu.r))^2)))
-        if (sigma2_d == 'NS') sig2e.r <- 1
-       if (sigma2_d == 'rNS') sig2e.r <- 1
-      }
-    if (family(mod.r)[1] == "poisson") sig2e.r <- exp(-mean(log(mu.r)))
+        if (family(mod.r)[2] == "logit") {
+            if (sigma2_d == "s2w") 
+                sig2e.r <- exp(mean(log(size/(mu.r * (1 - mu.r)))))
+            if (sigma2_d == "NS") 
+                sig2e.r <- pi^2/3
+            if (sigma2_d == "rNS") 
+                sig2e.r <- 0.8768809 * pi^2/3
+        } else {
+            if (sigma2_d == "s2w") 
+                sig2e.r <- exp(mean(log(size * mu.r * (1 - mu.r)/dnorm(qnorm(mu.r))^2)))
+            if (sigma2_d == "NS") 
+                sig2e.r <- 1
+            if (sigma2_d == "rNS") 
+                sig2e.r <- 1
+        }
+    if (family(mod.r)[1] == "poisson") 
+        sig2e.r <- exp(-mean(log(mu.r)))
     
     SSE.resid.r <- sig2e.r/(var(Yhat.r) + sig2e.r)
-  }
-  
-  R2.resid <- 1 - SSE.resid/SSE.resid.r
-  return(R2.resid[1])
+    
+    R2.resid <- 1 - SSE.resid/SSE.resid.r
+    return(R2.resid[1])
+}
+
+R2.resid.lmerMod <- function(mod = NULL, mod.r = NULL) {
+    X <- model.matrix(mod)
+    n <- dim(X)[1]
+    X.r <- model.matrix(mod.r)
+    p.r <- dim(X.r)[2]
+    
+    vcov <- as.data.frame(lme4::VarCorr(mod))$vcov
+    sigma2 <- vcov[length(vcov)]
+    
+    if (class(mod.r) == "lmerMod") {
+        vcov.r <- as.data.frame(lme4::VarCorr(mod.r))$vcov
+        sigma2.r <- vcov.r[length(vcov.r)]
+    }
+    
+    if (class(mod.r) == "lm") {
+        sigma2.r <- (n - p.r)/n * stats::sigma(mod.r)^2
+    }
+    
+    R2.resid <- 1 - sigma2/sigma2.r
+    return(R2.resid)
+}
+
+R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
+    
+    X <- model.matrix(mod)
+    n <- dim(X)[1]
+    X.r <- model.matrix(mod.r)
+    
+    # full model
+    mu <- fitted(mod)
+    Yhat <- X %*% lme4::fixef(mod)
+    if (family(mod)[1] == "binomial") {
+        if (is.matrix(model.frame(mod)[, 1])) {
+            size <- rowSums(model.frame(mod)[, 1])
+        } else {
+            size <- 1
+        }
+        if (family(mod)[2] == "logit") {
+            if (sigma2_d == "s2w") 
+                sig2e <- exp(mean(log(size/(mu * (1 - mu)))))
+            if (sigma2_d == "NS") 
+                sig2e <- pi^2/3
+            if (sigma2_d == "rNS") 
+                sig2e <- 0.8768809 * pi^2/3
+        } else {
+            if (sigma2_d == "s2w") 
+                sig2e <- exp(mean(log(size * mu * (1 - mu)/dnorm(qnorm(mu))^2)))
+            if (sigma2_d == "NS") 
+                sig2e <- 1
+            if (sigma2_d == "rNS") 
+                sig2e <- 1
+        }
+    }
+    if (family(mod)[1] == "poisson") 
+        sig2e <- exp(-mean(log(mu)))
+    
+    sig2a <- VarCorr(mod)[[1]][1]
+    nranef <- length(VarCorr(mod))
+    if (nranef > 1) 
+        for (i in 2:nranef) sig2a <- sig2a + VarCorr(mod)[[i]][1]
+    
+    SSE.resid <- sig2e/(var(Yhat) + sig2a + sig2e)
+    
+    # reduced model
+    if (class(mod.r)[1] == "glmerMod") {
+        X.r <- model.matrix(mod.r)
+        mu.r <- fitted(mod.r)
+        Yhat.r <- X.r %*% lme4::fixef(mod.r)
+        if (family(mod.r)[1] == "binomial") 
+            if (family(mod.r)[2] == "logit") {
+                if (sigma2_d == "s2w") 
+                  sig2e.r <- exp(mean(log(size/(mu.r * (1 - mu.r)))))
+                if (sigma2_d == "NS") 
+                  sig2e.r <- pi^2/3
+                if (sigma2_d == "rNS") 
+                  sig2e.r <- 0.8768809 * pi^2/3
+            } else {
+                if (sigma2_d == "s2w") 
+                  sig2e.r <- exp(mean(log(size * mu.r * (1 - mu.r)/dnorm(qnorm(mu.r))^2)))
+                if (sigma2_d == "NS") 
+                  sig2e.r <- 1
+                if (sigma2_d == "rNS") 
+                  sig2e.r <- 1
+            }
+        if (family(mod.r)[1] == "poisson") 
+            sig2e.r <- exp(-mean(log(mu.r)))
+        
+        sig2a.r <- VarCorr(mod.r)[[1]][1]
+        nranef.r <- length(VarCorr(mod.r))
+        if (nranef.r > 1) 
+            for (i in 2:nranef.r) sig2a.r <- sig2a.r + VarCorr(mod.r)[[i]][1]
+        
+        SSE.resid.r <- sig2e.r/(var(Yhat.r) + sig2a.r + sig2e.r)
+    }
+    
+    if (class(mod.r)[1] == "glm") {
+        mu.r <- mod.r$fitted.values
+        Yhat.r <- family(mod.r)$linkfun(mu.r)
+        if (family(mod.r)[1] == "binomial") 
+            if (family(mod.r)[2] == "logit") {
+                if (sigma2_d == "s2w") 
+                  sig2e.r <- exp(-mean(log(mu.r * (1 - mu.r))))
+                if (sigma2_d == "NS") 
+                  sig2e.r <- pi^2/3
+                if (sigma2_d == "rNS") 
+                  sig2e.r <- 0.8768809 * pi^2/3
+            } else {
+                if (sigma2_d == "s2w") 
+                  sig2e.r <- exp(mean(log(mu.r * (1 - mu.r)/dnorm(qnorm(mu.r))^2)))
+                if (sigma2_d == "NS") 
+                  sig2e.r <- 1
+                if (sigma2_d == "rNS") 
+                  sig2e.r <- 1
+            }
+        if (family(mod.r)[1] == "poisson") 
+            sig2e.r <- exp(-mean(log(mu.r)))
+        
+        SSE.resid.r <- sig2e.r/(var(Yhat.r) + sig2e.r)
+    }
+    
+    R2.resid <- 1 - SSE.resid/SSE.resid.r
+    return(R2.resid[1])
 }
 
 R2.resid.phylolm <- function(mod = NULL, mod.r = NULL, phy = NULL) {
-  
-  X <- mod$X
-  n <- dim(X)[1]
-  
-  if (!mod$model %in% c("lambda", "OUrandomRoot", "OUfixedRoot", "BM", "kappa", "delta", "EB", "trend")) {
-    stop("evolution model not supported yet")
-  }
-  
-  phy.f <- transf_phy(mod, phy)
-  
-  scal <- sum(phy.f$edge.length)/n
-  sigma2 <- mod$sigma2
-  
-  if (class(mod.r) == "phylolm") {
-    if (!mod.r$model %in% c("lambda", "OUrandomRoot", "OUfixedRoot", "BM", "kappa", "delta", "EB", "trend")) {
-      stop("evolution model not supported yet")
+    
+    X <- mod$X
+    n <- dim(X)[1]
+    
+    if (!mod$model %in% c("lambda", "OUrandomRoot", "OUfixedRoot", "BM", "kappa", 
+        "delta", "EB", "trend")) {
+        stop("evolution model not supported yet")
     }
     
-    X.r <- mod.r$X
-    p.r <- dim(X.r)[2]
+    phy.f <- transf_phy(mod, phy)
     
-    phy.r <- transf_phy(mod.r, phy)
+    scal <- sum(phy.f$edge.length)/n
+    sigma2 <- mod$sigma2
     
-    scal.r <- sum(phy.r$edge.length)/n
-    sigma2.r <- mod.r$sigma2
-  }
-  
-  if (class(mod.r) == "lm") {
-    X.r <- model.matrix(mod.r)
-    p.r <- dim(X.r)[2]
-    scal.r <- 1
-    sigma2.r <- (n - p.r)/n * stats::sigma(mod.r)^2
-  }
-  
-  R2.resid <- 1 - (scal * sigma2)/(scal.r * sigma2.r)
-  return(R2.resid)
+    if (class(mod.r) == "phylolm") {
+        if (!mod.r$model %in% c("lambda", "OUrandomRoot", "OUfixedRoot", "BM", "kappa", 
+            "delta", "EB", "trend")) {
+            stop("evolution model not supported yet")
+        }
+        
+        X.r <- mod.r$X
+        p.r <- dim(X.r)[2]
+        
+        phy.r <- transf_phy(mod.r, phy)
+        
+        scal.r <- sum(phy.r$edge.length)/n
+        sigma2.r <- mod.r$sigma2
+    }
+    
+    if (class(mod.r) == "lm") {
+        X.r <- model.matrix(mod.r)
+        p.r <- dim(X.r)[2]
+        scal.r <- 1
+        sigma2.r <- (n - p.r)/n * stats::sigma(mod.r)^2
+    }
+    
+    R2.resid <- 1 - (scal * sigma2)/(scal.r * sigma2.r)
+    return(R2.resid)
 }
 
 R2.resid.binaryPGLMM <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
-  
-  y <- mod$y
-  n <- length(y)
-  Yhat <- mod$X %*% mod$B
-  phyV <- mod$VCV
-  s2 <- mod$s2
-  scal <- prod(diag(s2 * phyV))^(1/n)
-  mu <- mod$mu
-  Yhat <- log(mu/(1 - mu))
-  if (sigma2_d == 's2w') sig2e <- exp(-mean(log(mu*(1-mu))))
-  if (sigma2_d == 'NS') sig2e <- pi^2/3
-  if (sigma2_d == "rNS") sig2e <- 0.8768809 * pi^2/3
-
-  SSE.resid <- sig2e/(var(Yhat) + scal + sig2e)
-  
-  # reduced model
-  if (class(mod.r)[1] == "binaryPGLMM") {
-    Yhat.r <- mod.r$X %*% mod.r$B
-    phyV.r <- mod.r$VCV
-    s2.r <- mod.r$s2
-    scal.r <- prod(diag(s2.r * phyV.r))^(1/n)
-    mu.r <- mod.r$mu
-    Yhat.r <- log(mu.r/(1 - mu.r))
-    if (sigma2_d == 's2w') sig2e.r <- exp(-mean(log(mu.r*(1-mu.r))))
-    if (sigma2_d == 'NS') sig2e.r <- pi^2/3
-    if (sigma2_d == "rNS") sig2e.r <- 0.8768809 * pi^2/3
     
-    SSE.resid.r <- sig2e.r/(var(Yhat.r) + scal.r + sig2e.r)
-  }
-  
-  if (class(mod.r)[1] == "glm") {
-    mu.r <- mod.r$fitted.values
-    Yhat.r <- log(mu.r/(1 - mu.r))
-    if (sigma2_d == 's2w') sig2e.r <- exp(-mean(log(mu.r*(1-mu.r))))
-    if (sigma2_d == 'NS') sig2e.r <- pi^2/3
-    if (sigma2_d == "rNS") sig2e.r <- 0.8768809 * pi^2/3
-
-    SSE.resid.r <- sig2e.r/(var(Yhat.r) + sig2e.r)
-  }
-  
-  R2.resid <- 1 - SSE.resid/SSE.resid.r
-  
-  return(R2.resid[1])
+    y <- mod$y
+    n <- length(y)
+    Yhat <- mod$X %*% mod$B
+    phyV <- mod$VCV
+    s2 <- mod$s2
+    scal <- prod(diag(s2 * phyV))^(1/n)
+    mu <- mod$mu
+    Yhat <- log(mu/(1 - mu))
+    if (sigma2_d == "s2w") 
+        sig2e <- exp(-mean(log(mu * (1 - mu))))
+    if (sigma2_d == "NS") 
+        sig2e <- pi^2/3
+    if (sigma2_d == "rNS") 
+        sig2e <- 0.8768809 * pi^2/3
+    
+    SSE.resid <- sig2e/(var(Yhat) + scal + sig2e)
+    
+    # reduced model
+    if (class(mod.r)[1] == "binaryPGLMM") {
+        Yhat.r <- mod.r$X %*% mod.r$B
+        phyV.r <- mod.r$VCV
+        s2.r <- mod.r$s2
+        scal.r <- prod(diag(s2.r * phyV.r))^(1/n)
+        mu.r <- mod.r$mu
+        Yhat.r <- log(mu.r/(1 - mu.r))
+        if (sigma2_d == "s2w") 
+            sig2e.r <- exp(-mean(log(mu.r * (1 - mu.r))))
+        if (sigma2_d == "NS") 
+            sig2e.r <- pi^2/3
+        if (sigma2_d == "rNS") 
+            sig2e.r <- 0.8768809 * pi^2/3
+        
+        SSE.resid.r <- sig2e.r/(var(Yhat.r) + scal.r + sig2e.r)
+    }
+    
+    if (class(mod.r)[1] == "glm") {
+        mu.r <- mod.r$fitted.values
+        Yhat.r <- log(mu.r/(1 - mu.r))
+        if (sigma2_d == "s2w") 
+            sig2e.r <- exp(-mean(log(mu.r * (1 - mu.r))))
+        if (sigma2_d == "NS") 
+            sig2e.r <- pi^2/3
+        if (sigma2_d == "rNS") 
+            sig2e.r <- 0.8768809 * pi^2/3
+        
+        SSE.resid.r <- sig2e.r/(var(Yhat.r) + sig2e.r)
+    }
+    
+    R2.resid <- 1 - SSE.resid/SSE.resid.r
+    
+    return(R2.resid[1])
 }
