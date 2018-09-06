@@ -1,0 +1,32 @@
+---
+title: '`rr2`: An R package to calculate R^2^s for regression models'
+tags:
+  - R
+  - R^2^
+  - GLMM
+  - phylogenetic regression
+  - models with correlated data
+authors:
+  - name: Anthony R. Ives
+    affiliation: 1
+  - name: Daijiang Li
+    orcid: 0000-0002-0925-3421
+    affiliation: 2
+affiliations:
+ - name: Department of Integrative Biology, UW-Madison, Madison, WI 53706
+   index: 1
+ - name: Department of Wildlife Ecology and Conservation, University of Florida, Gainesville, FL 32611
+   index: 2
+date: 6 September 2018
+bibliography: paper.bib
+---
+
+# Summary
+
+Reporting the variance explained by a model (R^2^) is common in most publications. However, conceptual problems exist in defining R^2^ when the model includes correlated data. @ives2018r2s proposed three R^2^s (R^2^<sub>lik</sub>, R^2^<sub>resid</sub>, and R^2^<sub>pred</sub>) for a variety of regression models that include correlation among data such as linear mixed models (LMMs), generalized linear mixed models (GLMMs), and phylogenetic regressions [PGLMMs, @ives2011generalized; @ives2014phylogenetic]. These three R^2^s can also be used as partial R^2^s to compare the contribution of predictor variables to the fit of models.
+
+The `rr2` package provides R functions to implement the R^2^s calculation methods propsed by @ives2018r2s. The main function is `R2()`, which calculates all three R^2^s by default with arguments available to select which R^2^(s) to calculate by users. Alternatively, individual R^2^ can be calculated with corresponding functions (`R2_lik()`, `R2_resid()`, and `R2_pred()`). Supported models include linear models (`lm`), generalized linear models (`glm`), linear mixed models (`lmerMod`), generlaized linear mixed models (`glmerMod`), phylogenetic linear models (`phylolm`), phylogenetic generalized linear models (`phyloglm`), and phylogenetic generalized linear mixed models (`binaryPGLMM` and `communityPGLMM`). 
+
+The R package `rr2` is available on [Github](https://github.com/arives/rr2), where issues can be openned.
+
+# Reference
