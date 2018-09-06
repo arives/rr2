@@ -29,7 +29,8 @@
 #' nsample <- 10
 #' n <- p1 * nsample
 #' 
-#' d <- data.frame(x1 = 0, x2 = 0, y = 0, u1 = rep(1:p1, each = nsample), u2 = rep(1:p1, times = nsample))
+#' d <- data.frame(x1 = 0, x2 = 0, y = 0, u1 = rep(1:p1, each = nsample), 
+#'                 u2 = rep(1:p1, times = nsample))
 #' d$u1 <- as.factor(d$u1)
 #' d$u2 <- as.factor(d$u2)
 #' 

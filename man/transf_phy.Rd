@@ -9,7 +9,7 @@ transf_phy(phylolmMod, phy)
 \arguments{
 \item{phylolmMod}{A fitted phylolm model.}
 
-\item{phy}{A phylogeny with class "phylo".}
+\item{phy}{A phylogeny with class 'phylo'.}
 }
 \value{
 A transformed phylogeny.

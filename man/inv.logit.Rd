@@ -7,7 +7,7 @@
 inv.logit(x)
 }
 \arguments{
-\item{x}{a vector of numeric values}
+\item{x}{A numeric vector.}
 }
 \description{
 Convert numeric values between 0 and 1.
