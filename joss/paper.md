@@ -29,4 +29,8 @@ The `rr2` package provides R functions to implement the R^2^s propsed by @ives20
 
 The R package `rr2` is available on [Github](https://github.com/arives/rr2), where issues can be openned.
 
-# Reference
+# Acknowledgments
+
+This work was funded by NSF grants NSF/NASA-DEB-Dimensions 1240804 and DEB-LTREB-1052160.
+
+# References
