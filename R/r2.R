@@ -1,3 +1,12 @@
+#' rr2: An R package to calculate R2s for regression models
+#' 
+#' The rr2 package provides methods to calculate R2 for models with correlated errors, 
+#' including Phylogenetic GLS, Phylogenetic Logistic Regression, LMMs, GLMM, and PGLMM.
+#' 
+#' @docType package
+#' @name rr2
+NULL
+
 #' Calculate R2.lik, R2.resid, and R2.pred
 #'
 #' This is a wrapper for calculating three R2s -- R2.lik, R2.resid, and R2.pred -- for LMM, GLMM, PGLM, and PGLMM. Note that the individual functions \code{R2.lik()}, \code{R2.resid()}, and \code{R2.pred()} can be called separately. This is preferrable if you are only interested in one R2; for example, for \code{phylolm()} called from `R2` you need to specify 'phy' (phylo object for the phylogeny), while \code{R2.lik()} does not require this.
