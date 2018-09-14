@@ -26,9 +26,9 @@ bibliography: paper.bib
 
 Reporting the variance explained by a model (an $R^2$) is common for many simple statistical tests. However, conceptual challenges exist in defining $R^2$ for models that include correlated data. @ives2018r2s proposed three $R^2$s ($R^2_{lik}$, $R^2_{resid}$, and $R^2_{pred}$) for a variety of regression models that include correlation among data such as linear mixed models (LMMs), generalized linear mixed models (GLMMs), and phylogenetic regressions [PGLMMs, @ives2011generalized; @ives2014phylogenetic]. These three $R^2$s can also be used as partial $R^2$s to compare the contributions of predictor variables (fixed effects) and/or correlation structures (random effects) to the fit of the models.
 
-The `rr2` package provides R functions to implement the $R^2$s propsed by @ives2018r2s. The main function is `R2()`, which calculates all three $R^2$s by default, with arguments available to select which $R^2$(s) to calculate by users. Alternatively, individual $R^2$ can be calculated with corresponding functions (`R2_lik()`, `R2_resid()`, and `R2_pred()`). Supported models include linear models (`lm`), generalized linear models (`glm`), linear mixed models (`lmerMod`), generlaized linear mixed models (`glmerMod`), phylogenetic linear models (`phylolm`), phylogenetic generalized linear models (`phyloglm`), and phylogenetic generalized linear mixed models (`binaryPGLMM` and `communityPGLMM`). 
+The `rr2` package provides R functions to implement the $R^2$s propsed by @ives2018r2s. The main function is `R2()`, which calculates all three $R^2$s by default, with arguments available to select which $R^2$(s) to calculate by users. Alternatively, individual $R^2$s can be calculated with corresponding functions (`R2_lik()`, `R2_resid()`, and `R2_pred()`). Supported models include linear models (`lm`), generalized linear models (`glm`), linear mixed models (`lmerMod`), generalized linear mixed models (`glmerMod`), phylogenetic linear models (`phylolm`), and phylogenetic generalized linear mixed models (`binaryPGLMM`, `phyloglm`, and `communityPGLMM`). 
 
-The R package `rr2` is available on [Github](https://github.com/arives/rr2), where issues can be openned.
+The R package `rr2` is available on [Github](https://github.com/arives/rr2), where issues can be opened.
 
 # Acknowledgments
 
