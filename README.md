@@ -7,7 +7,7 @@ correlated errors including classes: ‘lmerMod’ (LMM), ‘glmerMod’ (GLMM),
 ‘phylolm’ (Phylogenetic GLS), and ‘binaryPGLMM/phyloglm/communityPGLMM’
 (Phylogenetic Logistic Regression). Detailed technical descriptions can
 be found in [Ives 2017,
-preprint](http://www.biorxiv.org/content/early/2017/05/30/144170).
+preprint](https://www.biorxiv.org/content/early/2017/07/26/144170).
 
 Installation
 ============
