@@ -8,6 +8,7 @@ tags:
   - models with correlated data
 authors:
   - name: Anthony R. Ives
+  orcid: 0000-0001-9375-9523
     affiliation: 1
   - name: Daijiang Li
     orcid: 0000-0002-0925-3421
