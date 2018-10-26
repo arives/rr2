@@ -269,7 +269,14 @@ R2.pred.lm <- function(mod = NA, mod.r = NA) {
     return(R2.pred)
 }
 
-R2.pred.glm <- R2.pred.lm
+R2.pred.glm <- function(mod = NA, mod.r = NA) {
+  Y <- model.frame(mod)[, 1]
+  if(is.matrix(Y)) Y <- Y[,1]/rowSums(Y)
+  SSE.pred <- var(Y - stats::fitted(mod))
+  SSE.pred.r <- var(Y - stats::fitted(mod.r))
+  R2.pred <- 1 - SSE.pred/SSE.pred.r
+  return(R2.pred)
+}
 
 R2.pred.lmerMod <- function(mod = NA, mod.r = NA) {
     Y <- model.frame(mod)[, 1]
@@ -279,7 +286,14 @@ R2.pred.lmerMod <- function(mod = NA, mod.r = NA) {
     return(R2.pred)
 }
 
-R2.pred.glmerMod <- R2.pred.lmerMod
+R2.pred.glmerMod <- function(mod = NA, mod.r = NA) {
+  Y <- model.frame(mod)[, 1]
+  if(is.matrix(Y)) Y <- Y[,1]/rowSums(Y)
+  SSE.pred <- var(Y - fitted(mod))
+  SSE.pred.r <- var(Y - stats::fitted(mod.r))
+  R2.pred <- 1 - SSE.pred/SSE.pred.r
+  return(R2.pred)
+}
 
 R2.pred.phylolm <- function(mod = NULL, mod.r = NULL, phy = NULL) {
     Y <- mod$y
