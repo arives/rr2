@@ -1,14 +1,15 @@
 Package: rr2
 Type: Package
 Title: R2s for Regression Models
-Version: 0.3.0
+Version: 1.0.0
 Authors@R: c(
     person("Anthony", "Ives", , "arives@wisc.edu", c("aut", "cre")),
     person("Daijiang", "Li", , "daijianglee@gmail.com", role = "ctb"))
 Description: Three methods to calculate R2 for models
-    with correlated errors, including Phylogenetic GLS, Phylogenetic 
-    Logistic Regression, LMMs, and GLMM. See details in Ives preprint
-    at biorxiv (https://doi.org/10.1101/144170).
+    with correlated errors, including Phylogenetic GLS, 
+    Phylogenetic Logistic Regression, Linear Mixed Models (LMMs), and 
+    Generalized Linear Mixed Models (GLMMs). 
+    See details in Ives 2018 <doi:10.1093/sysbio/syy060>
 License: GPL-3
 Depends: R (>= 3.0), stats
 Encoding: UTF-8
