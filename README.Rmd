@@ -137,6 +137,10 @@ z.v.glmm <- glm(y_binary ~ x1, data = d, family = "binomial")
 R2(mod = z.f.glmm, mod.r = z.x.glmm)
 R2(mod = z.f.glmm, mod.r = z.v.glmm)
 R2(mod = z.f.glmm)
+# specify sigma2_d for R2.resid()
+R2.resid(mod = z.f.glmm, mod.r = z.v.glmm, sigma2_d = "s2w")
+R2.resid(mod = z.f.glmm, mod.r = z.v.glmm, sigma2_d = "NS") 
+R2.resid(mod = z.f.glmm, mod.r = z.v.glmm, sigma2_d = "rNS")
 ```
 
 ## PGLS 
