@@ -9,7 +9,7 @@ Description: Three methods to calculate R2 for models
     with correlated errors, including Phylogenetic GLS, 
     Phylogenetic Logistic Regression, Linear Mixed Models (LMMs), and 
     Generalized Linear Mixed Models (GLMMs). 
-    See details in Ives 2018 <doi:10.1093/sysbio/syy060>
+    See details in Ives 2018 <doi:10.1093/sysbio/syy060>.
 License: GPL-3
 Depends: R (>= 3.0), stats
 Encoding: UTF-8
