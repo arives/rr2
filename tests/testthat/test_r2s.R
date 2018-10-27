@@ -48,17 +48,12 @@ d$y_phy_binary <- rbinom(n = n, size = 1, prob = rr2::inv.logit(b1 * d$x1 + e))
 # library(dplyr)
 # comm = phyr::comm_a
 # comm$site = row.names(comm)
-# dat = tidyr::gather(comm, key = "sp", value = "freq", -site) %>% 
-#   dplyr::left_join(phyr::envi, by = "site") %>% 
+# dat = tidyr::gather(comm, key = "sp", value = "freq", -site) %>%
+#   dplyr::left_join(phyr::envi, by = "site") %>%
 #   dplyr::left_join(phyr::traits, by = "sp")
 # dat$pa = as.numeric(dat$freq > 0)
 
-# test_that("R2 functions do not work with lm", {
-#     z.lm = lm(y_re_intercept ~ x1 + x2, data = d)
-#     expect_error(R2.lik(z.lm), "mod must be class one of classes lmerMod, glmerMod, phylolm, phyloglm.")
-# })
-
-test_that("when missing mod.r, the functions will automatically creat one", {
+test_that("when missing mod.r, the functions will automatically create one", {
   # LM
   z.f <- lm(y_re_intercept ~ x1 + x2, data = d)
   z.0 <- lm(y_re_intercept ~ 1, data = d)
@@ -82,7 +77,7 @@ test_that("when missing mod.r, the functions will automatically creat one", {
                R2(mod = z.f.glmm))
 })
 
-test_that("when missing mod.r, the functions will automatically creat one, long-run analyses", {
+test_that("when missing mod.r, the functions will automatically create one, long-run analyses", {
   testthat::skip_on_cran() # don't run on CRAN since these are time consuming
   
   # PGLS
@@ -120,9 +115,10 @@ test_that("when missing mod.r, the functions will automatically creat one, long-
   expect_equal(t11, t12)
   
   # # communityPGLMM
-  # mod <- phyr::communityPGLMM(freq ~ 1 + shade + (1|sp__) + (1|site) + (1|sp__@site), 
+  # mod <- phyr::communityPGLMM(freq ~ 1 + shade + (1|sp__) + (1|site) + (1|sp__@site),
   #                                           dat, tree = phyr::phylotree, REML = F)
   # mod.r <- lm(freq ~ 1, dat)
+  # expect_message(R2(mod, mod.r))
   # expect_equal(R2(mod, mod.r), R2(mod))
 })
 
