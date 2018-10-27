@@ -162,7 +162,7 @@ R2.pred(z.f)
 
 }
 \references{
-Ives A. in press. R2s for Correlated Data: Phylogenetic Models, LMMs, and GLMMs. Systematic Biology.
+Ives A. 2018. R2s for Correlated Data: Phylogenetic Models, LMMs, and GLMMs. Systematic Biology. <doi:10.1093/sysbio/syy060>
 }
 \seealso{
 MuMIn, lme4, ape, phylolm, pez
