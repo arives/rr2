@@ -123,11 +123,41 @@ head(d)
 
 Then, let’s fit some models and calculate their R<sup>2</sup>s.
 
+LM
+--
+
+``` r
+library(rr2)
+z.f.lm <- lm(y_re_intercept ~ x1 + x2, data = d)
+z.x.lm <- lm(y_re_intercept ~ x1, data = d)
+z.0.lm <- lm(y_re_intercept ~ 1, data = d)
+
+R2(mod = z.f.lm, mod.r = z.x.lm)
+```
+
+    ##    R2_lik  R2_resid   R2_pred 
+    ## 0.2473776 0.2473776 0.2473776
+
+``` r
+partialR2(mod = z.f.lm, mod.r = z.x.lm)
+```
+
+    ## [1] 0.2473776
+
+``` r
+partialR2adj(mod = z.f.lm, mod.r = z.x.lm)
+```
+
+    ## $R2
+    ## [1] 0.2473776
+    ## 
+    ## $R2.adj
+    ## [1] 0.4982517
+
 LMM
 ---
 
 ``` r
-library(rr2)
 z.f.lmm <- lme4::lmer(y_re_intercept ~ x1 + x2 + (1 | u1) + (1 | u2), data = d, REML = F)
 z.x.lmm <- lme4::lmer(y_re_intercept ~ x1 + (1 | u1) + (1 | u2), data = d, REML = F)
 z.v.lmm <- lme4::lmer(y_re_intercept ~ 1 + (1 | u2), data = d, REML = F)
@@ -212,6 +242,9 @@ R2(mod = z.f.pgls, phy = phy)
 Phylogenetic Logistic Regression
 --------------------------------
 
+*Note*: we modified `ape::binaryPGLMM` to return necessary components
+for `rr2::R2()`.
+
 ``` r
 z.f.plog <- rr2::binaryPGLMM(y_phy_binary ~ x1, data = d, phy = phy)
 z.x.plog <- rr2::binaryPGLMM(y_phy_binary ~ 1, data = d, phy = phy)
@@ -256,6 +289,63 @@ R2.lik(z.f.plog2, z.x.plog2)
 ```
 
     ## [1] 0.3853273
+
+Contributions of predictors
+===========================
+
+We can use `rr2::R2()` to calculate partial R<sup>2</sup>s and compare
+contributions of different predictors. Here is an example using
+`phylolm::phyloglm()`. The same comparisons can be also applied to other
+types of models.
+
+``` r
+z.f <- phylolm::phyloglm(y_phy_binary ~ x1 + x2, data = d, start.alpha = 1, phy = phy)
+z.r1 <- phylolm::phyloglm(y_phy_binary ~ x1, data = d, start.alpha = 1, phy = phy)
+z.r2 <- phylolm::phyloglm(y_phy_binary ~ x2, data = d, start.alpha = 1, phy = phy)
+# total R2
+R2(z.f)
+```
+
+    ## Models of class phyloglm only have R2.lik method
+
+    ##    R2_lik 
+    ## 0.4825879
+
+``` r
+# contribution of x1
+R2(z.f, z.r2)
+```
+
+    ## Models of class phyloglm only have R2.lik method
+
+    ##    R2_lik 
+    ## 0.3877523
+
+``` r
+# contribution of x2
+R2(z.f, z.r1)
+```
+
+    ## Models of class phyloglm only have R2.lik method
+
+    ##      R2_lik 
+    ## 0.004148668
+
+It is also possible to estimate the “contribution” of correlation
+structrues in the model. For the above example, we can replace the
+phylogeny with a star phylogeny and then compare the R<sup>2</sup>s of
+the two models.
+
+``` r
+# see the first chunk R code for the build of phy.x, a star phylogeny
+z.r3 <- phylolm::phyloglm(y_phy_binary ~ x1 + x2, data = d, start.alpha = 1, phy = phy.x)
+R2(z.f, z.r3)
+```
+
+    ## Models of class phyloglm only have R2.lik method
+
+    ##    R2_lik 
+    ## 0.3124863
 
 Citation
 ========

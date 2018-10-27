@@ -41,7 +41,8 @@ partialR2 <- function(mod, mod.r) {
 #' @param df.r Degree of freedom of the reduced \code{mod.r}.
 #' @return A list of both R2 and adjusted R2 , the latter is not necessary to be between 0 and 1.
 #' @export
-partialR2adj <- function(mod, df.f, mod.r, df.r) {
+partialR2adj <- function(mod, df.f = summary(mod)$df[1], 
+                         mod.r, df.r = summary(mod.r)$df[1]) {
     anova.full <- anova(mod)
     anova.reduced <- anova(mod.r)
     
