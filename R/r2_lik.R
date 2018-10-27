@@ -17,7 +17,7 @@
 #' 
 #' @seealso MuMIn, lme4, ape, phylolm, pez
 #' @author Anthony R. Ives
-#' @references Ives A. in press. R2s for Correlated Data: Phylogenetic Models, LMMs, and GLMMs. Systematic Biology.
+#' @references Ives A. 2018. R2s for Correlated Data: Phylogenetic Models, LMMs, and GLMMs. Systematic Biology. <doi:10.1093/sysbio/syy060>
 #' 
 #' @examples library(ape)
 #' library(phylolm)
