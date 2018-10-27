@@ -25,7 +25,7 @@ devtools::install_github("arives/rr2")
 
 # Package structure
 
-This package has three main functions: `R2.resid()`, `R2.lik()`, and `R2.pred()`. You can use them individually in the form of, e.g., `R2.resid(mod, mod.r)` where `mod` is the full model and `mod.r` is the reduce model for partial R2s. If you do not include the reduced model `mod.r`, then the appropriate model with just the intercept is used to give the total R^2^. When using `R2.resid` and `R2.pred` with PGLS, you need to include the phylo object containing a phylogenetic tree, e.g., `R2.resid(mod, mod.r, phy = phy)`. 
+This package has three main functions: `R2.resid()`, `R2.lik()`, and `R2.pred()`. You can use them individually in the form of, e.g., `R2.resid(mod, mod.r)` where `mod` is the full model and `mod.r` is the reduced model for partial R2s. If you do not include the reduced model `mod.r`, then the appropriate model with just the intercept is used to give the total R^2^. When using `R2.resid` and `R2.pred` with PGLS, you need to include the phylo object containing a phylogenetic tree, e.g., `R2.resid(mod, mod.r, phy = phy)`. 
 
 You can calculate all three R^2^s at the same time with `R2(mod, mod.r)`. You can also specify which R^2^(s) to calculate within this function by turning off unwanted methods, e.g., `R2(mod, mod.r, resid = FALSE)` or `R2(mod, mod.r, pred = FALSE)`. 
 
@@ -163,5 +163,11 @@ R2.lik(z.f.plog2, z.x.plog2)
 
 Please cite the following paper if you find this package useful:
 
-> Anthony Ives. 2017. R2s for Correlated Data: Phylogenetic Models, LMMs, and GLMMs. bioRxiv 144170. doi: <https://doi.org/10.1101/144170>
+> [Anthony Ives. 2018. R2s for Correlated Data: Phylogenetic Models, LMMs, and GLMMs. Systematic Biology. syy060](https://doi.org/10.1093/sysbio/syy060)
 
+# Contributing and Contact Information
+
+Contributions are welcome. You can either provide comments and feedback by filing an issue on Github [here](https://github.com/arives/rr2/issues) or making pull requests. It may be easier if you first open 
+an issue outlining what you will do in the pull request.
+
+Questions about the package can also be posted as issues on Github.
