@@ -165,7 +165,7 @@ Please cite the following paper if you find this package useful:
 
 > [Anthony Ives. 2018. R2s for Correlated Data: Phylogenetic Models, LMMs, and GLMMs. Systematic Biology. syy060](https://doi.org/10.1093/sysbio/syy060)
 
-# Contributing and Contact Information
+# Contributing
 
 Contributions are welcome. You can either provide comments and feedback by filing an issue on Github [here](https://github.com/arives/rr2/issues) or making pull requests. It may be easier if you first open 
 an issue outlining what you will do in the pull request.
