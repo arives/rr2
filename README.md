@@ -218,6 +218,25 @@ R2(mod = z.f.glmm)
     ##    R2_lik  R2_resid   R2_pred 
     ## 0.2406380 0.3659939 0.3792381
 
+``` r
+# specify sigma2_d for R2.resid()
+R2.resid(mod = z.f.glmm, mod.r = z.v.glmm, sigma2_d = "s2w")
+```
+
+    ## [1] 0.3404476
+
+``` r
+R2.resid(mod = z.f.glmm, mod.r = z.v.glmm, sigma2_d = "NS") 
+```
+
+    ## [1] 0.4246935
+
+``` r
+R2.resid(mod = z.f.glmm, mod.r = z.v.glmm, sigma2_d = "rNS")
+```
+
+    ## [1] 0.4553596
+
 PGLS
 ----
 
