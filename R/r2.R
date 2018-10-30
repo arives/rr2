@@ -24,13 +24,13 @@ NULL
 
 #' Calculate R2.lik, R2.resid, and R2.pred
 #'
-#' This is a wrapper for calculating three R2s -- R2.lik, R2.resid, and R2.pred -- for LMM, GLMM, PGLM, and PGLMM. Note that the individual functions \code{R2.lik()}, \code{R2.resid()}, and \code{R2.pred()} can be called separately. This is preferrable if you are only interested in one R2; for example, for \code{phylolm()} called from `R2` you need to specify 'phy' (phylo object for the phylogeny), while \code{R2.lik()} does not require this.
+#' This is a wrapper for calculating three R2s -- R2.lik, R2.resid, and R2.pred -- for LMMs and GLMMs, and phylogenetic LMMs (PLMMs) and GLMMs (PGLMMs). Note that the individual functions \code{R2.lik()}, \code{R2.resid()}, and \code{R2.pred()} can be called separately. This is preferrable if you are only interested in one R2; for example, for \code{phylolm()} called from `R2` you need to specify 'phy' (phylo object for the phylogeny), while \code{R2.lik()} does not require this.
 #' 
 #' Details about the methods are provided under the separate functions for \code{R2.lik()}, \code{R2.resid()}, and \code{R2.pred()}. There are also many worked examples. 
 #'   
 #' @param mod A regression model with one of the following classes: 'lm', 'glm', lmerMod', glmerMod', 'phylolm', 'binaryPGLMM', or 'communityPGLMM'.
 #' @param mod.r A reduced model; if not provided, the total R2 will be given by setting 'mod.r' to the model corresponding to 'mod' with the intercept as the only predictor.
-#' @param phy The phylogeny for phylogenetic models (as a 'phylo' object), which is not required to be specified for \code{R2.lik()}.
+#' @param phy The phylogeny for phylogenetic models (as a 'phylo' object), which is not required to be specified for \code{R2.lik()} of non-phylogenetic models.
 #' @param sigma2_d Distribution-specific variance σ2d (see Details) used in \code{R2.resid()}. For binomial GLMs, GLMMs and PGLMMs with logit link functions, options are c('s2w', 'NS', 'rNS'). For binomial GLMs, GLMMs and PGLMMs with probit link functions, options are c('s2w', 'NS'). Other families use 's2w'.
 #' @param lik Whether to calculate R2.lik; default is TRUE.
 #' @param resid Whether to calculate R2.resid; default is TRUE.
@@ -98,7 +98,7 @@ NULL
 #' R2(z.f, z.v)
 #' R2(z.f)
 #' 
-#' # These give different results for R2.resid
+#' # These give different results for R2.resid.
 #' R2(z.f, sigma2_d = 's2w')
 #' R2(z.f, sigma2_d = 'NS')
 #' R2(z.f, sigma2_d = 'rNS')
@@ -173,21 +173,21 @@ R2 <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = c("s2w", "NS", "
     if (any(class(mod) %in% "phyloglm")) {
         resid <- FALSE
         pred <- FALSE
-        message("Models of class phyloglm only have R2.lik method")
+        message("Models of class phyloglm only have R2.lik method.")
     }
     
     # gaussian communityPGLMM only have R2.lik method
     if (any(class(mod) %in% "communityPGLMM")) {
         if (mod$family == "gaussian") {
             resid <- FALSE
-            message("Models of class communityPGLMM (gaussian) do not have R2.resid method")
+            message("Models of class communityPGLMM (gaussian) do not have R2.resid method.")
         }
     }
     
     # binaryPGLMM does not have R2.lik method
     if (any(class(mod) %in% "binaryPGLMM") & lik == TRUE) {
         lik <- FALSE
-        message("Models of class binaryPGLMM do not have R2.lik method")
+        message("Models of class binaryPGLMM do not have R2.lik method.")
     }
     
     # binary communityPGLMM only have R2.pred method at this moment
@@ -195,7 +195,7 @@ R2 <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = c("s2w", "NS", "
         if (mod$family == "binomial") {
             resid <- FALSE
             lik <- FALSE
-            message("Models of class communityPGLMM (binomial) only have R2.pred method")
+            message("Models of class communityPGLMM (binomial) only have R2.pred method.")
         }
     }
     

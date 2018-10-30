@@ -12,7 +12,7 @@ R2(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = c("s2w", "NS",
 
 \item{mod.r}{A reduced model; if not provided, the total R2 will be given by setting 'mod.r' to the model corresponding to 'mod' with the intercept as the only predictor.}
 
-\item{phy}{The phylogeny for phylogenetic models (as a 'phylo' object), which is not required to be specified for \code{R2.lik()}.}
+\item{phy}{The phylogeny for phylogenetic models (as a 'phylo' object), which is not required to be specified for \code{R2.lik()} of non-phylogenetic models.}
 
 \item{sigma2_d}{Distribution-specific variance σ2d (see Details) used in \code{R2.resid()}. For binomial GLMs, GLMMs and PGLMMs with logit link functions, options are c('s2w', 'NS', 'rNS'). For binomial GLMs, GLMMs and PGLMMs with probit link functions, options are c('s2w', 'NS'). Other families use 's2w'.}
 
@@ -26,7 +26,7 @@ R2(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = c("s2w", "NS",
 A vector, with all three R2s by default.
 }
 \description{
-This is a wrapper for calculating three R2s -- R2.lik, R2.resid, and R2.pred -- for LMM, GLMM, PGLM, and PGLMM. Note that the individual functions \code{R2.lik()}, \code{R2.resid()}, and \code{R2.pred()} can be called separately. This is preferrable if you are only interested in one R2; for example, for \code{phylolm()} called from `R2` you need to specify 'phy' (phylo object for the phylogeny), while \code{R2.lik()} does not require this.
+This is a wrapper for calculating three R2s -- R2.lik, R2.resid, and R2.pred -- for LMMs and GLMMs, and phylogenetic LMMs (PLMMs) and GLMMs (PGLMMs). Note that the individual functions \code{R2.lik()}, \code{R2.resid()}, and \code{R2.pred()} can be called separately. This is preferrable if you are only interested in one R2; for example, for \code{phylolm()} called from `R2` you need to specify 'phy' (phylo object for the phylogeny), while \code{R2.lik()} does not require this.
 }
 \details{
 Details about the methods are provided under the separate functions for \code{R2.lik()}, \code{R2.resid()}, and \code{R2.pred()}. There are also many worked examples.
@@ -90,7 +90,7 @@ R2(z.f, z.x)
 R2(z.f, z.v)
 R2(z.f)
 
-# These give different results for R2.resid
+# These give different results for R2.resid.
 R2(z.f, sigma2_d = 's2w')
 R2(z.f, sigma2_d = 'NS')
 R2(z.f, sigma2_d = 'rNS')

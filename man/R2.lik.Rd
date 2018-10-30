@@ -18,13 +18,15 @@ R2.lik value.
 Calculate partial and total R2s for LMM, GLMM, PGLS, and PGLMM using R2.lik, an R2 based on the likelihood of observing the data.
 }
 \details{
-\code{R2.lik()} works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', and 'communityPGLMM' (family =  'gaussian' only). 
+\code{R2.lik()} works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', and 'communityPGLMM' (family =  'gaussian' only). It is implemented as
 
 \deqn{partial R2 = 1 - exp(-2/n * (logLik(mod.f) - logLik(mod.r)))}
 
-where mod.f and mod.r are the full and reduced models, respectively. The total R2 is given when mod.r is the model corresponding to mod.f that contains only the intercept.
+where 'mod.f' and 'mod.r' are the full and reduced models, respectively. The total R2 is given when 'mod.r' is the model corresponding to mod.f that contains only the intercept. For GLMMs and PGLMMs, \code{R2.lik()} is standardized to have a maximum of one following Nagelkerke (1991).
 
-R2.lik is also computed for LMMs and GLMMs in the {MuMIn} package.
+Note that \code{phyloglm()} can have difficulties in finding solutions when there is no phylogenetic signal. Therefore, when the estimate of alpha is >50, indicating no phylogenetic signal, the model is refit with the corresponding GLM.
+
+\code{R2.lik()} is also computed for LMMs and GLMMs in the {MuMIn} package.
 }
 \examples{
 library(ape)
@@ -60,7 +62,7 @@ R2.lik(z.f, z.x)
 R2.lik(z.f, z.v)
 R2.lik(z.f)
 
-# These give the same results
+# These give the same results.
 R2.lik(z.f, z.0)
 R2.lik(z.f)
 
@@ -148,6 +150,8 @@ R2.lik(z.f)
 }
 \references{
 Ives A. 2018. R2s for Correlated Data: Phylogenetic Models, LMMs, and GLMMs. Systematic Biology. <doi:10.1093/sysbio/syy060>
+
+Nagelkerke 1991. A note on a general definition of the coefficient of determination. Biometrika 78:691–692.
 }
 \seealso{
 MuMIn, lme4, ape, phylolm, pez

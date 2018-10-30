@@ -40,6 +40,9 @@ where res[-j] is a vector of residuals with datum j removed, V[-j,-j] is the phy
 
 \deqn{partial R2 = 1 - (1 - R2.pred.f)/(1 - R2.pred.r)}
 
+Note that \code{phylolm()} can have difficulties in finding solutions when there is no phylogenetic
+signal; when the estimate indicates no phylogenetic signal, you should refit the model with the corresponding LM.
+
 \strong{LM (lm) and GLM (glm):} 
 
 For compatibility and generating reduced models, rr2 will compute R2.pred for LM and GLM that correspond to LMM/PGLS and GLMM/PGLMM.

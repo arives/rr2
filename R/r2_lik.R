@@ -7,17 +7,21 @@
 #' @return R2.lik value.
 #' @export
 #'
-#' @details  \code{R2.lik()} works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', and 'communityPGLMM' (family =  'gaussian' only). 
+#' @details  \code{R2.lik()} works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', and 'communityPGLMM' (family =  'gaussian' only). It is implemented as
 #' 
 #' \deqn{partial R2 = 1 - exp(-2/n * (logLik(mod.f) - logLik(mod.r)))}
 #' 
-#' where mod.f and mod.r are the full and reduced models, respectively. The total R2 is given when mod.r is the model corresponding to mod.f that contains only the intercept.
+#' where 'mod.f' and 'mod.r' are the full and reduced models, respectively. The total R2 is given when 'mod.r' is the model corresponding to mod.f that contains only the intercept. For GLMMs and PGLMMs, \code{R2.lik()} is standardized to have a maximum of one following Nagelkerke (1991).
 #' 
-#' R2.lik is also computed for LMMs and GLMMs in the {MuMIn} package.
+#' Note that \code{phyloglm()} can have difficulties in finding solutions when there is no phylogenetic signal. Therefore, when the estimate of alpha is >50, indicating no phylogenetic signal, the model is refit with the corresponding GLM.
+#' 
+#' \code{R2.lik()} is also computed for LMMs and GLMMs in the {MuMIn} package.
 #' 
 #' @seealso MuMIn, lme4, ape, phylolm, pez
 #' @author Anthony R. Ives
 #' @references Ives A. 2018. R2s for Correlated Data: Phylogenetic Models, LMMs, and GLMMs. Systematic Biology. <doi:10.1093/sysbio/syy060>
+#' 
+#' Nagelkerke 1991. A note on a general definition of the coefficient of determination. Biometrika 78:691–692.
 #' 
 #' @examples library(ape)
 #' library(phylolm)
@@ -52,7 +56,7 @@
 #' R2.lik(z.f, z.v)
 #' R2.lik(z.f)
 #' 
-#' # These give the same results
+#' # These give the same results.
 #' R2.lik(z.f, z.0)
 #' R2.lik(z.f)
 #' 
@@ -148,8 +152,8 @@ R2.lik <- function(mod = NULL, mod.r = NULL) {
     
     if (class(mod)[1] == "lm") {
         if (!is.object(mod.r)) {
-            Y <- model.frame(mod)[, 1]
-            mod.r <- lm(Y ~ 1)
+            y <- model.frame(mod)[, 1]
+            mod.r <- lm(y ~ 1)
         }
         if (!is.element(class(mod.r)[1], c("lm"))) {
             stop("mod.r must be class lm.")
@@ -159,8 +163,8 @@ R2.lik <- function(mod = NULL, mod.r = NULL) {
     
     if (class(mod)[1] == "glm") {
         if (!is.object(mod.r)) {
-            Y <- model.frame(mod)[, 1]
-            mod.r <- glm(Y ~ 1, family = family(mod)[[1]])
+            y <- model.frame(mod)[, 1]
+            mod.r <- glm(y ~ 1, family = family(mod)[[1]])
         }
         if (!is.element(class(mod.r)[1], c("glm"))) {
             stop("mod.r must be class glm.")
@@ -173,8 +177,8 @@ R2.lik <- function(mod = NULL, mod.r = NULL) {
     
     if (class(mod)[1] == "lmerMod") {
         if (!is.object(mod.r)) {
-            Y <- model.frame(mod)[, 1]
-            mod.r <- lm(Y ~ 1)
+            y <- model.frame(mod)[, 1]
+            mod.r <- lm(y ~ 1)
         }
         if (class(mod.r)[1] == "merModLmerTest") 
             class(mod.r) <- "lmerMod"
@@ -194,8 +198,8 @@ R2.lik <- function(mod = NULL, mod.r = NULL) {
     
     if (class(mod)[1] == "glmerMod") {
         if (!is.object(mod.r)) {
-            Y <- model.frame(mod)[, 1]
-            mod.r <- glm(Y ~ 1, family = family(mod)[[1]])
+            y <- model.frame(mod)[, 1]
+            mod.r <- glm(y ~ 1, family = family(mod)[[1]])
         }
         if (!is.element(class(mod.r)[1], c("glmerMod", "glm"))) {
             stop("mod.r must be class glmerMod or glm.")
@@ -208,8 +212,8 @@ R2.lik <- function(mod = NULL, mod.r = NULL) {
     
     if (class(mod)[1] == "phylolm") {
         if (!is.object(mod.r)) {
-            Y <- mod$y
-            mod.r <- lm(Y ~ 1)
+            y <- mod$y
+            mod.r <- lm(y ~ 1)
         }
         if (!is.element(class(mod.r)[1], c("phylolm", "lm"))) {
             stop("mod.r must be class phylolm or lm.")
@@ -219,8 +223,8 @@ R2.lik <- function(mod = NULL, mod.r = NULL) {
     
     if (class(mod)[1] == "phyloglm") {
         if (!is.object(mod.r)) {
-            Y <- mod$y
-            mod.r <- glm(Y ~ 1, family = "binomial")
+            y <- mod$y
+            mod.r <- glm(y ~ 1, family = "binomial")
         }
         if (!is.element(class(mod.r)[1], c("phyloglm", "glm"))) {
             stop("mod.r must be class phyloglm or glm.")
@@ -230,15 +234,15 @@ R2.lik <- function(mod = NULL, mod.r = NULL) {
     
     if (class(mod)[1] == "communityPGLMM") {
         if (mod$family == "binomial") 
-            stop("binary communityPGLMMs do not have log likelihood,
+            stop("Binary communityPGLMMs do not have log likelihood,
                   If you are interested in LRT of random terms, use
                   phyr::communityPGLMM.binary.LRT()")
         if (mod$REML == TRUE) 
             stop("mod was fitted with REML, please set it to FALSE and re-fit it")
         
         if (!is.object(mod.r)) {
-            Y <- mod$Y
-            mod.r <- lm(Y ~ 1)
+            y <- mod$Y
+            mod.r <- lm(y ~ 1)
         }
         if (!is.element(class(mod.r)[1], c("communityPGLMM", "lm"))) {
             stop("mod.r must be class communityPGLMM or lm.")
@@ -275,22 +279,24 @@ R2.lik.phylolm <- function(mod = NULL, mod.r = NULL) {
 
 R2.lik.phyloglm <- function(mod = NULL, mod.r = NULL) {
     
-    Y <- mod$y
+    y <- mod$y
     X <- mod$X
     n <- dim(X)[1]
     
-    alpha.cutoff <- 40
+    alpha.cutoff <- 50
     if (mod$alpha < alpha.cutoff) {
         LL <- mod$logLik
     } else {
-        LL <- logLik(glm(Y ~ 0 + X, family = "binomial"))
+        LL <- logLik(glm(y ~ 0 + X, family = "binomial"))
+        warning("In mod, estimate of alpha >50, so model refit with glm()")
     }
     if (class(mod.r)[1] == "phyloglm") {
         if (mod.r$alpha < alpha.cutoff) {
             LL.r <- mod.r$logLik
         } else {
             X.r <- mod.r$X
-            LL.r <- logLik(glm(Y ~ 0 + X.r, family = "binomial"))
+            LL.r <- logLik(glm(y ~ 0 + X.r, family = "binomial"))
+            warning("In mod.r, estimate of alpha >50, so model refit with glm()")
         }
     } else {
         LL.r <- logLik(mod.r)

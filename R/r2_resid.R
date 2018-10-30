@@ -3,7 +3,7 @@
 #' Calculate partial and total R2s for LMM, GLMM, PGLS, and PGLMM using R2.resid, an extension of ordinary least-squares (OLS) R2s. For LMMs and GLMMs, R2.resid is related to the method proposed by Nakagawa and Schielzeth (2013).
 #' 
 
-#' @param mod A regression model with one of the following classes: 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', or 'binaryPGLMM'. For 'glmerMod', only family= c('binomial', 'poisson') are supported.
+#' @param mod A regression model with one of the following classes: 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', or 'binaryPGLMM'. For 'glmerMod', only family = c('binomial', 'poisson') are supported.
 #' @param mod.r A reduced model; if not provided, the total R2 will be given by setting 'mod.r' to the model corresponding to 'mod' with the intercept as the only predictor.
 #' @param phy The phylogeny for phylogenetic models (as a 'phylo' object), which must be specified for models of class `phylolm`.
 #' @param sigma2_d Distribution-specific variance σ2d (see Details). For binomial GLMs, GLMMs and PGLMMs with logit link functions, options are c('s2w', 'NS', 'rNS'). For binomial GLMs, GLMMs and PGLMMs with probit link functions, options are c('s2w', 'NS'). Other families use 's2w'.
@@ -12,11 +12,11 @@
 #' 
 #' \strong{LMM (lmerMod):}
 #' 
-#' \deqn{partial R2 = 1 - σ2e/σ2e.r}
+#' \deqn{partial R2 = 1 - σ2e.f/σ2e.r}
 #'    
-#' \deqn{total R2 = 1 - σ2e/var(y)}
+#' \deqn{total R2 = 1 - σ2e.f/var(y)}
 #'    
-#' where σ2e and σ2e.r are the estimated residual variances from the full and reduced LMM, and var(Y) is the total variance of the response (dependent) variable.
+#' where σ2e.f and σ2e.r are the estimated residual variances from the full and reduced LMM, and var(y) is the total variance of the response (dependent) variable.
 #' 
 #' \strong{GLMM (glmerMod):} 
 #' 
@@ -24,9 +24,9 @@
 #'    
 #' where σ2x and σ2b are the estimated variances associated with the fixed and random effects. σ2d is a term that scales the implied 'residual variance' of the GLMM (see Ives 2018, Appendix 1). The default used for σ2d is σ2w which is computed from the iterative weights of the GLMM. Specifically,
 #' 
-#' \deqn{σ2w = exp(mean(log(g'(μ) * var(y – μ))))}
+#' \deqn{σ2w = var(g'(μ) * (y – μ))}
 #' 
-#' where g'() is the derivative of the link function and var(y – μ) is the expected variance in the difference between the data y and their predicted values μ. This is the default option specified by sigma2_d = 's2w'. For binomial models with a logit link function, sigma2_d = 'NS' gives the scaling σ2d =  π^2/3, and sigma2_d = 'rNS' gives σ2d = 0.8768809 * π^2/3. For binomial models with a probit link function, sigma2_d = 'NS' gives the scaling σ2d = 1. For other forms of sigma2_d from Nakagawa and Schielzeth (2013) and Nakagawa et al. (2017), see the MuMIn package.
+#' where g'() is the derivative of the link function, and (y – μ) is the difference between the data y and their predicted values μ. This is the default option specified by sigma2_d = 's2w'. For binomial models with a logit link function, sigma2_d = 'NS' gives the scaling σ2d =  π^2/3, and sigma2_d = 'rNS' gives σ2d = 0.8768809 * π^2/3. For binomial models with a probit link function, sigma2_d = 'NS' gives the scaling σ2d = 1. In general option sigma2_d = 's2w' will give values lower than sigma2_d = 'NS' and 'rNS', but the values will be closer to \code{R2.lik()} and \code{R2.pred()}. For other forms of sigma2_d from Nakagawa and Schielzeth (2013) and Nakagawa et al. (2017), see the MuMIn package.
 #' 
 #' Partial R2s are given by the standard formula
 #' 
@@ -34,21 +34,24 @@
 #' 
 #' where R2.f and R2.r are the total R2s for full and reduced models, respectively.
 #' 
-#' \strong{PGLS (phyloglm):} 
+#' \strong{PGLS (phylolm):} 
 #' 
 #' \deqn{partial R2 = 1 - c.f * σ2.f/(c.r * σ2.r)}
 #' 
 #' where σ2.f and σ2.r are the variances estimated for the PGLS full and reduced models, and c.f and c.r are the scaling values for full and reduce models that equal the total sum of phylogenetic branch length estimates. Note that the phylogeny needs to be specified in R2.resid.
 #' 
+#' Note that \code{phylolm()} can have difficulties in finding solutions when there is no phylogenetic signal;
+#' when the estimate indicates no phylogenetic signal, you should refit the model with the corresponding LM.
+#' 
 #' \strong{PGLMM (binaryPGLMM):} 
 #' 
 #' The binary PGLMM is computed in the same way as the binomial GLMM, with options sigma_d = c('s2w', 'NS', 'rNS'). The estimated variance of the random effect associated with the phylogeny, σ2b, is multiplied by the diagonal elements of the phylogenetic covariance matrix. For binary models, this covariance matrix should be standardized so that all diagonal elements are the same (a contemporaneous or ultrametric phylogenetic tree) (Ives and Garland 2014). In case this is not done, however, the code takes the geometric average of the diagonal elements.
 #' 
-#' Note that the version of \code{binaryPGLMM()} in the package ape is replaced by a version contained within {rr2} that outputs all of the required information for the calculation of R2.resid.
+#' Note that the version of \code{binaryPGLMM()} in the package ape is replaced by a version contained within {rr2} that outputs all of the required information for the calculation of \code{R2.resid()}
 #' 
 #' \strong{LM (lm) and GLM (glm):} 
 #' 
-#' For compatibility and generating reduced models, rr2 will compute R2.resid for LM and GLM that correspond to LMM/PGLS and GLMM/PGLMM.
+#' For compatibility and generating reduced models, rr2 will compute \code{R2.resid()} for LM and GLM that correspond to LMM/PGLS and GLMM/PGLMM.
 #' 
 #' @return R2.resid value.
 #' @importFrom lme4 VarCorr
@@ -196,8 +199,8 @@ R2.resid <- function(mod = NULL, mod.r = NULL, phy = NULL,
     
     if (class(mod)[1] == "lm") {
         if (!is.object(mod.r)) {
-            Y <- model.frame(mod)[, 1]
-            mod.r <- lm(Y ~ 1)
+            y <- model.frame(mod)[, 1]
+            mod.r <- lm(y ~ 1)
         }
         if (!is.element(class(mod.r)[1], c("lm"))) {
             stop("mod.r must be class lm.")
@@ -207,8 +210,8 @@ R2.resid <- function(mod = NULL, mod.r = NULL, phy = NULL,
     
     if (class(mod)[1] == "glm") {
         if (!is.object(mod.r)) {
-            Y <- model.frame(mod)[, 1]
-            mod.r <- glm(Y ~ 1, family = family(mod)[[1]])
+            y <- model.frame(mod)[, 1]
+            mod.r <- glm(y ~ 1, family = family(mod)[[1]])
         }
         if (!is.element(class(mod.r)[1], c("glm"))) {
             stop("mod.r must be class glm.")
@@ -226,8 +229,8 @@ R2.resid <- function(mod = NULL, mod.r = NULL, phy = NULL,
     if (class(mod)[1] == "lmerMod") {
         if (!is.object(mod.r)) {
             # exists()?
-            Y <- model.frame(mod)[, 1]
-            mod.r <- lm(Y ~ 1)
+            y <- model.frame(mod)[, 1]
+            mod.r <- lm(y ~ 1)
         }
         if (class(mod.r)[1] == "merModLmerTest") 
             class(mod.r) <- "lmerMod"
@@ -239,8 +242,8 @@ R2.resid <- function(mod = NULL, mod.r = NULL, phy = NULL,
     
     if (class(mod)[1] == "glmerMod") {
         if (!is.object(mod.r)) {
-            Y <- model.frame(mod)[, 1]
-            mod.r <- glm(Y ~ 1, family = family(mod)[[1]])
+            y <- model.frame(mod)[, 1]
+            mod.r <- glm(y ~ 1, family = family(mod)[[1]])
         }
         if (!is.element(class(mod.r)[1], c("glmerMod", "glm"))) {
             stop("mod.r must be class glmerMod or glm.")
@@ -260,8 +263,8 @@ R2.resid <- function(mod = NULL, mod.r = NULL, phy = NULL,
             stop("For phylolm you must provide the phylo object")
         }
         if (!is.object(mod.r)) {
-            Y <- mod$y
-            mod.r <- lm(Y ~ 1)
+            y <- mod$y
+            mod.r <- lm(y ~ 1)
         }
         if (!is.element(class(mod.r)[1], c("phylolm", "lm"))) {
             stop("mod.r must be class phylolm or lm.")
@@ -271,8 +274,8 @@ R2.resid <- function(mod = NULL, mod.r = NULL, phy = NULL,
     
     if (class(mod)[1] == "binaryPGLMM") {
         if (!is.object(mod.r)) {
-            Y <- mod$y
-            mod.r <- glm(Y ~ 1, family = "binomial")
+            y <- mod$y
+            mod.r <- glm(y ~ 1, family = "binomial")
         }
         if (!is.element(class(mod.r)[1], c("binaryPGLMM", "glm"))) {
             stop("mod.r must be class binaryPGLMM or glm.")
@@ -309,8 +312,6 @@ R2.resid.glm <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
         }
         if (family(mod)[2] == "logit") {
             if (sigma2_d == "s2w") 
-              #sig2e <- exp(mean(log(size/(mu * (1 - mu)))))
-              #sig2e <- exp(mean(log(1/(mu * (1 - mu)) - (2*mu - 1)*(5*mu*(1-mu) - 1)/(mu*(1-mu)))))
               sig2e <- var((y - mu)/(mu * (1 - mu)))
             if (sigma2_d == "NS") 
                 sig2e <- pi^2/3
@@ -326,7 +327,6 @@ R2.resid.glm <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
         }
     }
     if (family(mod)[1] == "poisson") 
-      #sig2e <- exp(-mean(log(mu)))
       sig2e <- var((y - mu)/mu)
     
     SSE.resid <- sig2e/(var(Yhat) + sig2e)
@@ -336,7 +336,6 @@ R2.resid.glm <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
     if (family(mod.r)[1] == "binomial") 
         if (family(mod.r)[2] == "logit") {
             if (sigma2_d == "s2w") 
-                #sig2e.r <- exp(mean(log(1/(mu.r * (1 - mu.r)) - (2*mu.r - 1)*(5*mu.r*(1-mu.r) - 1)/(mu.r*(1-mu.r)))))
                 sig2e.r <- var(size * (y - mu.r)/(mu.r * (1 - mu.r)))
             if (sigma2_d == "NS") 
                 sig2e.r <- pi^2/3
@@ -344,7 +343,6 @@ R2.resid.glm <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
                 sig2e.r <- 0.8768809 * pi^2/3
         } else {
             if (sigma2_d == "s2w") 
-                #sig2e.r <- exp(mean(log(size * mu.r * (1 - mu.r)/dnorm(qnorm(mu.r))^2)))
                 sig2e.r <- var(size * (y - mu.r)/dnorm(qnorm(mu.r)))
             if (sigma2_d == "NS") 
                 sig2e.r <- 1
@@ -352,7 +350,6 @@ R2.resid.glm <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
                 sig2e.r <- 1
         }
     if (family(mod.r)[1] == "poisson") 
-      #sig2e.r <- exp(-mean(log(mu.r)))
       sig2e.r <- var((y - mu.r)/mu.r)
     
     SSE.resid.r <- sig2e.r/(var(Yhat.r) + sig2e.r)
@@ -402,9 +399,6 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
         }
         if (family(mod)[2] == "logit") {
             if (sigma2_d == "s2w") 
-              #sig2e <- exp(mean(log(1/(mu * (1 - mu)))))
-              #sig2e <- exp(mean(log(1/(mu * (1 - mu)) - (2*mu - 1)*(5*mu*(1-mu) - 1)/(mu*(1-mu)))))
-              #sig2e <- var(size * (y - mu)/(mu * (1 - mu)))
               sig2e <- var((y - mu)/(mu * (1 - mu)))
             if (sigma2_d == "NS") 
                 sig2e <- pi^2/3
@@ -412,8 +406,6 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
                 sig2e <- 0.8768809 * pi^2/3
         } else {
             if (sigma2_d == "s2w") 
-                #sig2e <- exp(mean(log(size * mu * (1 - mu)/dnorm(qnorm(mu))^2)))
-                #sig2e <- var(size * (y - mu)/dnorm(qnorm(mu)))
                 sig2e <- var((y - mu)/dnorm(qnorm(mu)))
             if (sigma2_d == "NS") 
                 sig2e <- 1
@@ -422,7 +414,6 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
         }
     }
     if (family(mod)[1] == "poisson") 
-      #sig2e <- exp(-mean(log(mu)))
       sig2e <- var((y - mu)/mu)
     
     sig2a <- VarCorr(mod)[[1]][1]
@@ -440,18 +431,13 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
         if (family(mod.r)[1] == "binomial") 
             if (family(mod.r)[2] == "logit") {
                 if (sigma2_d == "s2w") 
-                  #sig2e.r <- exp(mean(log(1/(mu.r * (1 - mu.r)))))
-                  #sig2e.r <- exp(mean(log(1/(mu.r * (1 - mu.r)) - (2*mu.r - 1)*(5*mu.r*(1-mu.r) - 1)/(mu.r*(1-mu.r)))))
-                  #sig2e.r <- var(size * (y -mu.r)/(mu.r * (1 - mu.r)))
-                  sig2e.r <- var((y -mu.r)/(mu.r * (1 - mu.r)))
+                   sig2e.r <- var((y - mu.r)/(mu.r * (1 - mu.r)))
                 if (sigma2_d == "NS") 
                   sig2e.r <- pi^2/3
                 if (sigma2_d == "rNS") 
                   sig2e.r <- 0.8768809 * pi^2/3
             } else {
                 if (sigma2_d == "s2w") 
-                  #sig2e.r <- exp(mean(log(size * mu.r * (1 - mu.r)/dnorm(qnorm(mu.r))^2)))
-                  #sig2e.r <- var(size * (y - mu.r)/dnorm(qnorm(mu.r)))
                   sig2e.r <- var((y - mu.r)/dnorm(qnorm(mu.r)))
                 if (sigma2_d == "NS") 
                   sig2e.r <- 1
@@ -459,8 +445,7 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
                   sig2e.r <- 1
             }
         if (family(mod.r)[1] == "poisson") 
-          #sig2e.r <- exp(-mean(log(mu.r)))
-          sig2e.r <- var((y - mu.r)/mu.r)
+           sig2e.r <- var((y - mu.r)/mu.r)
         
         sig2a.r <- VarCorr(mod.r)[[1]][1]
         nranef.r <- length(VarCorr(mod.r))
@@ -476,9 +461,6 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
         if (family(mod.r)[1] == "binomial") 
             if (family(mod.r)[2] == "logit") {
                 if (sigma2_d == "s2w") 
-                  #sig2e.r <- exp(mean(log(1/(mu.r * (1 - mu.r)))))
-                  #sig2e.r <- exp(mean(log(1/(mu.r * (1 - mu.r)) - (2*mu.r - 1)*(5*mu.r*(1-mu.r) - 1)/(mu.r*(1-mu.r)))))
-                  #sig2e.r <- var(size * (y - mu.r)/(mu.r * (1 - mu.r)))
                   sig2e.r <- var((y - mu.r)/(mu.r * (1 - mu.r)))
                 if (sigma2_d == "NS") 
                   sig2e.r <- pi^2/3
@@ -486,8 +468,6 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
                   sig2e.r <- 0.8768809 * pi^2/3
             } else {
                 if (sigma2_d == "s2w") 
-                  #sig2e.r <- exp(mean(log(size * mu.r * (1 - mu.r)/dnorm(qnorm(mu.r))^2)))
-                  #sig2e.r <- var(size * (y - mu.r)/dnorm(qnorm(mu.r)))
                   sig2e.r <- var((y - mu.r)/dnorm(qnorm(mu.r)))
                 if (sigma2_d == "NS") 
                   sig2e.r <- 1
@@ -495,7 +475,6 @@ R2.resid.glmerMod <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {
                   sig2e.r <- 1
             }
         if (family(mod.r)[1] == "poisson") 
-          #sig2e.r <- exp(-mean(log(mu.r)))
           sig2e.r <- var((y - mu.r)/mu.r)
         
         SSE.resid.r <- sig2e.r/(var(Yhat.r) + sig2e.r)
@@ -512,7 +491,7 @@ R2.resid.phylolm <- function(mod = NULL, mod.r = NULL, phy = NULL) {
     
     if (!mod$model %in% c("lambda", "OUrandomRoot", "OUfixedRoot", "BM", "kappa", 
         "delta", "EB", "trend")) {
-        stop("evolution model not supported yet")
+        stop("Evolution model not supported yet.")
     }
     
     phy.f <- transf_phy(mod, phy)
@@ -523,7 +502,7 @@ R2.resid.phylolm <- function(mod = NULL, mod.r = NULL, phy = NULL) {
     if (class(mod.r) == "phylolm") {
         if (!mod.r$model %in% c("lambda", "OUrandomRoot", "OUfixedRoot", "BM", "kappa", 
             "delta", "EB", "trend")) {
-            stop("evolution model not supported yet")
+            stop("Evolution model not supported yet.")
         }
         
         X.r <- mod.r$X
@@ -557,7 +536,6 @@ R2.resid.binaryPGLMM <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) 
     mu <- mod$mu
     Yhat <- log(mu/(1 - mu))
     if (sigma2_d == "s2w") 
-        #sig2e <- exp(-mean(log(mu * (1 - mu))))
         sig2e <- var((y - mu)/(mu * (1 - mu)))
     if (sigma2_d == "NS") 
         sig2e <- pi^2/3
@@ -575,7 +553,6 @@ R2.resid.binaryPGLMM <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) 
         mu.r <- mod.r$mu
         Yhat.r <- log(mu.r/(1 - mu.r))
         if (sigma2_d == "s2w") 
-          #sig2e.r <- exp(-mean(log(mu.r * (1 - mu.r))))
           sig2e.r <- var((y - mu.r)/(mu.r * (1 - mu.r)))
         if (sigma2_d == "NS") 
             sig2e.r <- pi^2/3
@@ -589,7 +566,6 @@ R2.resid.binaryPGLMM <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) 
         mu.r <- mod.r$fitted.values
         Yhat.r <- log(mu.r/(1 - mu.r))
         if (sigma2_d == "s2w") 
-            #sig2e.r <- exp(-mean(log(mu.r * (1 - mu.r))))
             sig2e.r <- var((y - mu.r)/(mu.r * (1 - mu.r)))
         if (sigma2_d == "NS") 
             sig2e.r <- pi^2/3
