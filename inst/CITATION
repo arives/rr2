@@ -14,7 +14,7 @@ citEntry(entry = "Article",
   paste("Anthony R. Ives (2018).",
         "R^2s for Correlated Data: Phylogenetic Models, LMMs, and GLMMs.",
         "Systematic Biology.",
-        "URL https://doi.org/10.1101/144170.")
+        "URL https://doi.org/10.1093/sysbio/syy060")
 )
 
 citEntry(entry = "Manual",
@@ -31,5 +31,5 @@ citEntry(entry = "Manual",
   paste("Anthony R. Ives and Daijiang Li (2018).",
         "rr2: An R package to calculate R^2s for regression models",
         "The Journal of Open Source Software",
-        "URL https://github.com/arives/rr2.")
+        "URL https://github.com/arives/rr2")
 )
