@@ -54,6 +54,7 @@ d$y_phy_binary <- rbinom(n = n, size = 1, prob = rr2::inv.logit(b1 * d$x1 + e))
 # dat$pa = as.numeric(dat$freq > 0)
 
 test_that("when missing mod.r, the functions will automatically create one", {
+  testthat::skip_on_cran() # don't run on CRAN since these are time consuming
   # LM
   z.f <- lm(y_re_intercept ~ x1 + x2, data = d)
   z.0 <- lm(y_re_intercept ~ 1, data = d)
