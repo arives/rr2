@@ -1,4 +1,6 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+[![DOI](http://joss.theoj.org/papers/10.21105/joss.01028/status.svg)](https://doi.org/10.21105/joss.01028)
+
 Goal
 ====
 
@@ -371,8 +373,11 @@ Citation
 Please cite the following paper if you find this package useful:
 
 > [Anthony Ives. 2018. R2s for Correlated Data: Phylogenetic Models,
-> LMMs, and GLMMs. Systematic Biology.
-> syy060](https://doi.org/10.1093/sysbio/syy060)
+> LMMs, and GLMMs. Systematic Biology,
+> syy060.](https://doi.org/10.1093/sysbio/syy060)  
+> [Anthony R. Ives and Daijiang Li (2018). rr2: An R package to
+> calculate R^2s for regression models. The Journal of Open Source
+> Software, 3(30), 1028.](https://doi.org/10.21105/joss.01028)
 
 Contributing
 ============

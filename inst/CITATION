@@ -13,8 +13,8 @@ citEntry(entry = "Article",
   textVersion  =
   paste("Anthony R. Ives (2018).",
         "R^2s for Correlated Data: Phylogenetic Models, LMMs, and GLMMs.",
-        "Systematic Biology.",
-        "URL https://doi.org/10.1093/sysbio/syy060")
+        "Systematic Biology, syy060.",
+        "https://doi.org/10.1093/sysbio/syy060")
 )
 
 citEntry(entry = "Article",
@@ -23,14 +23,14 @@ citEntry(entry = "Article",
                             as.person("Daijiang Li")),
   journal      = "The Journal of Open Source Software",
   year         = "2018",
-  volume       = "",
-  number       = "",
-  pages        = "",
-  url          = "https://github.com/arives/rr2",
+  volume       = "3",
+  number       = "30",
+  pages        = "1028",
+  url          = "https://doi.org/10.21105/joss.01028",
 
   textVersion  =
   paste("Anthony R. Ives and Daijiang Li (2018).",
-        "rr2: An R package to calculate R^2s for regression models",
-        "The Journal of Open Source Software",
-        "URL https://github.com/arives/rr2")
+        "rr2: An R package to calculate R^2s for regression models.",
+        "The Journal of Open Source Software, 3(30), 1028.",
+        "https://doi.org/10.21105/joss.01028")
 )
