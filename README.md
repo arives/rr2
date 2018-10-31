@@ -6,8 +6,7 @@ This package provides three R<sup>2</sup>s for statistical models with
 correlated errors including classes: ‘lmerMod’ (LMM), ‘glmerMod’ (GLMM),
 ‘phylolm’ (Phylogenetic GLS), and ‘binaryPGLMM/phyloglm/communityPGLMM’
 (Phylogenetic Logistic Regression). Detailed technical descriptions can
-be found in [Ives 2017,
-preprint](https://www.biorxiv.org/content/early/2017/07/26/144170).
+be found in [Ives 2018](https://doi.org/10.1093/sysbio/syy060).
 
 Installation
 ============
@@ -273,7 +272,7 @@ z.v.plog <- glm(y_phy_binary ~ x1, data = d, family = "binomial")
 R2(mod = z.f.plog, mod.r = z.x.plog)
 ```
 
-    ## Models of class binaryPGLMM do not have R2.lik method
+    ## Models of class binaryPGLMM do not have R2.lik method.
 
     ##  R2_resid   R2_pred 
     ## 0.6115816 0.3344832
@@ -282,7 +281,7 @@ R2(mod = z.f.plog, mod.r = z.x.plog)
 R2(mod = z.f.plog)
 ```
 
-    ## Models of class binaryPGLMM do not have R2.lik method
+    ## Models of class binaryPGLMM do not have R2.lik method.
 
     ##  R2_resid   R2_pred 
     ## 0.8076862 0.5531285
@@ -297,7 +296,7 @@ z.v.plog2 <- glm(y_phy_binary ~ x1, data = d, family = "binomial")
 R2(z.f.plog2, z.x.plog2) 
 ```
 
-    ## Models of class phyloglm only have R2.lik method
+    ## Models of class phyloglm only have R2.lik method.
 
     ##    R2_lik 
     ## 0.3853273
@@ -325,7 +324,7 @@ z.r2 <- phylolm::phyloglm(y_phy_binary ~ x2, data = d, start.alpha = 1, phy = ph
 R2(z.f)
 ```
 
-    ## Models of class phyloglm only have R2.lik method
+    ## Models of class phyloglm only have R2.lik method.
 
     ##    R2_lik 
     ## 0.4825879
@@ -335,7 +334,7 @@ R2(z.f)
 R2(z.f, z.r2)
 ```
 
-    ## Models of class phyloglm only have R2.lik method
+    ## Models of class phyloglm only have R2.lik method.
 
     ##    R2_lik 
     ## 0.3877523
@@ -345,7 +344,7 @@ R2(z.f, z.r2)
 R2(z.f, z.r1)
 ```
 
-    ## Models of class phyloglm only have R2.lik method
+    ## Models of class phyloglm only have R2.lik method.
 
     ##      R2_lik 
     ## 0.004148668
@@ -361,7 +360,7 @@ z.r3 <- phylolm::phyloglm(y_phy_binary ~ x1 + x2, data = d, start.alpha = 1, phy
 R2(z.f, z.r3)
 ```
 
-    ## Models of class phyloglm only have R2.lik method
+    ## Models of class phyloglm only have R2.lik method.
 
     ##    R2_lik 
     ## 0.3124863
