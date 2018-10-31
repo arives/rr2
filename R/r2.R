@@ -31,7 +31,7 @@ NULL
 #' @param mod A regression model with one of the following classes: 'lm', 'glm', lmerMod', glmerMod', 'phylolm', 'binaryPGLMM', or 'communityPGLMM'.
 #' @param mod.r A reduced model; if not provided, the total R2 will be given by setting 'mod.r' to the model corresponding to 'mod' with the intercept as the only predictor.
 #' @param phy The phylogeny for phylogenetic models (as a 'phylo' object), which is not required to be specified for \code{R2.lik()} of non-phylogenetic models.
-#' @param sigma2_d Distribution-specific variance σ2d (see Details) used in \code{R2.resid()}. For binomial GLMs, GLMMs and PGLMMs with logit link functions, options are c('s2w', 'NS', 'rNS'). For binomial GLMs, GLMMs and PGLMMs with probit link functions, options are c('s2w', 'NS'). Other families use 's2w'.
+#' @param sigma2_d Distribution-specific variance \eqn{\sigma^2_d}{sigma2d} (see Details) used in \code{R2.resid()}. For binomial GLMs, GLMMs and PGLMMs with logit link functions, options are c('s2w', 'NS', 'rNS'). For binomial GLMs, GLMMs and PGLMMs with probit link functions, options are c('s2w', 'NS'). Other families use 's2w'.
 #' @param lik Whether to calculate R2.lik; default is TRUE.
 #' @param resid Whether to calculate R2.resid; default is TRUE.
 #' @param pred Whether to calculate R2.pred; default is TRUE.

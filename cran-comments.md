@@ -8,3 +8,10 @@
 0 errors | 0 warnings | 1 note
 
 * This is a new release.
+
+Possibly mis-spelled words in DESCRIPTION:
+  GLMMs (11:38)
+  GLS (9:52)
+  LMMs (10:60)
+  
+* LMMs, GLMMs, and GLS are common abbreviations of statistical models.

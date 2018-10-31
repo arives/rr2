@@ -14,7 +14,7 @@ R2(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = c("s2w", "NS",
 
 \item{phy}{The phylogeny for phylogenetic models (as a 'phylo' object), which is not required to be specified for \code{R2.lik()} of non-phylogenetic models.}
 
-\item{sigma2_d}{Distribution-specific variance σ2d (see Details) used in \code{R2.resid()}. For binomial GLMs, GLMMs and PGLMMs with logit link functions, options are c('s2w', 'NS', 'rNS'). For binomial GLMs, GLMMs and PGLMMs with probit link functions, options are c('s2w', 'NS'). Other families use 's2w'.}
+\item{sigma2_d}{Distribution-specific variance \eqn{\sigma^2_d}{sigma2d} (see Details) used in \code{R2.resid()}. For binomial GLMs, GLMMs and PGLMMs with logit link functions, options are c('s2w', 'NS', 'rNS'). For binomial GLMs, GLMMs and PGLMMs with probit link functions, options are c('s2w', 'NS'). Other families use 's2w'.}
 
 \item{lik}{Whether to calculate R2.lik; default is TRUE.}
 
