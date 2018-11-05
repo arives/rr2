@@ -1,5 +1,9 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 [![DOI](http://joss.theoj.org/papers/10.21105/joss.01028/status.svg)](https://doi.org/10.21105/joss.01028)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/rr2)](https://cran.r-project.org/package=rr2)
+[![CRAN RStudio mirror
+downloads](http://cranlogs.r-pkg.org/badges/rr2)](http://www.r-pkg.org/pkg/rr2)
 
 Goal
 ====
