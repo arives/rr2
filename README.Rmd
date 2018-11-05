@@ -21,6 +21,9 @@ This package provides three R^2^s for statistical models with correlated errors 
 This package can be installed with:
 
 ```{r, eval=FALSE}
+install.packages("rr2")
+
+# or install the latest version
 # install.packages("devtools")
 devtools::install_github("arives/rr2")
 ```

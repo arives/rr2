@@ -20,6 +20,9 @@ Installation
 This package can be installed with:
 
 ``` r
+install.packages("rr2")
+
+# or install the latest version
 # install.packages("devtools")
 devtools::install_github("arives/rr2")
 ```
