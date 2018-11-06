@@ -3,7 +3,8 @@
 [![CRAN
 status](https://www.r-pkg.org/badges/version/rr2)](https://cran.r-project.org/package=rr2)
 [![CRAN RStudio mirror
-downloads](http://cranlogs.r-pkg.org/badges/rr2)](http://www.r-pkg.org/pkg/rr2)
+downloads](http://cranlogs.r-pkg.org/badges/rr2)](http://www.r-pkg.org/pkg/rr2) [![CRAN RStudio mirror
+downloads](http://cranlogs.r-pkg.org/badges/grand-total/rr2?color=green)](http://www.r-pkg.org/pkg/rr2)
 
 Goal
 ====
