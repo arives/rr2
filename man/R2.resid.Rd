@@ -155,6 +155,14 @@ R2.resid(z.f, z.x, phy = phy)
 R2.resid(z.f, z.v, phy = phy)
 R2.resid(z.f, phy = phy)
 
+z.x <- gls(y ~ 1, data = d, correlation=corPagel(1, phy), method="ML")
+z.f <- gls(y ~ x, data = d, correlation=corPagel(1, phy), method="ML")
+z.v <- lm(y ~ x, data = d)
+
+R2.resid(z.f, z.x)
+R2.resid(z.f, z.v)
+R2.resid(z.f)
+
 #################
 # PGLMM with one fixed effect
 

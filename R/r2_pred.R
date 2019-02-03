@@ -2,7 +2,7 @@
 #'
 #' Calculate partial and total R2s for LMM, GLMM, PGLS, and PGLMM using R2.pred, an R2 based on the variance of the difference between the observed and predicted values of a fitted model.
 #' 
-#' @param mod A regression model with one of the following classes: 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'binaryPGLMM', or 'communityPGLMM'.
+#' @param mod A regression model with one of the following classes: 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'gls', 'binaryPGLMM', or 'communityPGLMM'.
 #' @param mod.r A reduced model; if not provided, the total R2 will be given by setting 'mod.r' to the model corresponding to 'mod' with the intercept as the only predictor.
 #' @param phy The phylogeny for phylogenetic models (as a 'phylo' object), which must be specified for models of class `phylolm`.
 #' @return R2.pred value.
@@ -18,7 +18,7 @@
 #' 
 #' Note that the version of \code{binaryPGLMM()} in the package ape is replaced by a version contained within {rr2} that outputs all of the required information for the calculation of R2.resid.
 #' 
-#' \strong{PGLS (phylolm):}
+#' \strong{PGLS (phylolm and gls):}
 #' 
 #' For PGLS, the total R2.pred is computed by removing each datum one at a time, predicting its value from the fitted model, repeating this for all data points, and then calculating the variance of the difference between observed and fitted values. The predictions are calculated as
 #' 
@@ -118,14 +118,13 @@
 #' d$y <- b1 * x + e
 #' rownames(d) <- phy$tip.label
 #' 
-#' z.x <- phylolm(y ~ 1, phy = phy, data = d, model = 'lambda')
-#' lam.x <- round(z.x$optpar, digits = 4)
-#' z.f <- phylolm(y ~ x, phy = phy, data = d, model = 'lambda')
+#' z.x <- gls(y ~ 1, data = d, correlation=corPagel(1, phy), method="ML")
+#' z.f <- gls(y ~ x, data = d, correlation=corPagel(1, phy), method="ML")
 #' z.v <- lm(y ~ x, data = d)
 #' 
-#' R2.pred(z.f, z.x, phy = phy)
-#' R2.pred(z.f, z.v, phy = phy)
-#' R2.pred(z.f, phy = phy)
+#' R2.pred(z.f, z.x)
+#' R2.pred(z.f, z.v)
+#' R2.pred(z.f)
 #' 
 #' #################
 #' # PGLMM with one fixed effect
@@ -160,9 +159,8 @@ R2.pred <- function(mod = NULL, mod.r = NULL, phy = NULL) {
     if (class(mod)[1] == "merModLmerTest") 
         class(mod) <- "lmerMod"
     
-    if (!is.element(class(mod)[1], c("lm", "glm", "lmerMod", "glmerMod", "phylolm", 
-        "binaryPGLMM", "communityPGLMM"))) {
-        stop("mod must be class one of classes lm, glm, lmerMod, glmerMod, phylolm (but not phyloglm), binaryPGLMM, communityPGLMM.")
+    if (!is.element(class(mod)[1], c("lm", "glm", "lmerMod", "glmerMod", "phylolm", "gls", "binaryPGLMM", "communityPGLMM"))) {
+        stop("mod must be class one of classes lm, glm, lmerMod, glmerMod, phylolm (but not phyloglm), gls, binaryPGLMM, communityPGLMM.")
     }
     
     if (class(mod)[1] == "lm") {
@@ -229,6 +227,17 @@ R2.pred <- function(mod = NULL, mod.r = NULL, phy = NULL) {
             stop("mod.r must be class phylolm or lm.")
         }
         return(R2.pred.phylolm(mod, mod.r, phy))
+    }
+    
+    if (class(mod)[1] == "gls") {
+      if (!is.object(mod.r)) {
+        y <- as.numeric(fitted(mod)+resid(mod))
+        mod.r <- lm(y ~ 1)
+      }
+      if (!is.element(class(mod.r)[1], c("gls", "lm"))) {
+        stop("mod.r must be class gls or lm.")
+      }
+      return(R2.pred.gls(mod, mod.r))
     }
     
     if (class(mod)[1] == "binaryPGLMM") {
@@ -299,61 +308,105 @@ R2.pred.glmerMod <- function(mod = NA, mod.r = NA) {
 }
 
 R2.pred.phylolm <- function(mod = NULL, mod.r = NULL, phy = NULL) {
-    y <- mod$y
-    X <- mod$X
-    n <- dim(X)[1]
-    
-    if (!mod$model %in% c("lambda", "OUrandomRoot", "OUfixedRoot", "BM", "kappa", 
-        "delta", "EB", "trend")) {
-        stop("Evolution model not supported yet.")
+  y <- mod$y
+  X <- mod$X
+  n <- dim(X)[1]
+  
+  if (!mod$model %in% c("lambda", "OUrandomRoot", "OUfixedRoot", "BM", "kappa", 
+                        "delta", "EB", "trend")) {
+    stop("Evolution model not supported yet.")
+  }
+  
+  phy.f <- transf_phy(mod, phy)  # function in the utils.R
+  
+  V <- ape::vcv(phy.f)
+  R <- y - stats::fitted(mod)
+  
+  Rhat <- matrix(0, nrow = n, ncol = 1)
+  for (j in 1:n) {
+    r <- R[-j]
+    VV <- V[-j, -j]
+    iVV <- solve(VV)
+    v <- V[j, -j]
+    Rhat[j] <- v %*% iVV %*% r
+  }
+  
+  Yhat <- as.numeric(stats::fitted(mod) + Rhat)
+  SSE.pred <- var(y - Yhat)
+  
+  # reduced model
+  if (class(mod.r) == "phylolm") {
+    if (!mod.r$model %in% c("lambda", "OUrandomRoot", "OUfixedRoot", "BM", "kappa", 
+                            "delta", "EB", "trend")) {
+      stop("Evolution model not supported yet.")
     }
     
-    phy.f <- transf_phy(mod, phy)  # function in the utils.R
+    phy.r <- transf_phy(mod.r, phy)
     
-    V <- ape::vcv(phy.f)
-    R <- y - stats::fitted(mod)
-    
-    Rhat <- matrix(0, nrow = n, ncol = 1)
+    V.r <- ape::vcv(phy.r)
+    R.r <- y - stats::fitted(mod.r)
+    Rhat.r <- matrix(0, nrow = n, ncol = 1)
     for (j in 1:n) {
-        r <- R[-j]
-        VV <- V[-j, -j]
-        iVV <- solve(VV)
-        v <- V[j, -j]
-        Rhat[j] <- v %*% iVV %*% r
+      r.r <- R.r[-j]
+      VV.r <- V.r[-j, -j]
+      iVV.r <- solve(VV.r)
+      v.r <- V.r[j, -j]
+      Rhat.r[j] <- v.r %*% iVV.r %*% r.r
     }
-    
-    Yhat <- as.numeric(stats::fitted(mod) + Rhat)
-    SSE.pred <- var(y - Yhat)
-    
-    # reduced model
-    if (class(mod.r) == "phylolm") {
-        if (!mod.r$model %in% c("lambda", "OUrandomRoot", "OUfixedRoot", "BM", "kappa", 
-            "delta", "EB", "trend")) {
-            stop("Evolution model not supported yet.")
-        }
-        
-        phy.r <- transf_phy(mod.r, phy)
-        
-        V.r <- ape::vcv(phy.r)
-        R.r <- y - stats::fitted(mod.r)
-        Rhat.r <- matrix(0, nrow = n, ncol = 1)
-        for (j in 1:n) {
-            r.r <- R.r[-j]
-            VV.r <- V.r[-j, -j]
-            iVV.r <- solve(VV.r)
-            v.r <- V.r[j, -j]
-            Rhat.r[j] <- v.r %*% iVV.r %*% r.r
-        }
-        Yhat.r <- as.numeric(stats::fitted(mod.r) + Rhat.r)
+    Yhat.r <- as.numeric(stats::fitted(mod.r) + Rhat.r)
+  }
+  
+  if (class(mod.r) == "lm") {
+    Yhat.r <- stats::fitted(mod.r)
+  }
+  
+  SSE.pred.r <- var(y - Yhat.r)
+  
+  return(1 - SSE.pred/SSE.pred.r)
+}
+
+R2.pred.gls <- function(mod = NULL, mod.r = NULL) {
+  y <- as.numeric(fitted(mod.r)+resid(mod.r))
+  n <- mod$dims$N
+  
+  V <- corMatrix(mod$modelStruct$corStruct)
+  R <- y - stats::fitted(mod)
+  
+  Rhat <- matrix(0, nrow = n, ncol = 1)
+  for (j in 1:n) {
+    r <- R[-j]
+    VV <- V[-j, -j]
+    iVV <- solve(VV)
+    v <- V[j, -j]
+    Rhat[j] <- v %*% iVV %*% r
+  }
+  
+  Yhat <- as.numeric(fitted(mod) + Rhat)
+  SSE.pred <- var(y - Yhat)
+  
+  # reduced model
+  if (class(mod.r) == "gls") {
+
+    V.r <- corMatrix(mod.r$modelStruct$corStruct)
+    R.r <- y - fitted(mod.r)
+    Rhat.r <- matrix(0, nrow = n, ncol = 1)
+    for (j in 1:n) {
+      r.r <- R.r[-j]
+      VV.r <- V.r[-j, -j]
+      iVV.r <- solve(VV.r)
+      v.r <- V.r[j, -j]
+      Rhat.r[j] <- v.r %*% iVV.r %*% r.r
     }
-    
-    if (class(mod.r) == "lm") {
-        Yhat.r <- stats::fitted(mod.r)
-    }
-    
-    SSE.pred.r <- var(y - Yhat.r)
-    
-    return(1 - SSE.pred/SSE.pred.r)
+    Yhat.r <- as.numeric(fitted(mod.r) + Rhat.r)
+  }
+  
+  if (class(mod.r) == "lm") {
+    Yhat.r <- stats::fitted(mod.r)
+  }
+  
+  SSE.pred.r <- var(y - Yhat.r)
+  
+  return(1 - SSE.pred/SSE.pred.r)
 }
 
 R2.pred.binaryPGLMM <- function(mod = NULL, mod.r = NULL) {

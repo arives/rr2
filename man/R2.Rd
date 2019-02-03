@@ -8,7 +8,7 @@ R2(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = c("s2w", "NS",
   "rNS"), lik = TRUE, resid = TRUE, pred = TRUE)
 }
 \arguments{
-\item{mod}{A regression model with one of the following classes: 'lm', 'glm', lmerMod', glmerMod', 'phylolm', 'binaryPGLMM', or 'communityPGLMM'.}
+\item{mod}{A regression model with one of the following classes: 'lm', 'glm', lmerMod', glmerMod', 'phylolm', 'gls', binaryPGLMM', or 'communityPGLMM'.}
 
 \item{mod.r}{A reduced model; if not provided, the total R2 will be given by setting 'mod.r' to the model corresponding to 'mod' with the intercept as the only predictor.}
 
@@ -34,6 +34,7 @@ Details about the methods are provided under the separate functions for \code{R2
 \examples{
 library(ape)
 library(phylolm)
+library(nlme)
 library(lme4)
 
 #################
@@ -115,13 +116,21 @@ d$y <- b1 * x + e
 rownames(d) <- phy$tip.label
 
 z.x <- phylolm(y ~ 1, phy = phy, data = d, model = 'lambda')
-lam.x <- round(z.x$optpar, digits = 4)
 z.f <- phylolm(y ~ x, phy = phy, data = d, model = 'lambda')
 z.v <- lm(y ~ x, data = d)
 
 R2(z.f, z.x, phy = phy)
 R2(z.f, z.v, phy = phy)
 R2(z.f, phy = phy)
+
+# This also works for models fit with gls() in {nlme}
+z.x <- gls(y ~ 1, data = d, correlation=corPagel(1, phy), method="ML")
+z.f <- gls(y ~ x, data = d, correlation=corPagel(1, phy), method="ML")
+z.v <- lm(y ~ x, data = d)
+
+R2(z.f, z.x)
+R2(z.f, z.v)
+R2(z.f)
 
 #################
 # PGLMM with one fixed effect

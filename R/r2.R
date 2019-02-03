@@ -28,7 +28,7 @@ NULL
 #' 
 #' Details about the methods are provided under the separate functions for \code{R2.lik()}, \code{R2.resid()}, and \code{R2.pred()}. There are also many worked examples. 
 #'   
-#' @param mod A regression model with one of the following classes: 'lm', 'glm', lmerMod', glmerMod', 'phylolm', 'binaryPGLMM', or 'communityPGLMM'.
+#' @param mod A regression model with one of the following classes: 'lm', 'glm', lmerMod', glmerMod', 'phylolm', 'gls', binaryPGLMM', or 'communityPGLMM'.
 #' @param mod.r A reduced model; if not provided, the total R2 will be given by setting 'mod.r' to the model corresponding to 'mod' with the intercept as the only predictor.
 #' @param phy The phylogeny for phylogenetic models (as a 'phylo' object), which is not required to be specified for \code{R2.lik()} of non-phylogenetic models.
 #' @param sigma2_d Distribution-specific variance \eqn{\sigma^2_d}{sigma2d} (see Details) used in \code{R2.resid()}. For binomial GLMs, GLMMs and PGLMMs with logit link functions, options are c('s2w', 'NS', 'rNS'). For binomial GLMs, GLMMs and PGLMMs with probit link functions, options are c('s2w', 'NS'). Other families use 's2w'.
@@ -44,6 +44,7 @@ NULL
 #' @export
 #' @examples library(ape)
 #' library(phylolm)
+#' library(nlme)
 #' library(lme4)
 #' 
 #' #################
@@ -125,13 +126,21 @@ NULL
 #' rownames(d) <- phy$tip.label
 #' 
 #' z.x <- phylolm(y ~ 1, phy = phy, data = d, model = 'lambda')
-#' lam.x <- round(z.x$optpar, digits = 4)
 #' z.f <- phylolm(y ~ x, phy = phy, data = d, model = 'lambda')
 #' z.v <- lm(y ~ x, data = d)
 #' 
 #' R2(z.f, z.x, phy = phy)
 #' R2(z.f, z.v, phy = phy)
 #' R2(z.f, phy = phy)
+#' 
+#' # This also works for models fit with gls() in {nlme}
+#' z.x <- gls(y ~ 1, data = d, correlation=corPagel(1, phy), method="ML")
+#' z.f <- gls(y ~ x, data = d, correlation=corPagel(1, phy), method="ML")
+#' z.v <- lm(y ~ x, data = d)
+#' 
+#' R2(z.f, z.x)
+#' R2(z.f, z.v)
+#' R2(z.f)
 #' 
 #' #################
 #' # PGLMM with one fixed effect

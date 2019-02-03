@@ -143,6 +143,14 @@
 #' R2.resid(z.f, z.v, phy = phy)
 #' R2.resid(z.f, phy = phy)
 #' 
+#' z.x <- gls(y ~ 1, data = d, correlation=corPagel(1, phy), method="ML")
+#' z.f <- gls(y ~ x, data = d, correlation=corPagel(1, phy), method="ML")
+#' z.v <- lm(y ~ x, data = d)
+#' 
+#' R2.resid(z.f, z.x)
+#' R2.resid(z.f, z.v)
+#' R2.resid(z.f)
+#' 
 #' #################
 #' # PGLMM with one fixed effect
 #' 
@@ -189,8 +197,8 @@ R2.resid <- function(mod = NULL, mod.r = NULL, phy = NULL,
     if (class(mod)[1] == "merModLmerTest") 
         class(mod) <- "lmerMod"
     
-    if (!is.element(class(mod)[1], c("lm", "glm", "lmerMod", "glmerMod", "phylolm", "binaryPGLMM"))) {
-        stop("mod must be class one of classes lm, glm, lmerMod, glmerMod, phylolm, binaryPGLMM.")
+    if (!is.element(class(mod)[1], c("lm", "glm", "lmerMod", "glmerMod", "phylolm", "gls", "binaryPGLMM"))) {
+        stop("mod must be class one of classes lm, glm, lmerMod, glmerMod, phylolm, gls, binaryPGLMM.")
     }
     
     sigma2_d <- match.arg(sigma2_d)
@@ -261,17 +269,28 @@ R2.resid <- function(mod = NULL, mod.r = NULL, phy = NULL,
     }
     
     if (class(mod)[1] == "phylolm") {
-        if (!is.object(phy)) {
-            stop("For phylolm you must provide the phylo object")
-        }
-        if (!is.object(mod.r)) {
-            y <- mod$y
-            mod.r <- lm(y ~ 1)
-        }
-        if (!is.element(class(mod.r)[1], c("phylolm", "lm"))) {
-            stop("mod.r must be class phylolm or lm.")
-        }
-        return(R2.resid.phylolm(mod, mod.r, phy))
+      if (!is.object(phy)) {
+        stop("For phylolm you must provide the phylo object")
+      }
+      if (!is.object(mod.r)) {
+        y <- mod$y
+        mod.r <- lm(y ~ 1)
+      }
+      if (!is.element(class(mod.r)[1], c("phylolm", "lm"))) {
+        stop("mod.r must be class phylolm or lm.")
+      }
+      return(R2.resid.phylolm(mod, mod.r, phy))
+    }
+    
+    if (class(mod)[1] == "gls") {
+      if (!is.object(mod.r)) {
+        y <- as.numeric(fitted(mod)+resid(mod))
+        mod.r <- lm(y ~ 1)
+      }
+      if (!is.element(class(mod.r)[1], c("gls", "lm"))) {
+        stop("mod.r must be class gls or lm.")
+      }
+      return(R2.resid.gls(mod, mod.r))
     }
     
     if (class(mod)[1] == "binaryPGLMM") {
@@ -525,6 +544,36 @@ R2.resid.phylolm <- function(mod = NULL, mod.r = NULL, phy = NULL) {
     
     R2.resid <- 1 - (scal * sigma2)/(scal.r * sigma2.r)
     return(R2.resid)
+}
+
+R2.resid.gls <- function(mod = NULL, mod.r = NULL) {
+  
+  n <- mod$dims$N
+  
+  VCV.f <- corMatrix(mod$modelStruct$corStruct)
+  phy.f <- vcv2phylo(VCV.f)
+  
+  scal <- sum(phy.f$edge.length)/n
+  sigma2 <- mod$sigma^2
+  
+  if (class(mod.r) == "gls") {
+
+    VCV.r <- corMatrix(mod.r$modelStruct$corStruct)
+    phy.r <- vcv2phylo(VCV.r)
+    
+    scal.r <- sum(phy.r$edge.length)/n
+    sigma2.r <- mod.r$sigma^2
+  }
+  
+  if (class(mod.r) == "lm") {
+    X.r <- model.matrix(mod.r)
+    p.r <- dim(X.r)[2]
+    scal.r <- 1
+    sigma2.r <- (n - p.r)/n * stats::sigma(mod.r)^2
+  }
+  
+  R2.resid <- 1 - (scal * sigma2)/(scal.r * sigma2.r)
+  return(R2.resid)
 }
 
 R2.resid.binaryPGLMM <- function(mod = NULL, mod.r = NULL, sigma2_d = sigma2_d) {

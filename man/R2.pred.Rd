@@ -7,7 +7,7 @@
 R2.pred(mod = NULL, mod.r = NULL, phy = NULL)
 }
 \arguments{
-\item{mod}{A regression model with one of the following classes: 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'binaryPGLMM', or 'communityPGLMM'.}
+\item{mod}{A regression model with one of the following classes: 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'gls', 'binaryPGLMM', or 'communityPGLMM'.}
 
 \item{mod.r}{A reduced model; if not provided, the total R2 will be given by setting 'mod.r' to the model corresponding to 'mod' with the intercept as the only predictor.}
 
@@ -30,7 +30,7 @@ where y are the observed data, and y.fitted.f and y.fitted.r are the fitted (pre
 
 Note that the version of \code{binaryPGLMM()} in the package ape is replaced by a version contained within {rr2} that outputs all of the required information for the calculation of R2.resid.
 
-\strong{PGLS (phylolm):}
+\strong{PGLS (phylolm and gls):}
 
 For PGLS, the total R2.pred is computed by removing each datum one at a time, predicting its value from the fitted model, repeating this for all data points, and then calculating the variance of the difference between observed and fitted values. The predictions are calculated as
 
@@ -125,14 +125,13 @@ d$x <- x[match(names(e), names(x))]
 d$y <- b1 * x + e
 rownames(d) <- phy$tip.label
 
-z.x <- phylolm(y ~ 1, phy = phy, data = d, model = 'lambda')
-lam.x <- round(z.x$optpar, digits = 4)
-z.f <- phylolm(y ~ x, phy = phy, data = d, model = 'lambda')
+z.x <- gls(y ~ 1, data = d, correlation=corPagel(1, phy), method="ML")
+z.f <- gls(y ~ x, data = d, correlation=corPagel(1, phy), method="ML")
 z.v <- lm(y ~ x, data = d)
 
-R2.pred(z.f, z.x, phy = phy)
-R2.pred(z.f, z.v, phy = phy)
-R2.pred(z.f, phy = phy)
+R2.pred(z.f, z.x)
+R2.pred(z.f, z.v)
+R2.pred(z.f)
 
 #################
 # PGLMM with one fixed effect
