@@ -97,6 +97,11 @@ test_that("when missing mod.r, the functions will automatically create one, long
                  R2(mod = z.f.pgls2, phy = phy))
   }
   
+  # GLS
+  z.f.gls <- nlme::gls(y_pgls ~ x_trait, data = d, correlation = ape::corPagel(1, phy), method = "ML")
+  expect_equal(R2(mod = z.f.gls, mod.r = z.v.pgls),
+               R2(mod = z.f.gls))
+  
   # binaryPGLMM
   z.f.plog <- rr2::binaryPGLMM(y_phy_binary ~ x1, data = d, phy = phy)
   z.v.plog <- glm(y_phy_binary ~ 1, data = d, family = "binomial")

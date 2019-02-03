@@ -1,5 +1,5 @@
 #' @importFrom utils tail
-#' @importFrom stats anova binomial family glm lm logLik model.frame model.matrix model.response optim pchisq pnorm poisson quantile reorder rnorm sd sigma update var na.omit fitted predict dnorm qnorm
+#' @importFrom stats anova binomial family glm lm logLik model.frame model.matrix model.response optim pchisq pnorm poisson quantile reorder rnorm sd sigma update var na.omit fitted predict dnorm qnorm resid 
 #' @importMethodsFrom Matrix t %*% crossprod diag tcrossprod solve determinant update
 NULL
 

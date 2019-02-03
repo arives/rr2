@@ -44,6 +44,7 @@
 #' @examples library(ape)
 #' library(phylolm)
 #' library(lme4)
+#' library(nlme)
 #' 
 #' #################
 #' # LMM with two fixed and two random effects 
@@ -118,8 +119,8 @@
 #' d$y <- b1 * x + e
 #' rownames(d) <- phy$tip.label
 #' 
-#' z.x <- gls(y ~ 1, data = d, correlation=corPagel(1, phy), method="ML")
-#' z.f <- gls(y ~ x, data = d, correlation=corPagel(1, phy), method="ML")
+#' z.x <- gls(y ~ 1, data = d, correlation = corPagel(1, phy), method = "ML")
+#' z.f <- gls(y ~ x, data = d, correlation = corPagel(1, phy), method = "ML")
 #' z.v <- lm(y ~ x, data = d)
 #' 
 #' R2.pred(z.f, z.x)
@@ -369,7 +370,7 @@ R2.pred.gls <- function(mod = NULL, mod.r = NULL) {
   y <- as.numeric(fitted(mod.r)+resid(mod.r))
   n <- mod$dims$N
   
-  V <- corMatrix(mod$modelStruct$corStruct)
+  V <- nlme::corMatrix(mod$modelStruct$corStruct)
   R <- y - stats::fitted(mod)
   
   Rhat <- matrix(0, nrow = n, ncol = 1)
@@ -387,7 +388,7 @@ R2.pred.gls <- function(mod = NULL, mod.r = NULL) {
   # reduced model
   if (class(mod.r) == "gls") {
 
-    V.r <- corMatrix(mod.r$modelStruct$corStruct)
+    V.r <- nlme::corMatrix(mod.r$modelStruct$corStruct)
     R.r <- y - fitted(mod.r)
     Rhat.r <- matrix(0, nrow = n, ncol = 1)
     for (j in 1:n) {

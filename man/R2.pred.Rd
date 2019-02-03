@@ -51,6 +51,7 @@ For compatibility and generating reduced models, rr2 will compute R2.pred for LM
 library(ape)
 library(phylolm)
 library(lme4)
+library(nlme)
 
 #################
 # LMM with two fixed and two random effects 
@@ -125,8 +126,8 @@ d$x <- x[match(names(e), names(x))]
 d$y <- b1 * x + e
 rownames(d) <- phy$tip.label
 
-z.x <- gls(y ~ 1, data = d, correlation=corPagel(1, phy), method="ML")
-z.f <- gls(y ~ x, data = d, correlation=corPagel(1, phy), method="ML")
+z.x <- gls(y ~ 1, data = d, correlation = corPagel(1, phy), method = "ML")
+z.f <- gls(y ~ x, data = d, correlation = corPagel(1, phy), method = "ML")
 z.v <- lm(y ~ x, data = d)
 
 R2.pred(z.f, z.x)

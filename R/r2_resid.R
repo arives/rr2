@@ -60,6 +60,7 @@
 #' @examples library(ape)
 #' library(phylolm)
 #' library(lme4)
+#' library(nlme)
 #' 
 #' #################
 #' # LMM with two fixed and two random effects 
@@ -144,8 +145,8 @@
 #' R2.resid(z.f, phy = phy)
 #' 
 #' # This also works for models fit with gls() in {nlme}
-#' z.x <- gls(y ~ 1, data = d, correlation=corPagel(1, phy), method="ML")
-#' z.f <- gls(y ~ x, data = d, correlation=corPagel(1, phy), method="ML")
+#' z.x <- gls(y ~ 1, data = d, correlation = corPagel(1, phy), method = "ML")
+#' z.f <- gls(y ~ x, data = d, correlation = corPagel(1, phy), method = "ML")
 #' z.v <- lm(y ~ x, data = d)
 #' 
 #' R2.resid(z.f, z.x)
@@ -551,16 +552,16 @@ R2.resid.gls <- function(mod = NULL, mod.r = NULL) {
   
   n <- mod$dims$N
   
-  VCV.f <- corMatrix(mod$modelStruct$corStruct)
-  phy.f <- vcv2phylo(VCV.f)
+  VCV.f <- nlme::corMatrix(mod$modelStruct$corStruct)
+  phy.f <- ape::vcv2phylo(VCV.f)
   
   scal <- sum(phy.f$edge.length)/n
   sigma2 <- mod$sigma^2
   
   if (class(mod.r) == "gls") {
 
-    VCV.r <- corMatrix(mod.r$modelStruct$corStruct)
-    phy.r <- vcv2phylo(VCV.r)
+    VCV.r <- nlme::corMatrix(mod.r$modelStruct$corStruct)
+    phy.r <- ape::vcv2phylo(VCV.r)
     
     scal.r <- sum(phy.r$edge.length)/n
     sigma2.r <- mod.r$sigma^2

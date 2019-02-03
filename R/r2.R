@@ -44,8 +44,8 @@ NULL
 #' @export
 #' @examples library(ape)
 #' library(phylolm)
-#' library(nlme)
 #' library(lme4)
+#' library(nlme)
 #' 
 #' #################
 #' # LMM with two fixed and two random effects 
@@ -134,8 +134,8 @@ NULL
 #' R2(z.f, phy = phy)
 #' 
 #' # This also works for models fit with gls() in {nlme}
-#' z.x <- gls(y ~ 1, data = d, correlation=corPagel(1, phy), method="ML")
-#' z.f <- gls(y ~ x, data = d, correlation=corPagel(1, phy), method="ML")
+#' z.x <- gls(y ~ 1, data = d, correlation = corPagel(1, phy), method = "ML")
+#' z.f <- gls(y ~ x, data = d, correlation = corPagel(1, phy), method = "ML")
 #' z.v <- lm(y ~ x, data = d)
 #' 
 #' R2(z.f, z.x)

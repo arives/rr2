@@ -72,6 +72,7 @@ For compatibility and generating reduced models, rr2 will compute \code{R2.resid
 library(ape)
 library(phylolm)
 library(lme4)
+library(nlme)
 
 #################
 # LMM with two fixed and two random effects 
@@ -156,8 +157,8 @@ R2.resid(z.f, z.v, phy = phy)
 R2.resid(z.f, phy = phy)
 
 # This also works for models fit with gls() in {nlme}
-z.x <- gls(y ~ 1, data = d, correlation=corPagel(1, phy), method="ML")
-z.f <- gls(y ~ x, data = d, correlation=corPagel(1, phy), method="ML")
+z.x <- gls(y ~ 1, data = d, correlation = corPagel(1, phy), method = "ML")
+z.f <- gls(y ~ x, data = d, correlation = corPagel(1, phy), method = "ML")
 z.v <- lm(y ~ x, data = d)
 
 R2.resid(z.f, z.x)

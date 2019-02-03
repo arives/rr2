@@ -25,9 +25,11 @@
 #' 
 #' Nagelkerke 1991. A note on a general definition of the coefficient of determination. Biometrika 78:691–692.
 #' 
-#' @examples library(ape)
+#' @examples 
+#' library(ape)
 #' library(phylolm)
 #' library(lme4)
+#' library(nlme)
 #' 
 #' #################
 #' # LMM with two fixed and two random effects 
@@ -116,8 +118,8 @@
 #' R2.lik(z.f)
 #' 
 #' # This also works for models fit with gls() in {nlme}
-#' z.x <- gls(y ~ 1, data = d, correlation=corPagel(1, phy), method="ML")
-#' z.f <- gls(y ~ x, data = d, correlation=corPagel(1, phy), method="ML")
+#' z.x <- gls(y ~ 1, data = d, correlation = corPagel(1, phy), method = "ML")
+#' z.f <- gls(y ~ x, data = d, correlation = corPagel(1, phy), method = "ML")
 #' z.v <- lm(y ~ x, data = d)
 #' R2.lik(z.f, z.x)
 #' R2.lik(z.f, z.v)
@@ -244,7 +246,7 @@ R2.lik <- function(mod = NULL, mod.r = NULL) {
     
     if (class(mod)[1] == "gls") {
       if (!is.object(mod.r)) {
-        y <- as.numeric(fitted(mod)+resid(mod))
+        y <- as.numeric(fitted(mod) + resid(mod))
         mod.r <- lm(y ~ 1)
       }
       if (!is.element(class(mod.r)[1], c("gls", "lm"))) {

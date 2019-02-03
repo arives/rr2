@@ -153,11 +153,17 @@ R2.resid(mod = z.f.glmm, mod.r = z.v.glmm, sigma2_d = "rNS")
 
 ```{r pgls}
 z.f.pgls <- phylolm::phylolm(y_pgls ~ x_trait, phy = phy, data = d, model = "lambda")
-z.v.pgls <- lm(y_pgls ~ x_trait, data = d)
+z.v.lm <- lm(y_pgls ~ x_trait, data = d)
 
 # phy is needed for phylogenetic models' R2.resid and R2.pred
-R2(mod = z.f.pgls, mod.r = z.v.pgls, phy = phy)
+R2(mod = z.f.pgls, mod.r = z.v.lm, phy = phy)
 R2(mod = z.f.pgls, phy = phy)
+
+# This also works for models fit with nlme::gls()
+z.f.gls <- nlme::gls(y_pgls ~ x_trait, data = d, correlation = ape::corPagel(1, phy), method = "ML")
+z.x.gls <- nlme::gls(y_pgls ~ 1, data = d, correlation = ape::corPagel(1, phy), method = "ML")
+R2(mod = z.f.gls, mod.r = z.v.lm)
+R2(mod = z.f.gls)
 ```
 
 ## Phylogenetic Logistic Regression

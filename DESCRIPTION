@@ -1,7 +1,7 @@
 Package: rr2
 Type: Package
 Title: R2s for Regression Models
-Version: 1.0.0
+Version: 1.0.1
 Authors@R: c(
     person("Anthony", "Ives", , "arives@wisc.edu", c("aut", "cre")),
     person("Daijiang", "Li", , "daijianglee@gmail.com", role = "ctb"))
@@ -18,7 +18,8 @@ Imports:
     phylolm,
     ape,
     utils,
-    Matrix
+    Matrix,
+    nlme
 RoxygenNote: 6.1.1
 Suggests: testthat
 URL: https://github.com/arives/rr2

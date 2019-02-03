@@ -3,7 +3,8 @@
 [![CRAN
 status](https://www.r-pkg.org/badges/version/rr2)](https://cran.r-project.org/package=rr2)
 [![CRAN RStudio mirror
-downloads](http://cranlogs.r-pkg.org/badges/rr2)](http://www.r-pkg.org/pkg/rr2) [![CRAN RStudio mirror
+downloads](http://cranlogs.r-pkg.org/badges/rr2)](http://www.r-pkg.org/pkg/rr2)
+[![CRAN RStudio mirror
 downloads](http://cranlogs.r-pkg.org/badges/grand-total/rr2?color=green)](http://www.r-pkg.org/pkg/rr2)
 
 Goal
@@ -251,10 +252,10 @@ PGLS
 
 ``` r
 z.f.pgls <- phylolm::phylolm(y_pgls ~ x_trait, phy = phy, data = d, model = "lambda")
-z.v.pgls <- lm(y_pgls ~ x_trait, data = d)
+z.v.lm <- lm(y_pgls ~ x_trait, data = d)
 
 # phy is needed for phylogenetic models' R2.resid and R2.pred
-R2(mod = z.f.pgls, mod.r = z.v.pgls, phy = phy)
+R2(mod = z.f.pgls, mod.r = z.v.lm, phy = phy)
 ```
 
     ##    R2_lik  R2_resid   R2_pred 
@@ -266,6 +267,23 @@ R2(mod = z.f.pgls, phy = phy)
 
     ##    R2_lik  R2_resid   R2_pred 
     ## 0.8642865 0.8862266 0.8777782
+
+``` r
+# This also works for models fit with nlme::gls()
+z.f.gls <- nlme::gls(y_pgls ~ x_trait, data = d, correlation = ape::corPagel(1, phy), method = "ML")
+z.x.gls <- nlme::gls(y_pgls ~ 1, data = d, correlation = ape::corPagel(1, phy), method = "ML")
+R2(mod = z.f.gls, mod.r = z.v.lm)
+```
+
+    ##    R2_lik  R2_resid   R2_pred 
+    ## 0.2353912 0.3590294 0.3114048
+
+``` r
+R2(mod = z.f.gls)
+```
+
+    ##    R2_lik  R2_resid   R2_pred 
+    ## 0.8642865 0.8862315 0.8777784
 
 Phylogenetic Logistic Regression
 --------------------------------
