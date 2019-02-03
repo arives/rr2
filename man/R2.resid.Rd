@@ -8,7 +8,7 @@ R2.resid(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = c("s2w",
   "NS", "rNS"))
 }
 \arguments{
-\item{mod}{A regression model with one of the following classes: 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', or 'binaryPGLMM'. For 'glmerMod', only family = c('binomial', 'poisson') are supported.}
+\item{mod}{A regression model with one of the following classes: 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'gls', or 'binaryPGLMM'. For 'glmerMod', only family = c('binomial', 'poisson') are supported.}
 
 \item{mod.r}{A reduced model; if not provided, the total R2 will be given by setting 'mod.r' to the model corresponding to 'mod' with the intercept as the only predictor.}
 
@@ -155,6 +155,7 @@ R2.resid(z.f, z.x, phy = phy)
 R2.resid(z.f, z.v, phy = phy)
 R2.resid(z.f, phy = phy)
 
+# This also works for models fit with gls() in {nlme}
 z.x <- gls(y ~ 1, data = d, correlation=corPagel(1, phy), method="ML")
 z.f <- gls(y ~ x, data = d, correlation=corPagel(1, phy), method="ML")
 z.v <- lm(y ~ x, data = d)

@@ -8,7 +8,7 @@
 #' @return R2.pred value.
 #' @export
 #'
-#' @details  R2.pred works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', 'binaryPGLMM', and 'communityPGLMM' (family = gaussian and binomial).
+#' @details  R2.pred works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', 'gls', binaryPGLMM', and 'communityPGLMM' (family = gaussian and binomial).
 #' 
 #' \strong{LMM (lmerMod), GLMM (glmerMod), PGLMM (binaryPGLMM and communityPGLMM):}
 #' 
