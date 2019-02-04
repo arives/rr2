@@ -11,8 +11,7 @@ Goal
 ====
 
 This package provides three R<sup>2</sup>s for statistical models with
-correlated errors including classes: ‘lmerMod’ (LMM), ‘glmerMod’ (GLMM),
-‘phylolm’ (Phylogenetic GLS), and ‘binaryPGLMM/phyloglm/communityPGLMM’
+correlated errors including classes: ‘lmerMod’ (LMM), ‘glmerMod’ (GLMM), 'gls', ‘phylolm’ (Phylogenetic GLS), and ‘binaryPGLMM/phyloglm/communityPGLMM’
 (Phylogenetic Logistic Regression). Detailed technical descriptions can
 be found in [Ives 2018](https://doi.org/10.1093/sysbio/syy060).
 
@@ -57,6 +56,7 @@ This package also has some helper functions such as `inv.logit()`,
 | LMM: lmerMod                     | R2.pred, R2.resid, R2.lik |
 | GLMM: glmerMod                   | R2.pred, R2.resid, R2.lik |
 | PGLS: phylolm                    | R2.pred, R2.resid, R2.lik |
+| PGLS: gls                        | R2.pred, R2.resid, R2.lik |
 | PGLMM: binaryPGLMM               | R2.pred, R2.resid, ——-    |
 | PGLMM: phyloglm                  | ——-, ——–, R2.lik          |
 | PGLMM: communityPGLMM (gaussian) | R2.pred, ——–, R2.lik      |
