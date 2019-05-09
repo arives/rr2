@@ -153,6 +153,29 @@
 #' R2.resid(z.f, z.v)
 #' R2.resid(z.f)
 #' 
+#' # But note that you need to define weights for gls() with non-ultrametric trees; if not, you will get a error "Matrix is not block-diagonal"
+#' 
+#' phy.nu <- rtree(n = n)
+#' 
+#' # Generate random data
+#' e <- signal^0.5 * rTraitCont(phy.nu, model = 'BM', sigma = 1) + (1-signal)^0.5 * rnorm(n = n)
+#' d$x <- x[match(names(e), names(x))]
+#' d$y <- b1 * x + e
+#' rownames(d) <- phy.nu$tip.label
+#' 
+#' weights <- diag(vcv.phylo(phy.nu))
+#' z.x <- gls(y ~ 1,data = d, 
+#'          correlation = corPagel(1, phy.nu),
+#'          weights=varFixed(~weights), method = "ML")
+#' z.f <- gls(y ~ x,data = d, 
+#'          correlation = corPagel(1, phy.nu),
+#'          weights=varFixed(~weights), method = "ML")
+#' z.v <- lm(y ~ x, data = d)
+#' 
+#' R2.resid(z.f, z.x)
+#' R2.resid(z.f, z.v)
+#' R2.resid(z.f)
+#' 
 #' #################
 #' # PGLMM with one fixed effect
 #' 
@@ -552,16 +575,28 @@ R2.resid.gls <- function(mod = NULL, mod.r = NULL) {
   
   n <- mod$dims$N
   
-  VCV.f <- nlme::corMatrix(mod$modelStruct$corStruct)
-  phy.f <- ape::vcv2phylo(VCV.f)
+  cormatrix <- nlme::corMatrix(mod$modelStruct$corStruct)
+  if(!is.null(attr(mod$modelStruct$varStruct, 'weights'))){
+    VCVdiag <- 1/attr(mod$modelStruct$varStruct, 'weights')
+    VCV.f <- diag(VCVdiag) %*% cormatrix %*% diag(VCVdiag)
+    phy.f <- ape::vcv2phylo(VCV.f)
+  }else{
+    phy.f <- ape::vcv2phylo(cormatrix)
+  }
   
   scal <- sum(phy.f$edge.length)/n
   sigma2 <- mod$sigma^2
   
   if (class(mod.r) == "gls") {
 
-    VCV.r <- nlme::corMatrix(mod.r$modelStruct$corStruct)
-    phy.r <- ape::vcv2phylo(VCV.r)
+    cormatrix.r <- nlme::corMatrix(mod.r$modelStruct$corStruct)
+    if(!is.null(attr(mod.r$modelStruct$varStruct, 'weights'))){
+      VCVdiag <- 1/attr(mod.r$modelStruct$varStruct, 'weights')
+      VCV.r <- diag(VCVdiag) %*% cormatrix.r %*% diag(VCVdiag)
+      phy.r <- ape::vcv2phylo(VCV.r)
+    }else{
+      phy.r <- ape::vcv2phylo(cormatrix.r)
+    }
     
     scal.r <- sum(phy.r$edge.length)/n
     sigma2.r <- mod.r$sigma^2

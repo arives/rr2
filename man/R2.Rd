@@ -132,6 +132,28 @@ R2(z.f, z.x)
 R2(z.f, z.v)
 R2(z.f)
 
+# But note that you need to define weights for gls() with non-ultrametric trees; if not, you will get a error from R2.resid,  "Matrix is not block-diagonal"
+
+phy.nu <- rtree(n = n)
+# Generate random data
+e <- signal^0.5 * rTraitCont(phy.nu, model = 'BM', sigma = 1) + (1-signal)^0.5 * rnorm(n = n)
+d$x <- x[match(names(e), names(x))]
+d$y <- b1 * x + e
+rownames(d) <- phy.nu$tip.label
+
+weights <- diag(vcv.phylo(phy.nu))
+z.x <- gls(y ~ 1,data = d, 
+           correlation = corPagel(1, phy.nu),
+           weights=varFixed(~weights), method = "ML")
+z.f <- gls(y ~ x,data = d, 
+           correlation = corPagel(1, phy.nu),
+           weights=varFixed(~weights), method = "ML")
+z.v <- lm(y ~ x, data = d)
+
+R2(z.f, z.x)
+R2(z.f, z.v)
+R2(z.f)
+
 #################
 # PGLMM with one fixed effect
 
