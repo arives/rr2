@@ -132,7 +132,8 @@ R2(z.f, z.x)
 R2(z.f, z.v)
 R2(z.f)
 
-# But note that you need to define weights for gls() with non-ultrametric trees; if not, you will get a error from R2.resid,  "Matrix is not block-diagonal"
+# But note that you need to define weights for gls() with non-ultrametric trees; 
+# if not, you will get a error from R2.resid,  "Matrix is not block-diagonal"
 
 phy.nu <- rtree(n = n)
 # Generate random data

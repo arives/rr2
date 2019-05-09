@@ -1,6 +1,6 @@
 #' rr2: An R package to calculate R2s for regression models
 #' 
-# Copyright (C) 2018 Anthony Ives; Daijiang Li
+# Copyright (C) 2019 Anthony Ives; Daijiang Li
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -142,7 +142,8 @@ NULL
 #' R2(z.f, z.v)
 #' R2(z.f)
 #' 
-#' # But note that you need to define weights for gls() with non-ultrametric trees; if not, you will get a error from R2.resid,  "Matrix is not block-diagonal"
+#' # But note that you need to define weights for gls() with non-ultrametric trees; 
+#' # if not, you will get a error from R2.resid,  "Matrix is not block-diagonal"
 #' 
 #' phy.nu <- rtree(n = n)
 

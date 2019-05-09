@@ -165,7 +165,8 @@ R2.resid(z.f, z.x)
 R2.resid(z.f, z.v)
 R2.resid(z.f)
 
-# But note that you need to define weights for gls() with non-ultrametric trees; if not, you will get a error "Matrix is not block-diagonal"
+# But note that you need to define weights for gls() with non-ultrametric trees; 
+# if not, you will get a error "Matrix is not block-diagonal"
 
 phy.nu <- rtree(n = n)
 
