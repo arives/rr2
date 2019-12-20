@@ -18,7 +18,7 @@ R2.lik value.
 Calculate partial and total R2s for LMM, GLMM, PGLS, and PGLMM using R2.lik, an R2 based on the likelihood of observing the data.
 }
 \details{
-\code{R2.lik()} works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', and 'communityPGLMM' (family =  'gaussian' only). It is implemented as
+\code{R2.lik()} works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', 'pglmm', 'pglmm_compare', and 'communityPGLMM' (family =  'gaussian' only). It is implemented as
 
 \deqn{partial R2 = 1 - exp(-2/n * (logLik(mod.f) - logLik(mod.r)))}
 
@@ -33,6 +33,7 @@ library(ape)
 library(phylolm)
 library(lme4)
 library(nlme)
+library(phyr)
 
 #################
 # LMM with two fixed and two random effects 
@@ -156,6 +157,15 @@ R2.lik(z.f, z.x)
 R2.lik(z.f, z.v)
 R2.lik(z.f)
 
+# The data can also be analyzed as a PGLMM using pglmm_compare()
+z.f <- pglmm_compare(y ~ x, data = d, family = 'binomial', tree = phy)
+z.x <- pglmm_compare(y ~ 1, data = d, family = 'binomial', tree = phy)
+z.v <- glm(y ~ x, data = d, family = 'binomial')
+
+R2.lik(z.f, z.x)
+R2.lik(z.f, z.v)
+R2.lik(z.f)
+
 }
 \references{
 Ives A.R. and Li D. 2018. rr2: An R package to calculate R2s for regression models. Journal of Open Source Software. DOI:10.21105/joss.01028
@@ -165,7 +175,7 @@ Ives A.R. 2018. R2s for Correlated Data: Phylogenetic Models, LMMs, and GLMMs. S
 Nagelkerke 1991. A note on a general definition of the coefficient of determination. Biometrika 78:691–692.
 }
 \seealso{
-MuMIn, lme4, ape, phylolm, pez
+MuMIn, lme4, ape, phyr, phylolm, pez
 }
 \author{
 Anthony R. Ives

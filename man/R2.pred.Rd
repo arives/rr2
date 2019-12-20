@@ -20,9 +20,9 @@ R2.pred value.
 Calculate partial and total R2s for LMM, GLMM, PGLS, and PGLMM using R2.pred, an R2 based on the variance of the difference between the observed and predicted values of a fitted model.
 }
 \details{
-R2.pred works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', 'gls', binaryPGLMM', and 'communityPGLMM' (family = gaussian and binomial).
+R2.pred works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', 'gls', 'pglmm', 'pglmm_compare', binaryPGLMM', and 'communityPGLMM' (family = gaussian and binomial).
 
-\strong{LMM (lmerMod), GLMM (glmerMod), PGLMM (binaryPGLMM and communityPGLMM):}
+\strong{LMM (lmerMod), GLMM (glmerMod), PGLMM (pglmm, pglmm_compare, binaryPGLMM and communityPGLMM):}
 
 \deqn{partial R2 = 1 - var(y - y.fitted.f)/var(y - y.fitted.r)}
 
@@ -52,6 +52,7 @@ library(ape)
 library(phylolm)
 library(lme4)
 library(nlme)
+library(phyr)
 
 #################
 # LMM with two fixed and two random effects 
@@ -154,10 +155,9 @@ e <- e[match(phy$tip.label, names(e))]
 d$y <- rbinom(n = n, size = 1, prob = inv.logit(b1 * d$x + e))
 rownames(d) <- phy$tip.label
 
-# Use the function binaryPGLMM() from the rr2 package rather than ape.
-z.f <- rr2::binaryPGLMM(y ~ x, data = d, phy = phy)
-z.x <- rr2::binaryPGLMM(y ~ 1, data = d, phy = phy)
-z.v <- glm(y ~ x, data = d, family = 'binomial')
+z.f <- pglmm_compare(y ~ x, data = d, family = "binomial", tree = phy)
+z.x <- pglmm_compare(y ~ 1, data = d, family = "binomial", tree = phy)
+z.v <- glm(y ~ x, data = d, family = "binomial")
 
 R2.pred(z.f, z.x)
 R2.pred(z.f, z.v)

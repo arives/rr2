@@ -7,7 +7,7 @@
 #' @return R2.lik value.
 #' @export
 #'
-#' @details  \code{R2.lik()} works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', and 'communityPGLMM' (family =  'gaussian' only). It is implemented as
+#' @details  \code{R2.lik()} works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', 'pglmm', 'pglmm_compare', and 'communityPGLMM' (family =  'gaussian' only). It is implemented as
 #' 
 #' \deqn{partial R2 = 1 - exp(-2/n * (logLik(mod.f) - logLik(mod.r)))}
 #' 
@@ -17,7 +17,7 @@
 #' 
 #' \code{R2.lik()} is also computed for LMMs and GLMMs in the {MuMIn} package.
 #' 
-#' @seealso MuMIn, lme4, ape, phylolm, pez
+#' @seealso MuMIn, lme4, ape, phyr, phylolm, pez
 #' @author Anthony R. Ives
 #' @references Ives A.R. and Li D. 2018. rr2: An R package to calculate R2s for regression models. Journal of Open Source Software. DOI:10.21105/joss.01028
 #' 
@@ -30,6 +30,7 @@
 #' library(phylolm)
 #' library(lme4)
 #' library(nlme)
+#' library(phyr)
 #' 
 #' #################
 #' # LMM with two fixed and two random effects 
@@ -153,13 +154,22 @@
 #' R2.lik(z.f, z.v)
 #' R2.lik(z.f)
 #' 
+#' # The data can also be analyzed as a PGLMM using pglmm_compare()
+#' z.f <- pglmm_compare(y ~ x, data = d, family = 'binomial', tree = phy)
+#' z.x <- pglmm_compare(y ~ 1, data = d, family = 'binomial', tree = phy)
+#' z.v <- glm(y ~ x, data = d, family = 'binomial')
+#' 
+#' R2.lik(z.f, z.x)
+#' R2.lik(z.f, z.v)
+#' R2.lik(z.f)
+#' 
 R2.lik <- function(mod = NULL, mod.r = NULL) {
     if (class(mod)[1] == "merModLmerTest") 
         class(mod) <- "lmerMod"
     
     if (!is.element(class(mod)[1], c("lm", "glm", "lmerMod", "glmerMod", "phylolm", 
-        "phyloglm", "gls", "communityPGLMM"))) {
-        stop("mod must be class one of classes lm, glm, lmerMod, glmerMod, phylolm, phyloglm, gls, communityPGLMM.")
+        "phyloglm", "gls", "pglmm", "pglmm_compare", "communityPGLMM"))) {
+        stop("mod must be class one of classes lm, glm, lmerMod, glmerMod, phylolm, phyloglm, gls, pglmm, pglmm_compare, communityPGLMM.")
     }
     
     if (class(mod)[1] == "lm") {
@@ -255,22 +265,36 @@ R2.lik <- function(mod = NULL, mod.r = NULL) {
       return(R2.lik.gls(mod, mod.r))
     }
 
+    if (class(mod)[1] %in% c("pglmm", "pglmm_compare")) {
+      if (mod$REML == TRUE) 
+        stop("mod was fitted with REML, please set it to FALSE and re-fit it")
+      
+      if (!is.object(mod.r)) {
+        y <- mod$Y
+        mod.r <- lm(y ~ 1)
+      }
+      if (!is.element(class(mod.r)[1], c("pglmm", "pglmm_compare", "lm"))) {
+        stop("mod.r must be class pglmm, pglmm_compare or lm.")
+      }
+      return(R2.like.pglmm(mod, mod.r))
+    }
+
     if (class(mod)[1] == "communityPGLMM") {
-        if (mod$family == "binomial") 
-            stop("Binary communityPGLMMs do not have log likelihood,
-                  If you are interested in LRT of random terms, use
-                  phyr::communityPGLMM.binary.LRT()")
-        if (mod$REML == TRUE) 
-            stop("mod was fitted with REML, please set it to FALSE and re-fit it")
+     if (mod$family == "binomial") 
+      stop("Binary communityPGLMMs do not have log likelihood,
+               If you are interested in LRT of random terms, use
+              phyr::communityPGLMM.binary.LRT()")
+     if (mod$REML == TRUE) 
+      stop("mod was fitted with REML, please set it to FALSE and re-fit it")
         
-        if (!is.object(mod.r)) {
-            y <- mod$Y
-            mod.r <- lm(y ~ 1)
-        }
-        if (!is.element(class(mod.r)[1], c("communityPGLMM", "lm"))) {
-            stop("mod.r must be class communityPGLMM or lm.")
-        }
-        return(R2.like.communityPGLMM(mod, mod.r))
+     if (!is.object(mod.r)) {
+      y <- mod$Y
+      mod.r <- lm(y ~ 1)
+      }
+      if (!is.element(class(mod.r)[1], c("communityPGLMM", "lm"))) {
+       stop("mod.r must be class communityPGLMM or lm.")
+      }
+      return(R2.like.communityPGLMM(mod, mod.r))
     }
 }
 
@@ -336,7 +360,16 @@ R2.lik.gls <- function(mod = NULL, mod.r = NULL) {
   return(R2.lik)
 }
 
-
+R2.like.pglmm <- function(mod = NULL, mod.r = NULL) {
+  n <- nrow(mod$X)
+  if (class(mod.r) == "lm") {
+    ll.r <- logLik(mod.r)[[1]]
+  } else {
+    ll.r <- mod.r$logLik
+  }
+  R2.lik <- 1 - exp(-2/n * (mod$logLik - ll.r))
+  return(R2.lik)
+}
 
 R2.like.communityPGLMM <- function(mod = NULL, mod.r = NULL) {
     n <- nrow(mod$X)

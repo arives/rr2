@@ -8,7 +8,7 @@ R2(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = c("s2w", "NS",
   "rNS"), lik = TRUE, resid = TRUE, pred = TRUE)
 }
 \arguments{
-\item{mod}{A regression model with one of the following classes: 'lm', 'glm', lmerMod', glmerMod', 'phylolm', 'gls', binaryPGLMM', or 'communityPGLMM'.}
+\item{mod}{A regression model with one of the following classes: 'lm', 'glm', lmerMod', glmerMod', 'phylolm', 'gls', 'pglmm', 'pglmm_compare', binaryPGLMM', or 'communityPGLMM'.}
 
 \item{mod.r}{A reduced model; if not provided, the total R2 will be given by setting 'mod.r' to the model corresponding to 'mod' with the intercept as the only predictor.}
 

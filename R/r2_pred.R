@@ -8,9 +8,9 @@
 #' @return R2.pred value.
 #' @export
 #'
-#' @details  R2.pred works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', 'gls', binaryPGLMM', and 'communityPGLMM' (family = gaussian and binomial).
+#' @details  R2.pred works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', 'gls', 'pglmm', 'pglmm_compare', binaryPGLMM', and 'communityPGLMM' (family = gaussian and binomial).
 #' 
-#' \strong{LMM (lmerMod), GLMM (glmerMod), PGLMM (binaryPGLMM and communityPGLMM):}
+#' \strong{LMM (lmerMod), GLMM (glmerMod), PGLMM (pglmm, pglmm_compare, binaryPGLMM and communityPGLMM):}
 #' 
 #' \deqn{partial R2 = 1 - var(y - y.fitted.f)/var(y - y.fitted.r)}
 #' 
@@ -45,6 +45,7 @@
 #' library(phylolm)
 #' library(lme4)
 #' library(nlme)
+#' library(phyr)
 #' 
 #' #################
 #' # LMM with two fixed and two random effects 
@@ -147,10 +148,9 @@
 #' d$y <- rbinom(n = n, size = 1, prob = inv.logit(b1 * d$x + e))
 #' rownames(d) <- phy$tip.label
 #' 
-#' # Use the function binaryPGLMM() from the rr2 package rather than ape.
-#' z.f <- rr2::binaryPGLMM(y ~ x, data = d, phy = phy)
-#' z.x <- rr2::binaryPGLMM(y ~ 1, data = d, phy = phy)
-#' z.v <- glm(y ~ x, data = d, family = 'binomial')
+#' z.f <- pglmm_compare(y ~ x, data = d, family = "binomial", tree = phy)
+#' z.x <- pglmm_compare(y ~ 1, data = d, family = "binomial", tree = phy)
+#' z.v <- glm(y ~ x, data = d, family = "binomial")
 #' 
 #' R2.pred(z.f, z.x)
 #' R2.pred(z.f, z.v)
@@ -160,8 +160,8 @@ R2.pred <- function(mod = NULL, mod.r = NULL, phy = NULL) {
     if (class(mod)[1] == "merModLmerTest") 
         class(mod) <- "lmerMod"
     
-    if (!is.element(class(mod)[1], c("lm", "glm", "lmerMod", "glmerMod", "phylolm", "gls", "binaryPGLMM", "communityPGLMM"))) {
-        stop("mod must be class one of classes lm, glm, lmerMod, glmerMod, phylolm (but not phyloglm), gls, binaryPGLMM, communityPGLMM.")
+    if (!is.element(class(mod)[1], c("lm", "glm", "lmerMod", "glmerMod", "phylolm", "gls", "pglmm", "pglmm_compare", "binaryPGLMM", "communityPGLMM"))) {
+        stop("mod must be class one of classes lm, glm, lmerMod, glmerMod, phylolm (but not phyloglm), gls, pglmm, pglmm_compare, binaryPGLMM, communityPGLMM.")
     }
     
     if (class(mod)[1] == "lm") {
@@ -240,7 +240,24 @@ R2.pred <- function(mod = NULL, mod.r = NULL, phy = NULL) {
       }
       return(R2.pred.gls(mod, mod.r))
     }
-    
+###    
+    if (class(mod)[1] %in% c("pglmm", "pglmm_compare")) {
+      if (!is.object(mod.r)) {
+        y <- mod$Y
+        if (mod$family == "gaussian") {
+          mod.r <- lm(y ~ 1)
+        }else{
+          mod.r <- glm(y ~ 1, family = mod$family)
+        }
+      }
+      
+      if (!is.element(class(mod.r)[1], c("pglmm", "pglmm_compare", "lm", "glm"))) {
+        stop("mod.r must be of class pglmm, pglmm_compare, lm, or glm.")
+      }
+      
+      return(R2.pred.pglmm(mod, mod.r))
+    }
+###
     if (class(mod)[1] == "binaryPGLMM") {
         if (!is.object(mod.r)) {
             y <- mod$y
@@ -443,6 +460,25 @@ pglmm.predict <- function(mod) {
     Yhat <- as.numeric(fit + Rhat)
     return(Yhat)
 }
+
+R2.pred.pglmm <- function(mod = NULL, mod.r = NULL) {
+  Yhat <- pglmm.predict(mod)
+  SSE.pred <- var(mod$Y - Yhat)
+  
+  # reduced model
+  if (class(mod.r) %in% c("pglmm", "pglmm_compare")){
+    SSE.pred.r <- var(mod.r$Y - Yhat.r)
+  }
+  
+  if (class(mod.r) == "lm") {
+    y.r <- model.frame(mod.r)[, 1]
+    Yhat.r <- stats::fitted(mod.r)
+    SSE.pred.r <- var(y.r - Yhat.r)
+  }
+  
+  return(1 - SSE.pred/SSE.pred.r)
+}
+
 
 R2.pred.communityPGLMM.gaussian <- function(mod = NULL, mod.r = NULL) {
     Yhat <- pglmm.predict(mod)

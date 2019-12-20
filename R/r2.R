@@ -28,7 +28,7 @@ NULL
 #' 
 #' Details about the methods are provided under the separate functions for \code{R2.lik()}, \code{R2.resid()}, and \code{R2.pred()}. There are also many worked examples. 
 #'   
-#' @param mod A regression model with one of the following classes: 'lm', 'glm', lmerMod', glmerMod', 'phylolm', 'gls', binaryPGLMM', or 'communityPGLMM'.
+#' @param mod A regression model with one of the following classes: 'lm', 'glm', lmerMod', glmerMod', 'phylolm', 'gls', 'pglmm', 'pglmm_compare', binaryPGLMM', or 'communityPGLMM'.
 #' @param mod.r A reduced model; if not provided, the total R2 will be given by setting 'mod.r' to the model corresponding to 'mod' with the intercept as the only predictor.
 #' @param phy The phylogeny for phylogenetic models (as a 'phylo' object), which is not required to be specified for \code{R2.lik()} of non-phylogenetic models.
 #' @param sigma2_d Distribution-specific variance \eqn{\sigma^2_d}{sigma2d} (see Details) used in \code{R2.resid()}. For binomial GLMs, GLMMs and PGLMMs with logit link functions, options are c('s2w', 'NS', 'rNS'). For binomial GLMs, GLMMs and PGLMMs with probit link functions, options are c('s2w', 'NS'). Other families use 's2w'.
@@ -209,14 +209,6 @@ R2 <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = c("s2w", "NS", "
         resid <- FALSE
         pred <- FALSE
         message("Models of class phyloglm only have R2.lik method.")
-    }
-    
-    # gaussian communityPGLMM only have R2.lik method
-    if (any(class(mod) %in% "communityPGLMM")) {
-        if (mod$family == "gaussian") {
-            resid <- FALSE
-            message("Models of class communityPGLMM (gaussian) do not have R2.resid method.")
-        }
     }
     
     # binaryPGLMM does not have R2.lik method
