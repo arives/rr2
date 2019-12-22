@@ -2,7 +2,7 @@
 % Please edit documentation in R/r2.R
 \name{R2}
 \alias{R2}
-\title{Calculate R2.lik, R2.resid, and R2.pred}
+\title{Calculate R2_lik, R2_resid, and R2_pred}
 \usage{
 R2(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = c("s2w", "NS",
   "rNS"), lik = TRUE, resid = TRUE, pred = TRUE)
@@ -12,30 +12,31 @@ R2(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = c("s2w", "NS",
 
 \item{mod.r}{A reduced model; if not provided, the total R2 will be given by setting 'mod.r' to the model corresponding to 'mod' with the intercept as the only predictor.}
 
-\item{phy}{The phylogeny for phylogenetic models (as a 'phylo' object), which is not required to be specified for \code{R2.lik()} of non-phylogenetic models.}
+\item{phy}{The phylogeny for phylogenetic models (as a 'phylo' object), which is not required to be specified for \code{R2_lik()} of non-phylogenetic models.}
 
-\item{sigma2_d}{Distribution-specific variance \eqn{\sigma^2_d}{sigma2d} (see Details) used in \code{R2.resid()}. For binomial GLMs, GLMMs and PGLMMs with logit link functions, options are c('s2w', 'NS', 'rNS'). For binomial GLMs, GLMMs and PGLMMs with probit link functions, options are c('s2w', 'NS'). Other families use 's2w'.}
+\item{sigma2_d}{Distribution-specific variance \eqn{\sigma^2_d}{sigma2d} (see Details) used in \code{R2_resid()}. For binomial GLMs, GLMMs and PGLMMs with logit link functions, options are c('s2w', 'NS', 'rNS'). For binomial GLMs, GLMMs and PGLMMs with probit link functions, options are c('s2w', 'NS'). Other families use 's2w'.}
 
-\item{lik}{Whether to calculate R2.lik; default is TRUE.}
+\item{lik}{Whether to calculate R2_lik; default is TRUE.}
 
-\item{resid}{Whether to calculate R2.resid; default is TRUE.}
+\item{resid}{Whether to calculate R2_resid; default is TRUE.}
 
-\item{pred}{Whether to calculate R2.pred; default is TRUE.}
+\item{pred}{Whether to calculate R2_pred; default is TRUE.}
 }
 \value{
 A vector, with all three R2s by default.
 }
 \description{
-This is a wrapper for calculating three R2s -- R2.lik, R2.resid, and R2.pred -- for LMMs and GLMMs, and phylogenetic LMMs (PLMMs) and GLMMs (PGLMMs). Note that the individual functions \code{R2.lik()}, \code{R2.resid()}, and \code{R2.pred()} can be called separately. This is preferrable if you are only interested in one R2; for example, for \code{phylolm()} called from `R2` you need to specify 'phy' (phylo object for the phylogeny), while \code{R2.lik()} does not require this.
+This is a wrapper for calculating three R2s -- R2_lik, R2_resid, and R2_pred -- for LMMs and GLMMs, and phylogenetic LMMs (PLMMs) and GLMMs (PGLMMs). Note that the individual functions \code{R2_lik()}, \code{R2_resid()}, and \code{R2_pred()} can be called separately. This is preferrable if you are only interested in one R2; for example, for \code{phylolm()} called from `R2` you need to specify 'phy' (phylo object for the phylogeny), while \code{R2_lik()} does not require this.
 }
 \details{
-Details about the methods are provided under the separate functions for \code{R2.lik()}, \code{R2.resid()}, and \code{R2.pred()}. There are also many worked examples.
+Details about the methods are provided under the separate functions for \code{R2_lik()}, \code{R2_resid()}, and \code{R2_pred()}. There are also many worked examples.
 }
 \examples{
 library(ape)
 library(phylolm)
 library(lme4)
 library(nlme)
+library(phyr)
 
 #################
 # LMM with two fixed and two random effects 
@@ -91,7 +92,7 @@ R2(z.f, z.x)
 R2(z.f, z.v)
 R2(z.f)
 
-# These give different results for R2.resid.
+# These give different results for R2_resid.
 R2(z.f, sigma2_d = 's2w')
 R2(z.f, sigma2_d = 'NS')
 R2(z.f, sigma2_d = 'rNS')
@@ -133,7 +134,7 @@ R2(z.f, z.v)
 R2(z.f)
 
 # But note that you need to define weights for gls() with non-ultrametric trees; 
-# if not, you will get a error from R2.resid,  "Matrix is not block-diagonal"
+# if not, you will get a error from R2_resid,  "Matrix is not block-diagonal"
 
 phy.nu <- rtree(n = n)
 # Generate random data
@@ -175,12 +176,21 @@ e <- e[match(phy$tip.label, names(e))]
 d$y <- rbinom(n = n, size = 1, prob = inv.logit(b1 * d$x + e))
 rownames(d) <- phy$tip.label
 
+# Use the function pglmm_compare() from the phyr package.
+z.f <- pglmm_compare(y ~ x, data = d, family = 'binomial', tree = phy)
+z.x <- pglmm_compare(y ~ 1, data = d, family = 'binomial', tree = phy)
+z.v <- glm(y ~ x, data = d, family = 'binomial')
+
+R2(z.f, z.x)
+R2(z.f, z.v)
+R2(z.f)
+
 # Use the function binaryPGLMM() from the rr2 package rather than ape.
 z.f <- rr2::binaryPGLMM(y ~ x, data = d, phy = phy)
 z.x <- rr2::binaryPGLMM(y ~ 1, data = d, phy = phy)
 z.v <- glm(y ~ x, data = d, family = 'binomial')
 
-# R2.lik is not produced, because binaryPGLMM() does not generate a likelihood.
+# R2_lik is not produced, because binaryPGLMM() does not generate a likelihood.
 R2(z.f, z.x, phy = phy)
 R2(z.f, z.v, phy = phy)
 R2(z.f, phy = phy)
@@ -192,7 +202,7 @@ Ives A.R. and Li D. 2018. rr2: An R package to calculate R2s for regression mode
 Ives A.R. 2018. R2s for Correlated Data: Phylogenetic Models, LMMs, and GLMMs. Systematic Biology, Volume 68, Issue 2, March 2019, Pages 234-251. DOI:10.1093/sysbio/syy060
 }
 \seealso{
-MuMIn, lme4, ape, phylolm, pez
+MuMIn, lme4, ape, phylolm, phyr, pez
 }
 \author{
 Daijiang Li and Anthony R. Ives
