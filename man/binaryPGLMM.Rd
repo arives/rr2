@@ -4,9 +4,16 @@
 \alias{binaryPGLMM}
 \title{Phylogenetic GLM for binary data}
 \usage{
-binaryPGLMM(formula, data = list(), phy, s2.init = 0.1,
-  B.init = NULL, tol.pql = 10^-6, maxit.pql = 200,
-  maxit.reml = 100)
+binaryPGLMM(
+  formula,
+  data = list(),
+  phy,
+  s2.init = 0.1,
+  B.init = NULL,
+  tol.pql = 10^-6,
+  maxit.pql = 200,
+  maxit.reml = 100
+)
 }
 \arguments{
 \item{formula}{Regression formula.}

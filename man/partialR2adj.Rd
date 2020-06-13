@@ -4,8 +4,12 @@
 \alias{partialR2adj}
 \title{Adjusted partial R2}
 \usage{
-partialR2adj(mod, df.f = summary(mod)$df[1], mod.r,
-  df.r = summary(mod.r)$df[1])
+partialR2adj(
+  mod,
+  df.f = summary(mod)$df[1],
+  mod.r,
+  df.r = summary(mod.r)$df[1]
+)
 }
 \arguments{
 \item{mod}{A linear regression model.}

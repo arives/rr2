@@ -4,17 +4,21 @@
 \alias{R2_resid}
 \title{Calculate R2_resid}
 \usage{
-R2_resid(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = c("s2w",
-  "NS", "rNS"))
+R2_resid(
+  mod = NULL,
+  mod.r = NULL,
+  sigma2_d = c("s2w", "NS", "rNS"),
+  phy = NULL
+)
 }
 \arguments{
 \item{mod}{A regression model with one of the following classes: 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'gls', 'pglmm_compare' or 'binaryPGLMM'. For 'glmerMod', only family = c('binomial', 'poisson') are supported.}
 
 \item{mod.r}{A reduced model; if not provided, the total R2 will be given by setting 'mod.r' to the model corresponding to 'mod' with the intercept as the only predictor.}
 
-\item{phy}{The phylogeny for phylogenetic models (as a 'phylo' object), which must be specified for models of class `phylolm`.}
-
 \item{sigma2_d}{Distribution-specific variance \eqn{\sigma^2_d}{sigma2d} (see Details). For binomial GLMs, GLMMs and PGLMMs with logit link functions, options are c('s2w', 'NS', 'rNS'). For binomial GLMs, GLMMs and PGLMMs with probit link functions, options are c('s2w', 'NS'). Other families use 's2w'.}
+
+\item{phy}{The phylogeny for phylogenetic models (as a 'phylo' object), which must be specified for models of class `phylolm`.}
 }
 \value{
 R2_resid value.
@@ -41,13 +45,13 @@ where \eqn{\sigma^2_x}{σ2x} and \eqn{\sigma^2_b}{σ2b} are the estimated varian
 
 \deqn{\sigma_{w}^{2}=var(g'(\mu)*(y-\mu))}{σ2w = var(g'(μ) * (y – μ))}
 
-where g'() is the derivative of the link function, and \eqn{(y-\mu)}{(y – μ)} is the difference between the data y and their predicted values \eqn{\mu}{μ}. This is the default option specified by sigma2_d = 's2w'. For binomial models with a logit link function, sigma2_d = 'NS' gives the scaling \eqn{\sigma^2_d =  \pi^2/3}{σ2d =  π^2/3}, and sigma2_d = 'rNS' gives \eqn{\sigma^2_d = 0.8768809 * \pi^2/3}{σ2d = 0.8768809 * π^2/3}. For binomial models with a probit link function, sigma2_d = 'NS' gives the scaling \eqn{\sigma^2_d = 1}{σ2d = 1}. In general option sigma2_d = 's2w' will give values lower than sigma2_d = 'NS' and 'rNS', but the values will be closer to \code{R2_lik()} and \code{R2_pred()}. For other forms of sigma2_d from Nakagawa and Schielzeth (2013) and Nakagawa et al. (2017), see the MuMIn package.
+where g'() is the derivative of the link function, and \eqn{(y-\mu)}{(y – μ)} is the difference between the data y and their predicted values \eqn{\mu}{μ}. This is the default option specified by sigma2_d = 's2w'. For binomial models with a logit link function, sigma2_d = 'NS' gives the scaling \eqn{\sigma^2_d =  \pi^2/3}{σ2d =  π^2/3} from Nakagawa and Schielzeth (2013), and sigma2_d = 'rNS' gives \eqn{\sigma^2_d = 0.8768809 * \pi^2/3}{σ2d = 0.8768809 * π^2/3} which is a "corrected" version of 'NS' (see Ives 2018, Appendix 1). For binomial models with a probit link function, sigma2_d = 'NS' gives the scaling \eqn{\sigma^2_d = 1}{σ2d = 1}. In general, option sigma2_d = 's2w' will give values lower than sigma2_d = 'NS' and 'rNS', but the values will be closer to \code{R2_lik()} and \code{R2_pred()}. For other forms of sigma2_d from Nakagawa and Schielzeth (2013) and Nakagawa et al. (2017), see the MuMIn package.
 
 Partial R2s are given by the standard formula
 
-\deqn{partial R^2 = 1 - (1 - R^2_{.f})/(1 - R^2_{.r})}{partial R2 = 1 - (1 - R2_f)/(1 - R2_r)}
+\deqn{partial R^2 = 1 - (1 - R^2_{.f})/(1 - R^2_{.r})}{partial R2 = 1 - (1 - R2.f)/(1 - R2.r)}
 
-where R2_f and R2_r are the total R2s for full and reduced models, respectively.
+where R2.f and R2.r are the total R2s for full and reduced models, respectively.
 
 \strong{PGLS (phylolm, pglmm_compare):} 
 
@@ -55,7 +59,7 @@ where R2_f and R2_r are the total R2s for full and reduced models, respectively.
 
 where \eqn{\sigma^2_{.f}}{σ2.f} and \eqn{\sigma^2_{.r}}{σ2.r} are the variances estimated for the PGLS full and reduced models, and c.f and c.r are the scaling values for full and reduce models that equal the total sum of phylogenetic branch length estimates. Note that the phylogeny needs to be specified in R2_resid.
 
-Note that \code{phylolm()} can have difficulties in finding solutions when there is no phylogenetic signal;
+\code{phylolm()} can have difficulties in finding solutions when there is no phylogenetic signal;
 when the estimate indicates no phylogenetic signal, you should refit the model with the corresponding LM.
 
 \strong{PGLMM (pglmm_compare, binaryPGLMM):} 
@@ -146,10 +150,10 @@ e <- signal^0.5 * rTraitCont(phy, model = 'BM', sigma = 1) + (1-signal)^0.5 * rn
 d$x <- x[match(names(e), names(x))]
 d$y <- b1 * x + e
 rownames(d) <- phy$tip.label
+d$sp <- phy$tip.label
 
-z.x <- pglmm_compare(y ~ 1, phy = phy, data = d)
-lam.x <- round(z.x$optpar, digits = 4)
-z.f <- pglmm_compare(y ~ x, phy = phy, data = d)
+z.x <- pglmm_compare(y ~ 1, phy = phy, data = d, REML=F)
+z.f <- pglmm_compare(y ~ x, phy = phy, data = d, REML=F)
 z.v <- lm(y ~ x, data = d)
 
 R2_resid(z.f, z.x)
@@ -157,7 +161,6 @@ R2_resid(z.f, z.v)
 R2_resid(z.f)
 
 z.x <- phylolm(y ~ 1, phy = phy, data = d, model = 'lambda')
-lam.x <- round(z.x$optpar, digits = 4)
 z.f <- phylolm(y ~ x, phy = phy, data = d, model = 'lambda')
 z.v <- lm(y ~ x, data = d)
 
@@ -166,8 +169,8 @@ R2_resid(z.f, z.v, phy = phy)
 R2_resid(z.f, phy = phy)
 
 # This also works for models fit with gls() in {nlme}
-z.x <- gls(y ~ 1, data = d, correlation = corPagel(1, phy), method = "ML")
-z.f <- gls(y ~ x, data = d, correlation = corPagel(1, phy), method = "ML")
+z.x <- gls(y ~ 1, data = d, correlation = corPagel(1, phy, form = ~sp), method = "ML")
+z.f <- gls(y ~ x, data = d, correlation = corPagel(1, phy, form = ~sp), method = "ML")
 z.v <- lm(y ~ x, data = d)
 
 R2_resid(z.f, z.x)
@@ -184,15 +187,16 @@ e <- signal^0.5 * rTraitCont(phy.nu, model = 'BM', sigma = 1) + (1-signal)^0.5 *
 d$x <- x[match(names(e), names(x))]
 d$y <- b1 * x + e
 rownames(d) <- phy.nu$tip.label
+d$sp <- phy.nu$tip.label
 
 weights <- diag(vcv.phylo(phy.nu))
 z.x <- gls(y ~ 1,data = d, 
-         correlation = corPagel(1, phy.nu),
+         correlation = corPagel(1, phy.nu, form = ~sp),
          weights=varFixed(~weights), method = "ML")
 z.f <- gls(y ~ x,data = d, 
-         correlation = corPagel(1, phy.nu),
+         correlation = corPagel(1, phy.nu, form = ~sp),
          weights=varFixed(~weights), method = "ML")
-z.v <- lm(y ~ x, data = d)
+z.v <- lm(y ~ x, weights = 1/weights, data = d)
 
 R2_resid(z.f, z.x)
 R2_resid(z.f, z.v)
@@ -241,8 +245,6 @@ Nakagawa S., Johnson P. C. D., Schielzeth H. 2017. The coefficient of determinat
 }
 \seealso{
 MuMIn, lme4, ape, phylolm, pez
-
-MuMIn
 }
 \author{
 Anthony R. Ives

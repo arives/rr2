@@ -3,7 +3,6 @@
 \docType{package}
 \name{rr2}
 \alias{rr2}
-\alias{rr2-package}
 \title{rr2: An R package to calculate R2s for regression models}
 \description{
 The rr2 package provides methods to calculate R2 for models with correlated errors, 

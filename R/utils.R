@@ -66,7 +66,7 @@ partialR2adj <- function(mod, df.f = summary(mod)$df[1],
 #' @export
 #' 
 transf_phy <- function(phylolmMod, phy) {
-    if (!phylolmMod$model %in% c("BM", "trend")) {
+  if (!phylolmMod$model %in% c("BM", "trend")) {
         # optpar for BM models is NULL
         optpar <- round(phylolmMod$optpar, digits = 4)
         m.list <- list(x = optpar)

@@ -4,17 +4,16 @@
 \alias{R2_pred}
 \title{Calculate R2_pred}
 \usage{
-R2_pred(mod = NULL, mod.r = NULL, phy = NULL,
-  gaussian.pred = "nearest_node")
+R2_pred(mod = NULL, mod.r = NULL, gaussian.pred = "tip_rm", phy = NULL)
 }
 \arguments{
 \item{mod}{A regression model with one of the following classes: 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'gls', 'pglmm', pglmm_compare', 'binaryPGLMM', or 'communityPGLMM'.}
 
 \item{mod.r}{A reduced model; if not provided, the total R2 will be given by setting 'mod.r' to the model corresponding to 'mod' with the intercept as the only predictor.}
 
-\item{phy}{The phylogeny for phylogenetic models (as a 'phylo' object), which must be specified for models of class `phylolm`.}
-
 \item{gaussian.pred}{For models of classes `pglmm` and `pglmm_compare` when family = gaussian, which type of prediction to calculate.}
+
+\item{phy}{The phylogeny for phylogenetic models (as a 'phylo' object), which must be specified for models of class `phylolm`.}
 }
 \description{
 Calculate partial and total R2s for LMM, GLMM, PGLS, and PGLMM using R2_pred, an R2 based on the variance of the difference between the observed and predicted values of a fitted model.
@@ -127,9 +126,10 @@ e <- signal^0.5 * rTraitCont(phy, model = 'BM', sigma = 1) + (1-signal)^0.5 * rn
 d$x <- x[match(names(e), names(x))]
 d$y <- b1 * x + e
 rownames(d) <- phy$tip.label
+d$sp <- phy$tip.label
 
-z.x <- gls(y ~ 1, data = d, correlation = corPagel(1, phy), method = "ML")
-z.f <- gls(y ~ x, data = d, correlation = corPagel(1, phy), method = "ML")
+z.x <- gls(y ~ 1, data = d, correlation = corPagel(1, phy, form = ~sp), method = "ML")
+z.f <- gls(y ~ x, data = d, correlation = corPagel(1, phy, form = ~sp), method = "ML")
 z.v <- lm(y ~ x, data = d)
 
 R2_pred(z.f, z.x)
@@ -164,6 +164,82 @@ R2_pred(z.f, z.x)
 R2_pred(z.f, z.v)
 R2_pred(z.f)
 
+#' #################
+# A community example of pglmm {phyr} contrasting R2_pred when bayes = TRUE and bayes = F
+
+library(mvtnorm)
+
+nspp <- 6
+nsite <- 4
+
+# Simulate a phylogeny that has a lot of phylogenetic signal (power = 1.3)
+phy <- compute.brlen(rtree(n = nspp), method = "Grafen", power = 1.3)
+
+# Simulate species means
+sd.sp <- 1
+mean.sp <- rTraitCont(phy, model = "BM", sigma=sd.sp^2)
+
+# Replicate values of mean.sp over sites
+Y.sp <- rep(mean.sp, times=nsite)
+
+# Simulate site means
+sd.site <- 1
+mean.site <- rnorm(nsite, sd=sd.site)
+
+# Replicate values of mean.site over sp
+Y.site <- rep(mean.site, each=nspp)
+
+# Compute a covariance matrix for phylogenetic attraction
+sd.attract <- 1
+Vphy <- vcv(phy)
+
+# Standardize the phylogenetic covariance matrix to have determinant = 1. 
+# (For an explanation of this standardization, see subsection 4.3.1 in Ives (2018))
+Vphy <- Vphy/(det(Vphy)^(1/nspp))
+
+# Construct the overall covariance matrix for phylogenetic attraction. 
+# (For an explanation of Kronecker products, see subsection 4.3.1 in the book)
+V <- kronecker(diag(nrow = nsite, ncol = nsite), Vphy)
+Y.attract <- array(t(rmvnorm(n = 1, sigma = sd.attract^2*V)))
+
+# Simulate residual errors
+sd.e <- 1
+Y.e <- rnorm(nspp*nsite, sd = sd.e)
+
+# Construct the dataset
+d <- data.frame(sp = rep(phy$tip.label, times = nsite), site = rep(1:nsite, each = nspp))
+
+# Simulate abundance data
+d$Y <- Y.sp + Y.site + Y.attract + Y.e
+
+# Full and reduced models
+z.f <- pglmm(Y ~ 1 + (1|sp__) + (1|site) + (1|sp__@site), 
+        data = d, cov_ranef = list(sp = phy), REML=F)
+z.nested <- pglmm(Y ~ 1 + (1|sp__) + (1|site), 
+        data = d, cov_ranef = list(sp = phy), REML=F)
+z.sp <- pglmm(Y ~ 1 + (1|sp) + (1|site), 
+        data = d, cov_ranef = list(sp = phy), REML=F)
+
+R2_pred(z.f, z.nested)
+R2_pred(z.nested, z.sp)
+R2_pred(z.f)
+
+# These are generally larger when gaussian.pred = "nearest_node"
+R2_pred(z.f, z.nested, gaussian.pred = "nearest_node")
+R2_pred(z.nested, z.sp, gaussian.pred = "nearest_node")
+R2_pred(z.f, gaussian.pred = "nearest_node")
+
+# When bayes = TRUE, gaussian.pred = "nearest_node" automatically as the only option.
+z.f.bayes <- pglmm(Y ~ 1 + (1|sp__) + (1|site) + (1|sp__@site), 
+               data = d, cov_ranef = list(sp = phy), bayes = TRUE)
+z.nested.bayes <- pglmm(Y ~ 1 + (1|sp__) + (1|site), 
+               data = d, cov_ranef = list(sp = phy), bayes = TRUE)
+z.sp.bayes <- pglmm(Y ~ 1 + (1|sp) + (1|site), 
+               data = d, cov_ranef = list(sp = phy), bayes = TRUE)
+
+R2_pred(z.f.bayes, z.nested.bayes)
+R2_pred(z.nested.bayes, z.sp.bayes)
+R2_pred(z.f.bayes)
 }
 \references{
 Ives A.R. and Li D. 2018. rr2: An R package to calculate R2s for regression models. Journal of Open Source Software. DOI:10.21105/joss.01028

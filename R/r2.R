@@ -30,7 +30,7 @@ NULL
 #'   
 #' @param mod A regression model with one of the following classes: 'lm', 'glm', lmerMod', glmerMod', 'phylolm', 'gls', 'pglmm', 'pglmm_compare', binaryPGLMM', or 'communityPGLMM'.
 #' @param mod.r A reduced model; if not provided, the total R2 will be given by setting 'mod.r' to the model corresponding to 'mod' with the intercept as the only predictor.
-#' @param phy The phylogeny for phylogenetic models (as a 'phylo' object), which is not required to be specified for \code{R2_lik()} of non-phylogenetic models.
+#' @param phy The phylogeny for phylogenetic models (as a 'phylo' object), which is not required to be specified for \code{R2_lik()} or non-phylogenetic models.
 #' @param sigma2_d Distribution-specific variance \eqn{\sigma^2_d}{sigma2d} (see Details) used in \code{R2_resid()}. For binomial GLMs, GLMMs and PGLMMs with logit link functions, options are c('s2w', 'NS', 'rNS'). For binomial GLMs, GLMMs and PGLMMs with probit link functions, options are c('s2w', 'NS'). Other families use 's2w'.
 #' @param lik Whether to calculate R2_lik; default is TRUE.
 #' @param resid Whether to calculate R2_resid; default is TRUE.
@@ -108,6 +108,30 @@ NULL
 #' R2(z.f, sigma2_d = 'rNS')
 #' 
 #' #################
+#' # GLS {nlme} with one fixed effect and autocorrelated errors among 6 groups
+#' 
+#' nT <- 10
+#' nseries <- 6
+#' n <- nT * nseries
+#' 
+#' d <- data.frame(x = 0, y = 0, u = rep(1:nseries, each = nT), e = rnorm(1))
+#' d$u <- as.factor(d$u)
+#' d$x <- rnorm(n = n)
+#' ar1 <- .5
+#' for(t in 2:n) d$e[t] <- ar1*d$e[t-1] + rnorm(1)
+#' 
+#' b1 <- 1
+#' d$y <- b1 * d$x + d$e
+#' 
+#' z.f <- gls(y ~ x + u, correlation = corAR1(form = ~1 | u), data = d)
+#' z.x <- gls(y ~ 1, correlation = corAR1(form = ~1 | u), data = d)
+#' z.ar <- lm(y ~ x + u, data = d)
+#' 
+#' R2(z.f, z.x)
+#' R2(z.f, z.ar)
+#' R2(z.f)
+#' 
+#' #################
 #' # PGLS with a single fixed effect
 #' 
 #' n <- 100
@@ -125,6 +149,7 @@ NULL
 #' d$x <- x[match(names(e), names(x))]
 #' d$y <- b1 * x + e
 #' rownames(d) <- phy$tip.label
+#' d$sp <- phy$tip.label
 #' 
 #' z.x <- phylolm(y ~ 1, phy = phy, data = d, model = 'lambda')
 #' z.f <- phylolm(y ~ x, phy = phy, data = d, model = 'lambda')
@@ -135,8 +160,8 @@ NULL
 #' R2(z.f, phy = phy)
 #' 
 #' # This also works for models fit with gls() in {nlme}
-#' z.x <- gls(y ~ 1, data = d, correlation = corPagel(1, phy), method = "ML")
-#' z.f <- gls(y ~ x, data = d, correlation = corPagel(1, phy), method = "ML")
+#' z.x <- gls(y ~ 1, data = d, correlation = corPagel(1, phy, form = ~sp), method = "ML")
+#' z.f <- gls(y ~ x, data = d, correlation = corPagel(1, phy, form = ~sp), method = "ML")
 #' z.v <- lm(y ~ x, data = d)
 #' 
 #' R2(z.f, z.x)
@@ -153,15 +178,16 @@ NULL
 #' d$x <- x[match(names(e), names(x))]
 #' d$y <- b1 * x + e
 #' rownames(d) <- phy.nu$tip.label
+#' d$sp <- phy.nu$tip.label
 #' 
 #' weights <- diag(vcv.phylo(phy.nu))
 #' z.x <- gls(y ~ 1,data = d, 
-#'            correlation = corPagel(1, phy.nu),
+#'            correlation = corPagel(1, phy.nu, form = ~sp),
 #'            weights=varFixed(~weights), method = "ML")
 #' z.f <- gls(y ~ x,data = d, 
-#'            correlation = corPagel(1, phy.nu),
+#'            correlation = corPagel(1, phy.nu, form = ~sp),
 #'            weights=varFixed(~weights), method = "ML")
-#' z.v <- lm(y ~ x, data = d)
+#' z.v <- lm(y ~ x, weights = 1/weights, data = d)
 #' 
 #' R2(z.f, z.x)
 #' R2(z.f, z.v)
@@ -188,24 +214,73 @@ NULL
 #' rownames(d) <- phy$tip.label
 #' 
 #' # Use the function pglmm_compare() from the phyr package.
-#' z.f <- pglmm_compare(y ~ x, data = d, family = 'binomial', tree = phy)
-#' z.x <- pglmm_compare(y ~ 1, data = d, family = 'binomial', tree = phy)
+#' z.f <- pglmm_compare(y ~ x, data = d, family = 'binomial', phy = phy, REML = FALSE)
+#' z.x <- pglmm_compare(y ~ 1, data = d, family = 'binomial', phy = phy, REML = FALSE)
 #' z.v <- glm(y ~ x, data = d, family = 'binomial')
 #' 
 #' R2(z.f, z.x)
 #' R2(z.f, z.v)
 #' R2(z.f)
 #'
-#' # Use the function binaryPGLMM() from the rr2 package rather than ape.
-#' z.f <- rr2::binaryPGLMM(y ~ x, data = d, phy = phy)
-#' z.x <- rr2::binaryPGLMM(y ~ 1, data = d, phy = phy)
-#' z.v <- glm(y ~ x, data = d, family = 'binomial')
-#' 
-#' # R2_lik is not produced, because binaryPGLMM() does not generate a likelihood.
-#' R2(z.f, z.x, phy = phy)
-#' R2(z.f, z.v, phy = phy)
-#' R2(z.f, phy = phy)
+#' #################
+#' # A community example of pglmm {phyr}
+#' library(mvtnorm)
 #'
+#' nspp <- 6
+#' nsite <- 4
+#'
+#' # Simulate a phylogeny that has a lot of phylogenetic signal (power = 1.3)
+#' phy <- compute.brlen(rtree(n = nspp), method = "Grafen", power = 1.3)
+#' 
+#' # Simulate species means
+#' sd.sp <- 1
+#' mean.sp <- rTraitCont(phy, model = "BM", sigma=sd.sp^2)
+#' 
+#' # Replicate values of mean.sp over sites
+#' Y.sp <- rep(mean.sp, times=nsite)
+#' 
+#' # Simulate site means
+#' sd.site <- 1
+#' mean.site <- rnorm(nsite, sd=sd.site)
+#' 
+#' # Replicate values of mean.site over sp
+#' Y.site <- rep(mean.site, each=nspp)
+#' 
+#' # Compute a covariance matrix for phylogenetic attraction
+#' sd.attract <- 1
+#' Vphy <- vcv(phy)
+#' 
+#' # Standardize the phylogenetic covariance matrix to have determinant = 1. 
+#' # (For an explanation of this standardization, see subsection 4.3.1 in Ives (2018))
+#' Vphy <- Vphy/(det(Vphy)^(1/nspp))
+#' 
+#' # Construct the overall covariance matrix for phylogenetic attraction. 
+#' # (For an explanation of Kronecker products, see subsection 4.3.1 in the book)
+#' V <- kronecker(diag(nrow = nsite, ncol = nsite), Vphy)
+#' Y.attract <- array(t(rmvnorm(n = 1, sigma = sd.attract^2*V)))
+#' 
+#' # Simulate residual errors
+#' sd.e <- 1
+#' Y.e <- rnorm(nspp*nsite, sd = sd.e)
+#' 
+#' # Construct the dataset
+#' d <- data.frame(sp = rep(phy$tip.label, times = nsite), site = rep(1:nsite, each = nspp))
+#' 
+#' # Simulate abundance data
+#' d$Y <- Y.sp + Y.site + Y.attract + Y.e
+#' 
+#' # Full and reduced models
+#' z.f <- pglmm(Y ~ 1 + (1|sp__) + (1|site) + (1|sp__@site), 
+#'              data = d, cov_ranef = list(sp = phy), REML=F)
+#' z.nested <- pglmm(Y ~ 1 + (1|sp__) + (1|site), 
+#'              data = d, cov_ranef = list(sp = phy), REML=F)
+#' z.sp <- pglmm(Y ~ 1 + (1|sp) + (1|site), 
+#'              data = d, cov_ranef = list(sp = phy), REML=F)
+#' 
+#' R2(z.f, z.nested)
+#' R2(z.nested, z.sp)
+#' R2(z.f)
+
 R2 <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = c("s2w", "NS", "rNS"), 
     lik = TRUE, resid = TRUE, pred = TRUE) {
     
@@ -214,48 +289,51 @@ R2 <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = c("s2w", "NS", "
     
     sigma2_d <- match.arg(sigma2_d)
     
-    # phyloglm only have R2_lik method
+    # phyloglm only has a R2_lik method.
     if (any(class(mod) %in% "phyloglm")) {
         resid <- FALSE
         pred <- FALSE
-        message("Models of class phyloglm only have R2_lik method.")
+        message("Models of class phyloglm only have a R2_lik method.")
     }
     
-    # binaryPGLMM does not have R2_lik method
+    # binaryPGLMM does not have a R2_lik method.
     if (any(class(mod) %in% "binaryPGLMM") & lik == TRUE) {
         lik <- FALSE
-        message("Models of class binaryPGLMM do not have R2_lik method.")
+        message("Models of class binaryPGLMM do not have a R2_lik method.")
     }
     
-    # binary communityPGLMM only have R2_pred method at this moment
+    # binary communityPGLMM only have a R2_pred method .
     if (any(class(mod) %in% "communityPGLMM") & (lik == TRUE | resid == TRUE)) {
       if (mod$family == "binomial") {
         resid <- FALSE
         lik <- FALSE
-        message("Models of class communityPGLMM (binomial) only have R2_pred method.")
+        message("Models of class communityPGLMM (binomial) only have a R2_pred method.")
       }
     }
     
     # pglmm does not have a R2_resid method
     if (any(class(mod) %in% c("communityPGLMM", "pglmm")) & (resid == TRUE)) {
-      message("Models of class pglmm do not have the R2_resid method.")
+      message("Models of class pglmm do not have a R2_resid method.")
       resid <- FALSE
     }
     
-    # phylolm requires phy object except for R2_lik
-    if (any(class(mod) %in% "phylolm") & is.null(phy)) 
-        stop("Phy object is required for models with class phylolm")
+    # gls does not have a R2_resid method
+    if (any(class(mod) %in% c("gls")) && !any(class(mod$modelStruct$corStruct) %in% c("corBrownian", "corMartins", "corGrafen", "corPagel", "corBlomberg")) && (resid == TRUE)) {
+      message("Models of class gls that are not phylogenetic do not have a R2_resid method.")
+      resid <- FALSE
+    }
     
     out <- rep(NA, 3)
     names(out) <- c("R2_lik", "R2_resid", "R2_pred")
     if (lik) 
         out[1] <- R2_lik(mod, mod.r)
     if (resid) 
-        out[2] <- R2_resid(mod, mod.r, phy, sigma2_d)
+        out[2] <- R2_resid(mod, mod.r, sigma2_d, phy = phy)
     if (pred) 
-        out[3] <- R2_pred(mod, mod.r, phy)
+        out[3] <- R2_pred(mod, mod.r, phy = phy)
     
     out <- out[!is.na(out)]  # remove R2s not calculated
     
     return(out)
 }
+

@@ -20,7 +20,7 @@ Imports:
     utils,
     Matrix,
     nlme
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.0
 Suggests: testthat
 URL: https://github.com/arives/rr2
 BugReports: https://github.com/arives/rr2/issues

@@ -15,16 +15,14 @@ R2_lik(mod = NULL, mod.r = NULL)
 R2_lik value.
 }
 \description{
-Calculate partial and total R2s for LMM, GLMM, PGLS, and PGLMM using R2_lik, an R2 based on the likelihood of observing the data.
+Calculate partial and total R2s for LMM, GLMM, PGLS, and PGLMM using R2_lik, an R2 based on the likelihood of the fitted model.
 }
 \details{
-\code{R2_lik()} works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', and 'communityPGLMM' (family =  'gaussian' only). It is implemented as
+\code{R2_lik()} is implemented as
 
 \deqn{partial R2 = 1 - exp(-2/n * (logLik(mod.f) - logLik(mod.r)))}
 
-where 'mod.f' and 'mod.r' are the full and reduced models, respectively. The total R2 is given when 'mod.r' is the model corresponding to mod.f that contains only the intercept. For GLMMs and PGLMMs, \code{R2_lik()} is standardized to have a maximum of one following Nagelkerke (1991).
-
-Note that \code{phyloglm()} can have difficulties in finding solutions when there is no phylogenetic signal. Therefore, when alphaWarn == 2, indicating no phylogenetic signal, the model is refit with the corresponding GLM.
+where 'mod.f' and 'mod.r' are the full and reduced models, respectively. The total R2 is given when 'mod.r' is the model corresponding to mod.f that contains only the intercept. For GLMMs and PGLMMs, \code{R2_lik()} is standardized to have a maximum of one following Nagelkerke (1991). Although you can use R2_lik with models fit with REML, you really shouldn't, because this makes it impossible to compare values when reduced models differ in independent variables (fixed effects).
 
 \code{R2_lik()} is also computed for LMMs and GLMMs in the {MuMIn} package.
 }
@@ -100,7 +98,7 @@ n <- 100
 d <- data.frame(x = array(0, dim = n), y = 0)
 
 b1 <- 1.5
-signal <- 0.7
+signal <- 0.5
 
 phy <- compute.brlen(rtree(n = n), method = 'Grafen', power = 1)
 phy.x <- compute.brlen(phy, method = 'Grafen', power = .0001)
@@ -111,9 +109,18 @@ e <- signal^0.5 * rTraitCont(phy, model = 'BM', sigma = 1) + (1-signal)^0.5 * rn
 d$x <- x[match(names(e), names(x))]
 d$y <- b1 * x + e
 rownames(d) <- phy$tip.label
+d$sp <- phy$tip.label
 
+z.f <- pglmm_compare(y ~ x, data = d, phy = phy, REML=F)
+z.x <- pglmm_compare(y ~ 1, data = d, phy = phy, REML=F)
+z.v <- glm(y ~ x, data = d)
+
+R2_lik(z.f, z.x)
+R2_lik(z.f, z.v)
+R2_lik(z.f)
+
+# These data can also be fit with phylolm() in {phylolm}
 z.x <- phylolm(y ~ 1, phy = phy, data = d, model = 'lambda')
-lam.x <- round(z.x$optpar, digits = 4)
 z.f <- phylolm(y ~ x, phy = phy, data = d, model = 'lambda')
 z.v <- lm(y ~ x, data = d)
 
@@ -122,9 +129,10 @@ R2_lik(z.f, z.v)
 R2_lik(z.f)
 
 # This also works for models fit with gls() in {nlme}
-z.x <- gls(y ~ 1, data = d, correlation = corPagel(1, phy), method = "ML")
-z.f <- gls(y ~ x, data = d, correlation = corPagel(1, phy), method = "ML")
+z.x <- gls(y ~ 1, data = d, correlation = corPagel(1, phy, form = ~sp), method = "ML")
+z.f <- gls(y ~ x, data = d, correlation = corPagel(1, phy, form = ~sp), method = "ML")
 z.v <- lm(y ~ x, data = d)
+
 R2_lik(z.f, z.x)
 R2_lik(z.f, z.v)
 R2_lik(z.f)
@@ -157,7 +165,9 @@ R2_lik(z.f, z.x)
 R2_lik(z.f, z.v)
 R2_lik(z.f)
 
-# These data can also be fit with pglmm_compare(), although note that this is a different model from phyloglm()
+# These data can also be fit with pglmm_compare(), although note that 
+# this is a different model from phyloglm()
+
 z.f <- pglmm_compare(y ~ x, data = d, family = "binomial", phy = phy, REML=F)
 z.x <- pglmm_compare(y ~ 1, data = d, family = "binomial", phy = phy, REML=F)
 z.v <- glm(y ~ x, data = d, family = "binomial")
@@ -165,6 +175,7 @@ z.v <- glm(y ~ x, data = d, family = "binomial")
 R2_lik(z.f, z.x)
 R2_lik(z.f, z.v)
 R2_lik(z.f)
+
 }
 \references{
 Ives A.R. and Li D. 2018. rr2: An R package to calculate R2s for regression models. Journal of Open Source Software. DOI:10.21105/joss.01028

@@ -4,15 +4,22 @@
 \alias{R2}
 \title{Calculate R2_lik, R2_resid, and R2_pred}
 \usage{
-R2(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = c("s2w", "NS",
-  "rNS"), lik = TRUE, resid = TRUE, pred = TRUE)
+R2(
+  mod = NULL,
+  mod.r = NULL,
+  phy = NULL,
+  sigma2_d = c("s2w", "NS", "rNS"),
+  lik = TRUE,
+  resid = TRUE,
+  pred = TRUE
+)
 }
 \arguments{
 \item{mod}{A regression model with one of the following classes: 'lm', 'glm', lmerMod', glmerMod', 'phylolm', 'gls', 'pglmm', 'pglmm_compare', binaryPGLMM', or 'communityPGLMM'.}
 
 \item{mod.r}{A reduced model; if not provided, the total R2 will be given by setting 'mod.r' to the model corresponding to 'mod' with the intercept as the only predictor.}
 
-\item{phy}{The phylogeny for phylogenetic models (as a 'phylo' object), which is not required to be specified for \code{R2_lik()} of non-phylogenetic models.}
+\item{phy}{The phylogeny for phylogenetic models (as a 'phylo' object), which is not required to be specified for \code{R2_lik()} or non-phylogenetic models.}
 
 \item{sigma2_d}{Distribution-specific variance \eqn{\sigma^2_d}{sigma2d} (see Details) used in \code{R2_resid()}. For binomial GLMs, GLMMs and PGLMMs with logit link functions, options are c('s2w', 'NS', 'rNS'). For binomial GLMs, GLMMs and PGLMMs with probit link functions, options are c('s2w', 'NS'). Other families use 's2w'.}
 
@@ -98,6 +105,30 @@ R2(z.f, sigma2_d = 'NS')
 R2(z.f, sigma2_d = 'rNS')
 
 #################
+# GLS {nlme} with one fixed effect and autocorrelated errors among 6 groups
+
+nT <- 10
+nseries <- 6
+n <- nT * nseries
+
+d <- data.frame(x = 0, y = 0, u = rep(1:nseries, each = nT), e = rnorm(1))
+d$u <- as.factor(d$u)
+d$x <- rnorm(n = n)
+ar1 <- .5
+for(t in 2:n) d$e[t] <- ar1*d$e[t-1] + rnorm(1)
+
+b1 <- 1
+d$y <- b1 * d$x + d$e
+
+z.f <- gls(y ~ x + u, correlation = corAR1(form = ~1 | u), data = d)
+z.x <- gls(y ~ 1, correlation = corAR1(form = ~1 | u), data = d)
+z.ar <- lm(y ~ x + u, data = d)
+
+R2(z.f, z.x)
+R2(z.f, z.ar)
+R2(z.f)
+
+#################
 # PGLS with a single fixed effect
 
 n <- 100
@@ -115,6 +146,7 @@ e <- signal^0.5 * rTraitCont(phy, model = 'BM', sigma = 1) + (1-signal)^0.5 * rn
 d$x <- x[match(names(e), names(x))]
 d$y <- b1 * x + e
 rownames(d) <- phy$tip.label
+d$sp <- phy$tip.label
 
 z.x <- phylolm(y ~ 1, phy = phy, data = d, model = 'lambda')
 z.f <- phylolm(y ~ x, phy = phy, data = d, model = 'lambda')
@@ -125,8 +157,8 @@ R2(z.f, z.v, phy = phy)
 R2(z.f, phy = phy)
 
 # This also works for models fit with gls() in {nlme}
-z.x <- gls(y ~ 1, data = d, correlation = corPagel(1, phy), method = "ML")
-z.f <- gls(y ~ x, data = d, correlation = corPagel(1, phy), method = "ML")
+z.x <- gls(y ~ 1, data = d, correlation = corPagel(1, phy, form = ~sp), method = "ML")
+z.f <- gls(y ~ x, data = d, correlation = corPagel(1, phy, form = ~sp), method = "ML")
 z.v <- lm(y ~ x, data = d)
 
 R2(z.f, z.x)
@@ -142,15 +174,16 @@ e <- signal^0.5 * rTraitCont(phy.nu, model = 'BM', sigma = 1) + (1-signal)^0.5 *
 d$x <- x[match(names(e), names(x))]
 d$y <- b1 * x + e
 rownames(d) <- phy.nu$tip.label
+d$sp <- phy.nu$tip.label
 
 weights <- diag(vcv.phylo(phy.nu))
 z.x <- gls(y ~ 1,data = d, 
-           correlation = corPagel(1, phy.nu),
+           correlation = corPagel(1, phy.nu, form = ~sp),
            weights=varFixed(~weights), method = "ML")
 z.f <- gls(y ~ x,data = d, 
-           correlation = corPagel(1, phy.nu),
+           correlation = corPagel(1, phy.nu, form = ~sp),
            weights=varFixed(~weights), method = "ML")
-z.v <- lm(y ~ x, data = d)
+z.v <- lm(y ~ x, weights = 1/weights, data = d)
 
 R2(z.f, z.x)
 R2(z.f, z.v)
@@ -177,24 +210,72 @@ d$y <- rbinom(n = n, size = 1, prob = inv.logit(b1 * d$x + e))
 rownames(d) <- phy$tip.label
 
 # Use the function pglmm_compare() from the phyr package.
-z.f <- pglmm_compare(y ~ x, data = d, family = 'binomial', tree = phy)
-z.x <- pglmm_compare(y ~ 1, data = d, family = 'binomial', tree = phy)
+z.f <- pglmm_compare(y ~ x, data = d, family = 'binomial', phy = phy, REML = FALSE)
+z.x <- pglmm_compare(y ~ 1, data = d, family = 'binomial', phy = phy, REML = FALSE)
 z.v <- glm(y ~ x, data = d, family = 'binomial')
 
 R2(z.f, z.x)
 R2(z.f, z.v)
 R2(z.f)
 
-# Use the function binaryPGLMM() from the rr2 package rather than ape.
-z.f <- rr2::binaryPGLMM(y ~ x, data = d, phy = phy)
-z.x <- rr2::binaryPGLMM(y ~ 1, data = d, phy = phy)
-z.v <- glm(y ~ x, data = d, family = 'binomial')
+#################
+# A community example of pglmm {phyr}
+library(mvtnorm)
 
-# R2_lik is not produced, because binaryPGLMM() does not generate a likelihood.
-R2(z.f, z.x, phy = phy)
-R2(z.f, z.v, phy = phy)
-R2(z.f, phy = phy)
+nspp <- 6
+nsite <- 4
 
+# Simulate a phylogeny that has a lot of phylogenetic signal (power = 1.3)
+phy <- compute.brlen(rtree(n = nspp), method = "Grafen", power = 1.3)
+
+# Simulate species means
+sd.sp <- 1
+mean.sp <- rTraitCont(phy, model = "BM", sigma=sd.sp^2)
+
+# Replicate values of mean.sp over sites
+Y.sp <- rep(mean.sp, times=nsite)
+
+# Simulate site means
+sd.site <- 1
+mean.site <- rnorm(nsite, sd=sd.site)
+
+# Replicate values of mean.site over sp
+Y.site <- rep(mean.site, each=nspp)
+
+# Compute a covariance matrix for phylogenetic attraction
+sd.attract <- 1
+Vphy <- vcv(phy)
+
+# Standardize the phylogenetic covariance matrix to have determinant = 1. 
+# (For an explanation of this standardization, see subsection 4.3.1 in Ives (2018))
+Vphy <- Vphy/(det(Vphy)^(1/nspp))
+
+# Construct the overall covariance matrix for phylogenetic attraction. 
+# (For an explanation of Kronecker products, see subsection 4.3.1 in the book)
+V <- kronecker(diag(nrow = nsite, ncol = nsite), Vphy)
+Y.attract <- array(t(rmvnorm(n = 1, sigma = sd.attract^2*V)))
+
+# Simulate residual errors
+sd.e <- 1
+Y.e <- rnorm(nspp*nsite, sd = sd.e)
+
+# Construct the dataset
+d <- data.frame(sp = rep(phy$tip.label, times = nsite), site = rep(1:nsite, each = nspp))
+
+# Simulate abundance data
+d$Y <- Y.sp + Y.site + Y.attract + Y.e
+
+# Full and reduced models
+z.f <- pglmm(Y ~ 1 + (1|sp__) + (1|site) + (1|sp__@site), 
+             data = d, cov_ranef = list(sp = phy), REML=F)
+z.nested <- pglmm(Y ~ 1 + (1|sp__) + (1|site), 
+             data = d, cov_ranef = list(sp = phy), REML=F)
+z.sp <- pglmm(Y ~ 1 + (1|sp) + (1|site), 
+             data = d, cov_ranef = list(sp = phy), REML=F)
+
+R2(z.f, z.nested)
+R2(z.nested, z.sp)
+R2(z.f)
 }
 \references{
 Ives A.R. and Li D. 2018. rr2: An R package to calculate R2s for regression models. Journal of Open Source Software. DOI:10.21105/joss.01028
