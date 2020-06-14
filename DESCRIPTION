@@ -19,8 +19,11 @@ Imports:
     ape,
     utils,
     Matrix,
-    nlme
+    nlme,
+    phyr
 RoxygenNote: 7.1.0
-Suggests: testthat
+Suggests: 
+    testthat,
+    mvtnorm
 URL: https://github.com/arives/rr2
 BugReports: https://github.com/arives/rr2/issues
