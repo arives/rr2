@@ -1,7 +1,7 @@
 context("testing R2 functions")
 
 # data 
-set.seed(123456)
+set.seed(12345)
 p1 <- 10; nsample <- 20; n <- p1 * nsample
 d <- data.frame(x1 = rnorm(n = n), 
                 x2 = rnorm(n = n), 
@@ -107,17 +107,17 @@ test_that("when missing mod.r, the functions will automatically create one, long
   z.v.plog <- glm(y_phy_binary ~ 1, data = d, family = "binomial")
   # R2.lik can't be used with binaryPGLMM because it is not a ML method
   expect_message(t1 <- R2(mod = z.f.plog, mod.r = z.v.plog), 
-                 "Models of class binaryPGLMM do not have R2.lik method")
+                 "Models of class binaryPGLMM do not have a R2.lik method")
   expect_message(t2 <- R2(mod = z.f.plog, mod.r = z.v.plog), 
-                 "Models of class binaryPGLMM do not have R2.lik method")
+                 "Models of class binaryPGLMM do not have a R2.lik method")
   expect_equal(t1, t2)
   
   z.f.plog2 <- phylolm::phyloglm(y_phy_binary ~ x1, data = d, start.alpha = 1, phy = phy)
   z.v.plog2 <- glm(y_phy_binary ~ 1, data = d, family = "binomial")
-  expect_message(t11 <- R2(z.f.plog2, z.v.plog2),
-                 "Models of class phyloglm only have R2.lik method")
+  expect_message(t11 <- R2(mod = z.f.plog2, mod.r = z.v.plog2),
+                 "Models of class phyloglm only have a R2.lik method")
   expect_message(t12 <- R2(z.f.plog2),
-                 "Models of class phyloglm only have R2.lik method")
+                 "Models of class phyloglm only have a R2.lik method")
   expect_equal(t11, t12)
   
   # # communityPGLMM

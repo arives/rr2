@@ -8,7 +8,7 @@ R2_lik(mod = NULL, mod.r = NULL)
 }
 \arguments{
 \item{mod}{A regression model with one of the following classes: 'lm', 'glm', 
-'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', 'gls', 'pglmm', pglmm_compare' 
+'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', 'gls', 'pglmm', pglmm.compare' 
 or 'communityPGLMM'.}
 
 \item{mod.r}{A reduced model; if not provided, the total R2 will be given by 
@@ -43,13 +43,12 @@ library(lme4)
 library(nlme)
 library(phyr)
 
-#################
-# LMM with two fixed and two random effects 
+set.seed(12345)
 p1 <- 10
 nsample <- 10
 n <- p1 * nsample
 
-d <- data.frame(x1 = 0, x2 = 0, y = 0, u1 = rep(1:p1, each = nsample), 
+d <- data.frame(x1 = 0, x2 = 0, u1 = rep(1:p1, each = nsample),
                 u2 = rep(1:p1, times = nsample))
 d$u1 <- as.factor(d$u1)
 d$u2 <- as.factor(d$u2)
@@ -60,50 +59,34 @@ sd1 <- 1.5
 
 d$x1 <- rnorm(n = n)
 d$x2 <- rnorm(n = n)
-d$y <- b1 * d$x1 + b2 * d$x2 + rep(rnorm(n = p1, sd = sd1), each = nsample) + 
-       rep(rnorm(n = p1, sd = sd1), times = nsample) + rnorm(n = n)
+d$y.lmm <- b1 * d$x1 + b2 * d$x2 + 
+  rep(rnorm(n = p1, sd = sd1), each = nsample) +
+  rep(rnorm(n = p1, sd = sd1), times = nsample) + 
+  rnorm(n = n)
 
-z.f <- lmer(y ~ x1 + x2 + (1 | u1) + (1 | u2), data = d, REML = FALSE)
-z.x <- lmer(y ~ x1 + (1 | u1) + (1 | u2), data = d, REML = FALSE)
-z.v <- lmer(y ~ 1 + (1 | u2), data = d, REML = FALSE)
-z.0 <- lm(y ~ 1, data = d)
+prob <- inv.logit(b1 * d$x1 + rep(rnorm(n = p1, sd = sd1), each = nsample))
+d$y.glmm <- rbinom(n = n, size = 1, prob = prob)
 
-R2_lik(z.f, z.x)
-R2_lik(z.f, z.v)
-R2_lik(z.f)
-
-# These give the same results.
-R2_lik(z.f, z.0)
-R2_lik(z.f)
-
-#################
-# GLMM with one fixed and one random effect
-
-p1 <- 10
-nsample <- 10
-n <- p1 * nsample
-
-d <- data.frame(x = 0, y = 0, u = rep(1:p1, each = nsample))
-d$u <- as.factor(d$u)
-
-b1 <- 1
-sd1 <- 1.5
-
-d$x <- rnorm(n = n)
-prob <- inv.logit(b1 * d$x + rep(rnorm(n = p1, sd = sd1), each = nsample))
-d$y <- rbinom(n = n, size = 1, prob = prob)
-
-z.f <- glmer(y ~ x + (1 | u), data = d, family = 'binomial')
-z.x <- glmer(y ~ 1 + (1 | u), data = d, family = 'binomial')
-z.v <- glm(y ~ x, data = d, family = 'binomial')
+# LMM with two fixed and two random effects ----
+z.f <- lmer(y.lmm ~ x1 + x2 + (1 | u1) + (1 | u2), data = d, REML = FALSE)
+z.x <- lmer(y.lmm ~ x1 + (1 | u1) + (1 | u2), data = d, REML = FALSE)
+z.v <- lmer(y.lmm ~ 1 + (1 | u2), data = d, REML = FALSE)
+z.0 <- lm(y.lmm ~ 1, data = d)
 
 R2_lik(z.f, z.x)
 R2_lik(z.f, z.v)
 R2_lik(z.f)
 
-#################
-# PGLS with a single fixed effect
+# GLMM with one fixed and one random effect ----
+z.f <- glmer(y.glmm ~ x1 + (1 | u1), data = d, family = 'binomial')
+z.x <- glmer(y.glmm ~ 1 + (1 | u1), data = d, family = 'binomial')
+z.v <- glm(y.glmm ~ x1, data = d, family = 'binomial')
 
+R2_lik(z.f, z.x)
+R2_lik(z.f, z.v)
+R2_lik(z.f)
+
+# PGLS with a single fixed effect ----
 n <- 100
 d <- data.frame(x = array(0, dim = n), y = 0)
 
@@ -121,8 +104,8 @@ d$y <- b1 * x + e
 rownames(d) <- phy$tip.label
 d$sp <- phy$tip.label
 
-z.f <- pglmm_compare(y ~ x, data = d, phy = phy, REML=F)
-z.x <- pglmm_compare(y ~ 1, data = d, phy = phy, REML=F)
+z.f <- pglmm.compare(y ~ x, data = d, phy = phy, REML=FALSE)
+z.x <- pglmm.compare(y ~ 1, data = d, phy = phy, REML=FALSE)
 z.v <- glm(y ~ x, data = d)
 
 R2_lik(z.f, z.x)
@@ -130,8 +113,8 @@ R2_lik(z.f, z.v)
 R2_lik(z.f)
 
 # These data can also be fit with phylolm() in {phylolm}
-z.x <- phylolm(y ~ 1, phy = phy, data = d, model = 'lambda')
 z.f <- phylolm(y ~ x, phy = phy, data = d, model = 'lambda')
+z.x <- phylolm(y ~ 1, phy = phy, data = d, model = 'lambda')
 z.v <- lm(y ~ x, data = d)
 
 R2_lik(z.f, z.x)
@@ -139,17 +122,15 @@ R2_lik(z.f, z.v)
 R2_lik(z.f)
 
 # This also works for models fit with gls() in {nlme}
-z.x <- gls(y ~ 1, data = d, correlation = corPagel(1, phy, form = ~sp), method = "ML")
 z.f <- gls(y ~ x, data = d, correlation = corPagel(1, phy, form = ~sp), method = "ML")
+z.x <- gls(y ~ 1, data = d, correlation = corPagel(1, phy, form = ~sp), method = "ML")
 z.v <- lm(y ~ x, data = d)
 
 R2_lik(z.f, z.x)
 R2_lik(z.f, z.v)
 R2_lik(z.f)
 
-#################
-# PGLMM with one fixed effect
-
+# PGLMM with one fixed effect ----
 n <- 100
 b1 <- 1.5
 signal <- 2
@@ -168,24 +149,23 @@ d$y <- rbinom(n = n, size = 1, prob = inv.logit(b1 * d$x + e))
 rownames(d) <- phy$tip.label
 
 z.f <- phyloglm(y ~ x, data = d, start.alpha = 1, phy = phy)
-z.x <- phyloglm(y ~ 1, data = d, phy = phy, start.alpha = min(20,z.f$alpha))
+z.x <- phyloglm(y ~ 1, data = d, phy = phy, start.alpha = min(20, z.f$alpha))
 z.v <- glm(y ~ x, data = d, family = 'binomial')
 
 R2_lik(z.f, z.x)
 R2_lik(z.f, z.v)
 R2_lik(z.f)
 
-# These data can also be fit with pglmm_compare(), although note that 
+# These data can also be fit with pglmm.compare(), although note that 
 # this is a different model from phyloglm()
 
-z.f <- pglmm_compare(y ~ x, data = d, family = "binomial", phy = phy, REML=F)
-z.x <- pglmm_compare(y ~ 1, data = d, family = "binomial", phy = phy, REML=F)
+z.f <- pglmm.compare(y ~ x, data = d, family = "binomial", phy = phy, REML=FALSE)
+z.x <- pglmm.compare(y ~ 1, data = d, family = "binomial", phy = phy, REML=FALSE)
 z.v <- glm(y ~ x, data = d, family = "binomial")
 
 R2_lik(z.f, z.x)
 R2_lik(z.f, z.v)
 R2_lik(z.f)
-
 }
 \references{
 Ives A.R. and Li D. 2018. rr2: An R package to calculate R2s for regression models. Journal of Open Source Software. DOI:10.21105/joss.01028

@@ -12,7 +12,7 @@ R2_resid(
 )
 }
 \arguments{
-\item{mod}{A regression model with one of the following classes: 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'gls', 'pglmm_compare' or 'binaryPGLMM'. For 'glmerMod', only family = c('binomial', 'poisson') are supported.}
+\item{mod}{A regression model with one of the following classes: 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'gls', 'pglmm.compare' or 'binaryPGLMM'. For 'glmerMod', only family = c('binomial', 'poisson') are supported.}
 
 \item{mod.r}{A reduced model; if not provided, the total R2 will be given by setting 'mod.r' to the model corresponding to 'mod' with the intercept as the only predictor.}
 
@@ -27,7 +27,7 @@ R2_resid value.
 Calculate partial and total R2s for LMM, GLMM, PGLS, and PGLMM using R2_resid, an extension of ordinary least-squares (OLS) R2s. For LMMs and GLMMs, R2_resid is related to the method proposed by Nakagawa and Schielzeth (2013).
 }
 \details{
-R2_resid works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'pglmm_compare', and 'binaryPGLMM'.
+R2_resid works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'pglmm.compare', and 'binaryPGLMM'.
 
 \strong{LMM (lmerMod):}
 
@@ -53,7 +53,7 @@ Partial R2s are given by the standard formula
 
 where R2.f and R2.r are the total R2s for full and reduced models, respectively.
 
-\strong{PGLS (phylolm, pglmm_compare):} 
+\strong{PGLS (phylolm, pglmm.compare):} 
 
 \deqn{partial R^2 = 1 - c.f * \sigma^2_{.f}/(c.r * \sigma^2_{.r})}{partial R2 = 1 - c.f * σ2.f/(c.r * σ2.r)}
 
@@ -62,7 +62,7 @@ where \eqn{\sigma^2_{.f}}{σ2.f} and \eqn{\sigma^2_{.r}}{σ2.r} are the variance
 \code{phylolm()} can have difficulties in finding solutions when there is no phylogenetic signal;
 when the estimate indicates no phylogenetic signal, you should refit the model with the corresponding LM.
 
-\strong{PGLMM (pglmm_compare, binaryPGLMM):} 
+\strong{PGLMM (pglmm.compare, binaryPGLMM):} 
 
 The R2_resid for PGLMMs is computed in the same way as the GLMM (glmer), with options sigma_d = c('s2w', 'NS', 'rNS'). The estimated variance of the random effect associated with the phylogeny, \eqn{\sigma^2_b}{σ2b}, is multiplied by the diagonal elements of the phylogenetic covariance matrix. For binary models, this covariance matrix should be standardized so that all diagonal elements are the same (a contemporaneous or ultrametric phylogenetic tree) (Ives and Garland 2014). In case this is not done, however, the code takes the geometric average of the diagonal elements.
 
@@ -77,14 +77,14 @@ library(ape)
 library(phylolm)
 library(lme4)
 library(nlme)
+library(phyr)
 
-#################
-# LMM with two fixed and two random effects 
+set.seed(12345)
 p1 <- 10
 nsample <- 10
 n <- p1 * nsample
 
-d <- data.frame(x1 = 0, x2 = 0, y = 0, u1 = rep(1:p1, each = nsample), 
+d <- data.frame(x1 = 0, x2 = 0, u1 = rep(1:p1, each = nsample),
                 u2 = rep(1:p1, times = nsample))
 d$u1 <- as.factor(d$u1)
 d$u2 <- as.factor(d$u2)
@@ -95,46 +95,34 @@ sd1 <- 1.5
 
 d$x1 <- rnorm(n = n)
 d$x2 <- rnorm(n = n)
-d$y <- b1 * d$x1 + b2 * d$x2 + rep(rnorm(n = p1, sd = sd1), each = nsample) + 
-       rep(rnorm(n = p1, sd = sd1), times = nsample) + rnorm(n = n)
+d$y.lmm <- b1 * d$x1 + b2 * d$x2 + 
+  rep(rnorm(n = p1, sd = sd1), each = nsample) +
+  rep(rnorm(n = p1, sd = sd1), times = nsample) + 
+  rnorm(n = n)
 
-z.f <- lmer(y ~ x1 + x2 + (1 | u1) + (1 | u2), data = d, REML = FALSE)
-z.x <- lmer(y ~ x1 + (1 | u1) + (1 | u2), data = d, REML = FALSE)
-z.v <- lmer(y ~ 1 + (1 | u2), data = d, REML = FALSE)
-z.0 <- lm(y ~ 1, data = d)
+prob <- inv.logit(b1 * d$x1 + rep(rnorm(n = p1, sd = sd1), each = nsample))
+d$y.glmm <- rbinom(n = n, size = 1, prob = prob)
 
-R2_resid(z.f, z.x)
-R2_resid(z.f, z.v)
-R2_resid(z.f)
-
-#################
-# GLMM with one fixed and one random effect
-
-p1 <- 10
-nsample <- 10
-n <- p1 * nsample
-
-d <- data.frame(x = 0, y = 0, u = rep(1:p1, each = nsample))
-d$u <- as.factor(d$u)
-
-b1 <- 1
-sd1 <- 1.5
-
-d$x <- rnorm(n = n)
-prob <- inv.logit(b1 * d$x + rep(rnorm(n = p1, sd = sd1), each = nsample))
-d$y <- rbinom(n = n, size = 1, prob = prob)
-
-z.f <- glmer(y ~ x + (1 | u), data = d, family = 'binomial')
-z.x <- glmer(y ~ 1 + (1 | u), data = d, family = 'binomial')
-z.v <- glm(y ~ x, data = d, family = 'binomial')
+# LMM with two fixed and two random effects ----
+z.f <- lmer(y.lmm ~ x1 + x2 + (1 | u1) + (1 | u2), data = d, REML = FALSE)
+z.x <- lmer(y.lmm ~ x1 + (1 | u1) + (1 | u2), data = d, REML = FALSE)
+z.v <- lmer(y.lmm ~ 1 + (1 | u2), data = d, REML = FALSE)
+z.0 <- lm(y.lmm ~ 1, data = d)
 
 R2_resid(z.f, z.x)
 R2_resid(z.f, z.v)
 R2_resid(z.f)
 
-#################
-# PGLS with a single fixed effect
+# GLMM with one fixed and one random effect ----
+z.f <- glmer(y.glmm ~ x1 + (1 | u1), data = d, family = 'binomial')
+z.x <- glmer(y.glmm ~ 1 + (1 | u1), data = d, family = 'binomial')
+z.v <- glm(y.glmm ~ x1, data = d, family = 'binomial')
 
+R2_resid(z.f, z.x)
+R2_resid(z.f, z.v)
+R2_resid(z.f)
+
+# PGLS with a single fixed effect ----
 n <- 100
 d <- data.frame(x = array(0, dim = n), y = 0)
 
@@ -146,14 +134,15 @@ phy.x <- compute.brlen(phy, method = 'Grafen', power = .0001)
 
 # Generate random data
 x <- rTraitCont(phy.x, model = 'BM', sigma = 1)
-e <- signal^0.5 * rTraitCont(phy, model = 'BM', sigma = 1) + (1-signal)^0.5 * rnorm(n = n)
+e <- signal ^ 0.5 * rTraitCont(phy, model = 'BM', sigma = 1) +
+  (1 - signal) ^ 0.5 * rnorm(n = n)
 d$x <- x[match(names(e), names(x))]
 d$y <- b1 * x + e
 rownames(d) <- phy$tip.label
 d$sp <- phy$tip.label
 
-z.x <- pglmm_compare(y ~ 1, phy = phy, data = d, REML=F)
-z.f <- pglmm_compare(y ~ x, phy = phy, data = d, REML=F)
+z.x <- pglmm.compare(y ~ 1, phy = phy, data = d, REML=FALSE)
+z.f <- pglmm.compare(y ~ x, phy = phy, data = d, REML=FALSE)
 z.v <- lm(y ~ x, data = d)
 
 R2_resid(z.f, z.x)
@@ -169,31 +158,32 @@ R2_resid(z.f, z.v, phy = phy)
 R2_resid(z.f, phy = phy)
 
 # This also works for models fit with gls() in {nlme}
-z.x <- gls(y ~ 1, data = d, correlation = corPagel(1, phy, form = ~sp), method = "ML")
 z.f <- gls(y ~ x, data = d, correlation = corPagel(1, phy, form = ~sp), method = "ML")
+z.x <- gls(y ~ 1, data = d, correlation = corPagel(1, phy, form = ~sp), method = "ML")
 z.v <- lm(y ~ x, data = d)
 
 R2_resid(z.f, z.x)
 R2_resid(z.f, z.v)
 R2_resid(z.f)
 
-# But note that you need to define weights for gls() with non-ultrametric trees; 
+# But note that you need to define weights for gls() with non-ultrametric trees;
 # if not, you will get a error "Matrix is not block-diagonal"
 
 phy.nu <- rtree(n = n)
 
 # Generate random data
-e <- signal^0.5 * rTraitCont(phy.nu, model = 'BM', sigma = 1) + (1-signal)^0.5 * rnorm(n = n)
+e <- signal ^ 0.5 * rTraitCont(phy.nu, model = 'BM', sigma = 1) +
+  (1 - signal) ^ 0.5 * rnorm(n = n)
 d$x <- x[match(names(e), names(x))]
 d$y <- b1 * x + e
 rownames(d) <- phy.nu$tip.label
 d$sp <- phy.nu$tip.label
 
 weights <- diag(vcv.phylo(phy.nu))
-z.x <- gls(y ~ 1,data = d, 
+z.x <- gls(y ~ 1,data = d,
          correlation = corPagel(1, phy.nu, form = ~sp),
          weights=varFixed(~weights), method = "ML")
-z.f <- gls(y ~ x,data = d, 
+z.f <- gls(y ~ x,data = d,
          correlation = corPagel(1, phy.nu, form = ~sp),
          weights=varFixed(~weights), method = "ML")
 z.v <- lm(y ~ x, weights = 1/weights, data = d)
@@ -202,8 +192,7 @@ R2_resid(z.f, z.x)
 R2_resid(z.f, z.v)
 R2_resid(z.f)
 
-#################
-# PGLMM with one fixed effect
+# PGLMM with one fixed effect ----
 
 n <- 100
 b1 <- 1.5
@@ -222,9 +211,9 @@ e <- e[match(phy$tip.label, names(e))]
 d$y <- rbinom(n = n, size = 1, prob = inv.logit(b1 * d$x + e))
 rownames(d) <- phy$tip.label
 
-# Use the function pglmm_compare in {phyr}.
-z.f <- pglmm_compare(y ~ x, data = d, family = "binomial", phy = phy)
-z.x <- pglmm_compare(y ~ 1, data = d, family = "binomial", phy = phy)
+# Use the function pglmm.compare in {phyr}.
+z.f <- pglmm.compare(y ~ x, data = d, family = "binomial", phy = phy)
+z.x <- pglmm.compare(y ~ 1, data = d, family = "binomial", phy = phy)
 z.v <- glm(y ~ x, data = d, family = 'binomial')
 
 R2_resid(z.f, z.x)

@@ -7,11 +7,11 @@
 R2_pred(mod = NULL, mod.r = NULL, gaussian.pred = "tip_rm", phy = NULL)
 }
 \arguments{
-\item{mod}{A regression model with one of the following classes: 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'gls', 'pglmm', pglmm_compare', 'binaryPGLMM', or 'communityPGLMM'.}
+\item{mod}{A regression model with one of the following classes: 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'gls', 'pglmm', pglmm.compare', 'binaryPGLMM', or 'communityPGLMM'.}
 
 \item{mod.r}{A reduced model; if not provided, the total R2 will be given by setting 'mod.r' to the model corresponding to 'mod' with the intercept as the only predictor.}
 
-\item{gaussian.pred}{For models of classes `pglmm` and `pglmm_compare` when family = gaussian, which type of prediction to calculate.}
+\item{gaussian.pred}{For models of classes `pglmm` and `pglmm.compare` when family = gaussian, which type of prediction to calculate.}
 
 \item{phy}{The phylogeny for phylogenetic models (as a 'phylo' object), which must be specified for models of class `phylolm`.}
 }
@@ -19,15 +19,15 @@ R2_pred(mod = NULL, mod.r = NULL, gaussian.pred = "tip_rm", phy = NULL)
 Calculate partial and total R2s for LMM, GLMM, PGLS, and PGLMM using R2_pred, an R2 based on the variance of the difference between the observed and predicted values of a fitted model.
 }
 \details{
-R2_pred works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', 'gls', 'pglmm', 'pglmm_compare', binaryPGLMM', and 'communityPGLMM' (family = gaussian and binomial).
+R2_pred works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', 'gls', 'pglmm', 'pglmm.compare', binaryPGLMM', and 'communityPGLMM' (family = gaussian and binomial).
 
-\strong{LMM (lmerMod), GLMM (glmerMod), PGLMM (pglmm, pglmm_compare, binaryPGLMM and communityPGLMM):}
+\strong{LMM (lmerMod), GLMM (glmerMod), PGLMM (pglmm, pglmm.compare, binaryPGLMM and communityPGLMM):}
 
 \deqn{partial R2 = 1 - var(y - y.fitted.f)/var(y - y.fitted.r)}
 
 where y are the observed data, and y.fitted.f and y.fitted.r are the fitted (predicted) values from the full and reduced models. For GLMMs and PGLMMs, the values of y.fitted are in the space of the raw data (as opposed to the 'Normal' or 'latent' space). When the reduced model 'mod.r' is not specified, the total R2 is computing using the reduced model with only the intercept.
 
-For pglmm and pglmm_compare with gaussian models, the default method for computing predicted values is "nearest_node" to correspond to predicted values in lmer, although the method "tip_rm" can be specified to correspond to the analyses in Ives (2018).
+For pglmm and pglmm.compare with gaussian models, the default method for computing predicted values is "nearest_node" to correspond to predicted values in lmer, although the method "tip_rm" can be specified to correspond to the analyses in Ives (2018).
 
 Note that the version of \code{binaryPGLMM()} in the package ape is replaced by a version contained within {rr2} that outputs all of the required information for the calculation of R2_resid.
 
@@ -54,13 +54,12 @@ library(lme4)
 library(nlme)
 library(phyr)
 
-#################
-# LMM with two fixed and two random effects 
+set.seed(12345)
 p1 <- 10
 nsample <- 10
 n <- p1 * nsample
 
-d <- data.frame(x1 = 0, x2 = 0, y = 0, u1 = rep(1:p1, each = nsample), 
+d <- data.frame(x1 = 0, x2 = 0, u1 = rep(1:p1, each = nsample),
                 u2 = rep(1:p1, times = nsample))
 d$u1 <- as.factor(d$u1)
 d$u2 <- as.factor(d$u2)
@@ -71,46 +70,34 @@ sd1 <- 1.5
 
 d$x1 <- rnorm(n = n)
 d$x2 <- rnorm(n = n)
-d$y <- b1 * d$x1 + b2 * d$x2 + rep(rnorm(n = p1, sd = sd1), each = nsample) + 
-       rep(rnorm(n = p1, sd = sd1), times = nsample) + rnorm(n = n)
+d$y.lmm <- b1 * d$x1 + b2 * d$x2 + 
+  rep(rnorm(n = p1, sd = sd1), each = nsample) +
+  rep(rnorm(n = p1, sd = sd1), times = nsample) + 
+  rnorm(n = n)
 
-z.f <- lmer(y ~ x1 + x2 + (1 | u1) + (1 | u2), data = d, REML = FALSE)
-z.x <- lmer(y ~ x1 + (1 | u1) + (1 | u2), data = d, REML = FALSE)
-z.v <- lmer(y ~ 1 + (1 | u2), data = d, REML = FALSE)
-z.0 <- lm(y ~ 1, data = d)
+prob <- inv.logit(b1 * d$x1 + rep(rnorm(n = p1, sd = sd1), each = nsample))
+d$y.glmm <- rbinom(n = n, size = 1, prob = prob)
 
-R2_pred(z.f, z.x)
-R2_pred(z.f, z.v)
-R2_pred(z.f)
-
-#################
-# GLMM with one fixed and one random effect
-
-p1 <- 10
-nsample <- 10
-n <- p1 * nsample
-
-d <- data.frame(x = 0, y = 0, u = rep(1:p1, each = nsample))
-d$u <- as.factor(d$u)
-
-b1 <- 1
-sd1 <- 1.5
-
-d$x <- rnorm(n = n)
-prob <- inv.logit(b1 * d$x + rep(rnorm(n = p1, sd = sd1), each = nsample))
-d$y <- rbinom(n = n, size = 1, prob = prob)
-
-z.f <- glmer(y ~ x + (1 | u), data = d, family = 'binomial')
-z.x <- glmer(y ~ 1 + (1 | u), data = d, family = 'binomial')
-z.v <- glm(y ~ x, data = d, family = 'binomial')
+# LMM with two fixed and two random effects ----
+z.f <- lmer(y.lmm ~ x1 + x2 + (1 | u1) + (1 | u2), data = d, REML = FALSE)
+z.x <- lmer(y.lmm ~ x1 + (1 | u1) + (1 | u2), data = d, REML = FALSE)
+z.v <- lmer(y.lmm ~ 1 + (1 | u2), data = d, REML = FALSE)
+z.0 <- lm(y.lmm ~ 1, data = d)
 
 R2_pred(z.f, z.x)
 R2_pred(z.f, z.v)
 R2_pred(z.f)
 
-#################
-# PGLS with a single fixed effect
+# GLMM with one fixed and one random effect ----
+z.f <- glmer(y.glmm ~ x1 + (1 | u1), data = d, family = 'binomial')
+z.x <- glmer(y.glmm ~ 1 + (1 | u1), data = d, family = 'binomial')
+z.v <- glm(y.glmm ~ x1, data = d, family = 'binomial')
 
+R2_pred(z.f, z.x)
+R2_pred(z.f, z.v)
+R2_pred(z.f)
+
+# PGLS with a single fixed effect ----
 n <- 100
 d <- data.frame(x = array(0, dim = n), y = 0)
 
@@ -122,7 +109,8 @@ phy.x <- compute.brlen(phy, method = 'Grafen', power = .0001)
 
 # Generate random data
 x <- rTraitCont(phy.x, model = 'BM', sigma = 1)
-e <- signal^0.5 * rTraitCont(phy, model = 'BM', sigma = 1) + (1-signal)^0.5 * rnorm(n = n)
+e <- signal ^ 0.5 * rTraitCont(phy, model = 'BM', sigma = 1) +
+  (1 - signal) ^ 0.5 * rnorm(n = n)
 d$x <- x[match(names(e), names(x))]
 d$y <- b1 * x + e
 rownames(d) <- phy$tip.label
@@ -136,9 +124,7 @@ R2_pred(z.f, z.x)
 R2_pred(z.f, z.v)
 R2_pred(z.f)
 
-#################
-# PGLMM with one fixed effect
-
+# PGLMM with one fixed effect ----
 n <- 100
 b1 <- 1.5
 signal <- 2
@@ -156,8 +142,8 @@ e <- e[match(phy$tip.label, names(e))]
 d$y <- rbinom(n = n, size = 1, prob = inv.logit(b1 * d$x + e))
 rownames(d) <- phy$tip.label
 
-z.f <- pglmm_compare(y ~ x, data = d, family = "binomial", phy = phy)
-z.x <- pglmm_compare(y ~ 1, data = d, family = "binomial", phy = phy)
+z.f <- pglmm.compare(y ~ x, data = d, family = "binomial", phy = phy)
+z.x <- pglmm.compare(y ~ 1, data = d, family = "binomial", phy = phy)
 z.v <- glm(y ~ x, data = d, family = "binomial")
 
 R2_pred(z.f, z.x)
@@ -168,7 +154,6 @@ R2_pred(z.f)
 # A community example of pglmm {phyr} contrasting R2_pred when bayes = TRUE and bayes = F
 
 library(mvtnorm)
-
 nspp <- 6
 nsite <- 4
 
@@ -193,11 +178,11 @@ Y.site <- rep(mean.site, each=nspp)
 sd.attract <- 1
 Vphy <- vcv(phy)
 
-# Standardize the phylogenetic covariance matrix to have determinant = 1. 
+# Standardize the phylogenetic covariance matrix to have determinant = 1.
 # (For an explanation of this standardization, see subsection 4.3.1 in Ives (2018))
 Vphy <- Vphy/(det(Vphy)^(1/nspp))
 
-# Construct the overall covariance matrix for phylogenetic attraction. 
+# Construct the overall covariance matrix for phylogenetic attraction.
 # (For an explanation of Kronecker products, see subsection 4.3.1 in the book)
 V <- kronecker(diag(nrow = nsite, ncol = nsite), Vphy)
 Y.attract <- array(t(rmvnorm(n = 1, sigma = sd.attract^2*V)))
@@ -213,12 +198,12 @@ d <- data.frame(sp = rep(phy$tip.label, times = nsite), site = rep(1:nsite, each
 d$Y <- Y.sp + Y.site + Y.attract + Y.e
 
 # Full and reduced models
-z.f <- pglmm(Y ~ 1 + (1|sp__) + (1|site) + (1|sp__@site), 
-        data = d, cov_ranef = list(sp = phy), REML=F)
-z.nested <- pglmm(Y ~ 1 + (1|sp__) + (1|site), 
-        data = d, cov_ranef = list(sp = phy), REML=F)
-z.sp <- pglmm(Y ~ 1 + (1|sp) + (1|site), 
-        data = d, cov_ranef = list(sp = phy), REML=F)
+z.f <- pglmm(Y ~ 1 + (1|sp__) + (1|site) + (1|sp__@site),
+        data = d, cov_ranef = list(sp = phy), REML = FALSE)
+z.nested <- pglmm(Y ~ 1 + (1|sp__) + (1|site),
+        data = d, cov_ranef = list(sp = phy), REML = FALSE)
+z.sp <- pglmm(Y ~ 1 + (1|sp) + (1|site),
+        data = d, cov_ranef = list(sp = phy), REML = FALSE)
 
 R2_pred(z.f, z.nested)
 R2_pred(z.nested, z.sp)
@@ -229,17 +214,18 @@ R2_pred(z.f, z.nested, gaussian.pred = "nearest_node")
 R2_pred(z.nested, z.sp, gaussian.pred = "nearest_node")
 R2_pred(z.f, gaussian.pred = "nearest_node")
 
-# When bayes = TRUE, gaussian.pred = "nearest_node" automatically as the only option.
-z.f.bayes <- pglmm(Y ~ 1 + (1|sp__) + (1|site) + (1|sp__@site), 
-               data = d, cov_ranef = list(sp = phy), bayes = TRUE)
-z.nested.bayes <- pglmm(Y ~ 1 + (1|sp__) + (1|site), 
-               data = d, cov_ranef = list(sp = phy), bayes = TRUE)
-z.sp.bayes <- pglmm(Y ~ 1 + (1|sp) + (1|site), 
-               data = d, cov_ranef = list(sp = phy), bayes = TRUE)
-
-R2_pred(z.f.bayes, z.nested.bayes)
-R2_pred(z.nested.bayes, z.sp.bayes)
-R2_pred(z.f.bayes)
+# # When bayes = TRUE, gaussian.pred = "nearest_node" automatically as the only option.
+# # Commented out because CRAN does not have INLA installed
+# z.f.bayes <- pglmm(Y ~ 1 + (1|sp__) + (1|site) + (1|sp__@site),
+#                data = d, cov_ranef = list(sp = phy), bayes = TRUE)
+# z.nested.bayes <- pglmm(Y ~ 1 + (1|sp__) + (1|site),
+#                data = d, cov_ranef = list(sp = phy), bayes = TRUE)
+# z.sp.bayes <- pglmm(Y ~ 1 + (1|sp) + (1|site),
+#                data = d, cov_ranef = list(sp = phy), bayes = TRUE)
+# 
+# R2_pred(z.f.bayes, z.nested.bayes)
+# R2_pred(z.nested.bayes, z.sp.bayes)
+# R2_pred(z.f.bayes)
 }
 \references{
 Ives A.R. and Li D. 2018. rr2: An R package to calculate R2s for regression models. Journal of Open Source Software. DOI:10.21105/joss.01028
