@@ -7,22 +7,32 @@
 R2_lik(mod = NULL, mod.r = NULL)
 }
 \arguments{
-\item{mod}{A regression model with one of the following classes: 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', 'gls', 'pglmm', pglmm_compare' or 'communityPGLMM'.}
+\item{mod}{A regression model with one of the following classes: 'lm', 'glm', 
+'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', 'gls', 'pglmm', pglmm_compare' 
+or 'communityPGLMM'.}
 
-\item{mod.r}{A reduced model; if not provided, the total R2 will be given by setting 'mod.r' to the model corresponding to 'mod' with the intercept as the only predictor.}
+\item{mod.r}{A reduced model; if not provided, the total R2 will be given by 
+setting 'mod.r' to the model corresponding to 'mod' with the intercept as 
+the only predictor.}
 }
 \value{
 R2_lik value.
 }
 \description{
-Calculate partial and total R2s for LMM, GLMM, PGLS, and PGLMM using R2_lik, an R2 based on the likelihood of the fitted model.
+Calculate partial and total R2s for LMM, GLMM, PGLS, and PGLMM using R2_lik, 
+an R2 based on the likelihood of the fitted model.
 }
 \details{
 \code{R2_lik()} is implemented as
 
 \deqn{partial R2 = 1 - exp(-2/n * (logLik(mod.f) - logLik(mod.r)))}
 
-where 'mod.f' and 'mod.r' are the full and reduced models, respectively. The total R2 is given when 'mod.r' is the model corresponding to mod.f that contains only the intercept. For GLMMs and PGLMMs, \code{R2_lik()} is standardized to have a maximum of one following Nagelkerke (1991). Although you can use R2_lik with models fit with REML, you really shouldn't, because this makes it impossible to compare values when reduced models differ in independent variables (fixed effects).
+where 'mod.f' and 'mod.r' are the full and reduced models, respectively. The total 
+R2 is given when 'mod.r' is the model corresponding to mod.f that contains only 
+the intercept. For GLMMs and PGLMMs, \code{R2_lik()} is standardized to have a 
+maximum of one following Nagelkerke (1991). Although you can use R2_lik with 
+models fit with REML, you really shouldn't, because this makes it impossible 
+to compare values when reduced models differ in independent variables (fixed effects).
 
 \code{R2_lik()} is also computed for LMMs and GLMMs in the {MuMIn} package.
 }
