@@ -204,10 +204,12 @@
 #' R2_pred(z.nested, z.sp)
 #' R2_pred(z.f)
 #' 
-#' # These are generally larger when gaussian.pred = "nearest_node"
-#' R2_pred(z.f, z.nested, gaussian.pred = "nearest_node")
-#' R2_pred(z.nested, z.sp, gaussian.pred = "nearest_node")
-#' R2_pred(z.f, gaussian.pred = "nearest_node")
+#' ## FIXED ME in phyr::pglmm.predicted.values(), Error in x$Y - fit : non-conformable arrays
+#' # vector - matrix
+#' ## These are generally larger when gaussian.pred = "nearest_node"
+#' #R2_pred(z.f, z.nested, gaussian.pred = "nearest_node")
+#' #R2_pred(z.nested, z.sp, gaussian.pred = "nearest_node")
+#' #R2_pred(z.f, gaussian.pred = "nearest_node")
 #' 
 #' # # When bayes = TRUE, gaussian.pred = "nearest_node" automatically as the only option.
 #' # # Commented out because CRAN does not have INLA installed
@@ -306,7 +308,7 @@ R2_pred <- function(mod = NULL, mod.r = NULL, gaussian.pred = "tip_rm", phy = NU
       return(R2_pred.gls(mod, mod.r))
     }
 
-    if (any(class(mod) %in% c("pglmm", "pglmm.compare"))) {
+    if (any(class(mod) %in% c("pglmm", "communityPGLMM", "pglmm.compare"))) {
       if (!is.object(mod.r)) {
         y <- mod$Y
         if (mod$family == "gaussian") {
@@ -316,8 +318,8 @@ R2_pred <- function(mod = NULL, mod.r = NULL, gaussian.pred = "tip_rm", phy = NU
         }
       }
       
-      if (!any(class(mod.r) %in% c("pglmm", "pglmm.compare", "lm", "glm"))) {
-        stop("mod.r must be of class pglmm, pglmm.compare, lm, or glm.")
+      if (!any(class(mod.r) %in% c("pglmm", "communityPGLMM", "pglmm.compare", "lm", "glm"))) {
+        stop("mod.r must be of class pglmm, communityPGLMM, pglmm.compare, lm, or glm.")
       }
       if (mod$family == "gaussian") {
         if(gaussian.pred == "nearest_node") warning("Predictions are made with gaussian.pred = nearest_node")

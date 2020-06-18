@@ -142,6 +142,7 @@ z.v <- lm(y ~ x, data = d)
 R2(z.f, z.x, phy = phy)
 R2(z.f, z.v, phy = phy)
 R2(z.f, phy = phy)
+
 # These data can also be fit with pglmm.compare in {phyr}
 # Note that pglmm.compare will be renamed to pglmm_compare in the next version
 z.f <- pglmm.compare(y ~ x, data = d, phy = phy, REML=FALSE)

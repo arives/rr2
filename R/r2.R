@@ -146,7 +146,7 @@ NULL
 #' R2(z.f, z.x, phy = phy)
 #' R2(z.f, z.v, phy = phy)
 #' R2(z.f, phy = phy)
-
+#' 
 #' # These data can also be fit with pglmm.compare in {phyr}
 #' # Note that pglmm.compare will be renamed to pglmm_compare in the next version
 #' z.f <- pglmm.compare(y ~ x, data = d, phy = phy, REML=FALSE)
@@ -305,20 +305,10 @@ R2 <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = c("s2w", "NS", "
         message("Models of class binaryPGLMM do not have a R2_lik method.")
     }
     
-    # binary communityPGLMM only have a R2_pred method .
-    if (any(class(mod) %in% "communityPGLMM") & (lik == TRUE | resid == TRUE)) {
-      if (mod$family == "binomial") {
-        resid <- FALSE
-        lik <- FALSE
-        message("Models of class communityPGLMM (binomial) only have a R2_pred method.")
-      }
-    }
-    
     # pglmm does not have a R2_resid method
-    if (any(class(mod) %in% c("communityPGLMM", "pglmm")) & (resid == TRUE | pred)) {
-      message("Models of class pglmm do not have a R2_resid method or a R2_pred method.")
+    if (any(class(mod) %in% c("communityPGLMM", "pglmm")) & (resid == TRUE | lik == TRUE)) {
+      message("Models of class pglmm do not have a R2_resid method.")
       resid <- FALSE
-      pred <- FALSE
     }
     
     # gls does not have a R2_resid method

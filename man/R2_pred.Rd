@@ -209,10 +209,12 @@ R2_pred(z.f, z.nested)
 R2_pred(z.nested, z.sp)
 R2_pred(z.f)
 
-# These are generally larger when gaussian.pred = "nearest_node"
-R2_pred(z.f, z.nested, gaussian.pred = "nearest_node")
-R2_pred(z.nested, z.sp, gaussian.pred = "nearest_node")
-R2_pred(z.f, gaussian.pred = "nearest_node")
+## FIXED ME in phyr::pglmm.predicted.values(), Error in x$Y - fit : non-conformable arrays
+# vector - matrix
+## These are generally larger when gaussian.pred = "nearest_node"
+#R2_pred(z.f, z.nested, gaussian.pred = "nearest_node")
+#R2_pred(z.nested, z.sp, gaussian.pred = "nearest_node")
+#R2_pred(z.f, gaussian.pred = "nearest_node")
 
 # # When bayes = TRUE, gaussian.pred = "nearest_node" automatically as the only option.
 # # Commented out because CRAN does not have INLA installed

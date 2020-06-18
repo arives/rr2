@@ -280,8 +280,8 @@ R2_lik <- function(mod = NULL, mod.r = NULL) {
         y <- mod$Y
         mod.r <- glm(y ~ 1, family = mod$family)
       }
-      if (!is.element(class(mod.r)[1], c("communityPGLMM", "pglmm", "pglmm.compare", "glm"))) {
-        stop("mod.r must be class communityPGLMM, pglmm, pglmm.compare or glm.")
+      if (!is.element(class(mod.r)[1], c("communityPGLMM", "pglmm", "pglmm.compare", "glm", "lm"))) {
+        stop("mod.r must be class communityPGLMM, pglmm, pglmm.compare, glm, or lm.")
       }
       return(R2_lik.pglmm(mod, mod.r))
     }
@@ -386,15 +386,4 @@ R2_lik.pglmm <- function(mod = NULL, mod.r = NULL) {
   }
   R2_lik <- 1 - exp(-2/n * (mod$logLik - ll.r))
   return(R2_lik)
-}
-
-R2_lik.communityPGLMM <- function(mod = NULL, mod.r = NULL) {
-    n <- nrow(mod$X)
-    if (any(class(mod.r) %in% c("lm", "glm"))) {
-        ll.r <- logLik(mod.r)[[1]]
-    } else {
-        ll.r <- mod.r$logLik
-    }
-    R2_lik <- 1 - exp(-2/n * (mod$logLik - ll.r))
-    return(R2_lik)
 }
