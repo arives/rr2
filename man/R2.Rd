@@ -11,11 +11,12 @@ R2(
   sigma2_d = c("s2w", "NS", "rNS"),
   lik = TRUE,
   resid = TRUE,
-  pred = TRUE
+  pred = TRUE,
+  ...
 )
 }
 \arguments{
-\item{mod}{A regression model with one of the following classes: 'lm', 'glm', lmerMod', glmerMod', 'phylolm', 'gls', 'pglmm', 'pglmm.compare', binaryPGLMM', or 'communityPGLMM'.}
+\item{mod}{A regression model with one of the following classes: 'lm', 'glm', lmerMod', glmerMod', 'phylolm', 'gls', 'pglmm', 'pglmm_compare', binaryPGLMM', or 'communityPGLMM'.}
 
 \item{mod.r}{A reduced model; if not provided, the total R2 will be given by setting 'mod.r' to the model corresponding to 'mod' with the intercept as the only predictor.}
 
@@ -28,6 +29,8 @@ R2(
 \item{resid}{Whether to calculate R2_resid; default is TRUE.}
 
 \item{pred}{Whether to calculate R2_pred; default is TRUE.}
+
+\item{...}{Additional arguments for `R2_pred()`. `gaussian.pred = "tip_rm"` or `gaussian.pred = "nearest_node"`.}
 }
 \value{
 A vector, with all three R2s by default.
@@ -143,10 +146,10 @@ R2(z.f, z.x, phy = phy)
 R2(z.f, z.v, phy = phy)
 R2(z.f, phy = phy)
 
-# These data can also be fit with pglmm.compare in {phyr}
-# Note that pglmm.compare will be renamed to pglmm_compare in the next version
-z.f <- pglmm.compare(y ~ x, data = d, phy = phy, REML=FALSE)
-z.x <- pglmm.compare(y ~ 1, data = d, phy = phy, REML=FALSE)
+# These data can also be fit with pglmm_compare in {phyr}
+# Note that pglmm_compare will be renamed to pglmm_compare in the next version
+z.f <- pglmm_compare(y ~ x, data = d, phy = phy, REML=FALSE)
+z.x <- pglmm_compare(y ~ 1, data = d, phy = phy, REML=FALSE)
 z.v <- glm(y ~ x, data = d)
 
 R2(z.f, z.x)
@@ -213,10 +216,10 @@ R2(z.f, z.x)
 R2(z.f, z.v)
 R2(z.f)
 
-# Use the function pglmm.compare() from the phyr package. Note that this is a 
+# Use the function pglmm_compare() from the phyr package. Note that this is a 
 # different model from phyloglm()
-z.f <- pglmm.compare(y ~ x, data = d, family = 'binomial', phy = phy, REML = FALSE)
-z.x <- pglmm.compare(y ~ 1, data = d, family = 'binomial', phy = phy, REML = FALSE)
+z.f <- pglmm_compare(y ~ x, data = d, family = 'binomial', phy = phy, REML = FALSE)
+z.x <- pglmm_compare(y ~ 1, data = d, family = 'binomial', phy = phy, REML = FALSE)
 z.v <- glm(y ~ x, data = d, family = 'binomial')
 
 R2(z.f, z.x)

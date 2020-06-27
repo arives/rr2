@@ -8,7 +8,7 @@ R2_lik(mod = NULL, mod.r = NULL)
 }
 \arguments{
 \item{mod}{A regression model with one of the following classes: 'lm', 'glm', 
-'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', 'gls', 'pglmm', pglmm.compare' 
+'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', 'gls', 'pglmm', pglmm_compare' 
 or 'communityPGLMM'.}
 
 \item{mod.r}{A reduced model; if not provided, the total R2 will be given by 
@@ -104,8 +104,8 @@ d$y <- b1 * x + e
 rownames(d) <- phy$tip.label
 d$sp <- phy$tip.label
 
-z.f <- pglmm.compare(y ~ x, data = d, phy = phy, REML=FALSE)
-z.x <- pglmm.compare(y ~ 1, data = d, phy = phy, REML=FALSE)
+z.f <- pglmm_compare(y ~ x, data = d, phy = phy, REML=FALSE)
+z.x <- pglmm_compare(y ~ 1, data = d, phy = phy, REML=FALSE)
 z.v <- glm(y ~ x, data = d)
 
 R2_lik(z.f, z.x)
@@ -156,11 +156,11 @@ R2_lik(z.f, z.x)
 R2_lik(z.f, z.v)
 R2_lik(z.f)
 
-# These data can also be fit with pglmm.compare(), although note that 
+# These data can also be fit with pglmm_compare(), although note that 
 # this is a different model from phyloglm()
 
-z.f <- pglmm.compare(y ~ x, data = d, family = "binomial", phy = phy, REML=FALSE)
-z.x <- pglmm.compare(y ~ 1, data = d, family = "binomial", phy = phy, REML=FALSE)
+z.f <- pglmm_compare(y ~ x, data = d, family = "binomial", phy = phy, REML=FALSE)
+z.x <- pglmm_compare(y ~ 1, data = d, family = "binomial", phy = phy, REML=FALSE)
 z.v <- glm(y ~ x, data = d, family = "binomial")
 
 R2_lik(z.f, z.x)

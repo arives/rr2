@@ -12,7 +12,7 @@ R2_resid(
 )
 }
 \arguments{
-\item{mod}{A regression model with one of the following classes: 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'gls', 'pglmm.compare' or 'binaryPGLMM'. For 'glmerMod', only family = c('binomial', 'poisson') are supported.}
+\item{mod}{A regression model with one of the following classes: 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'gls', 'pglmm_compare' or 'binaryPGLMM'. For 'glmerMod', only family = c('binomial', 'poisson') are supported.}
 
 \item{mod.r}{A reduced model; if not provided, the total R2 will be given by setting 'mod.r' to the model corresponding to 'mod' with the intercept as the only predictor.}
 
@@ -27,7 +27,7 @@ R2_resid value.
 Calculate partial and total R2s for LMM, GLMM, PGLS, and PGLMM using R2_resid, an extension of ordinary least-squares (OLS) R2s. For LMMs and GLMMs, R2_resid is related to the method proposed by Nakagawa and Schielzeth (2013).
 }
 \details{
-R2_resid works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'pglmm.compare', and 'binaryPGLMM'.
+R2_resid works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'pglmm_compare', and 'binaryPGLMM'.
 
 \strong{LMM (lmerMod):}
 
@@ -53,7 +53,7 @@ Partial R2s are given by the standard formula
 
 where R2.f and R2.r are the total R2s for full and reduced models, respectively.
 
-\strong{PGLS (phylolm, pglmm.compare):} 
+\strong{PGLS (phylolm, pglmm_compare):} 
 
 \deqn{partial R^2 = 1 - c.f * \sigma^2_{.f}/(c.r * \sigma^2_{.r})}{partial R2 = 1 - c.f * σ2.f/(c.r * σ2.r)}
 
@@ -62,7 +62,7 @@ where \eqn{\sigma^2_{.f}}{σ2.f} and \eqn{\sigma^2_{.r}}{σ2.r} are the variance
 \code{phylolm()} can have difficulties in finding solutions when there is no phylogenetic signal;
 when the estimate indicates no phylogenetic signal, you should refit the model with the corresponding LM.
 
-\strong{PGLMM (pglmm.compare, binaryPGLMM):} 
+\strong{PGLMM (pglmm_compare, binaryPGLMM):} 
 
 The R2_resid for PGLMMs is computed in the same way as the GLMM (glmer), with options sigma_d = c('s2w', 'NS', 'rNS'). The estimated variance of the random effect associated with the phylogeny, \eqn{\sigma^2_b}{σ2b}, is multiplied by the diagonal elements of the phylogenetic covariance matrix. For binary models, this covariance matrix should be standardized so that all diagonal elements are the same (a contemporaneous or ultrametric phylogenetic tree) (Ives and Garland 2014). In case this is not done, however, the code takes the geometric average of the diagonal elements.
 
@@ -141,8 +141,8 @@ d$y <- b1 * x + e
 rownames(d) <- phy$tip.label
 d$sp <- phy$tip.label
 
-z.x <- pglmm.compare(y ~ 1, phy = phy, data = d, REML=FALSE)
-z.f <- pglmm.compare(y ~ x, phy = phy, data = d, REML=FALSE)
+z.x <- pglmm_compare(y ~ 1, phy = phy, data = d, REML=FALSE)
+z.f <- pglmm_compare(y ~ x, phy = phy, data = d, REML=FALSE)
 z.v <- lm(y ~ x, data = d)
 
 R2_resid(z.f, z.x)
@@ -211,9 +211,9 @@ e <- e[match(phy$tip.label, names(e))]
 d$y <- rbinom(n = n, size = 1, prob = inv.logit(b1 * d$x + e))
 rownames(d) <- phy$tip.label
 
-# Use the function pglmm.compare in {phyr}.
-z.f <- pglmm.compare(y ~ x, data = d, family = "binomial", phy = phy)
-z.x <- pglmm.compare(y ~ 1, data = d, family = "binomial", phy = phy)
+# Use the function pglmm_compare in {phyr}.
+z.f <- pglmm_compare(y ~ x, data = d, family = "binomial", phy = phy)
+z.x <- pglmm_compare(y ~ 1, data = d, family = "binomial", phy = phy)
 z.v <- glm(y ~ x, data = d, family = 'binomial')
 
 R2_resid(z.f, z.x)

@@ -7,11 +7,11 @@
 R2_pred(mod = NULL, mod.r = NULL, gaussian.pred = "tip_rm", phy = NULL)
 }
 \arguments{
-\item{mod}{A regression model with one of the following classes: 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'gls', 'pglmm', pglmm.compare', 'binaryPGLMM', or 'communityPGLMM'.}
+\item{mod}{A regression model with one of the following classes: 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'gls', 'pglmm', pglmm_compare', 'binaryPGLMM', or 'communityPGLMM'.}
 
 \item{mod.r}{A reduced model; if not provided, the total R2 will be given by setting 'mod.r' to the model corresponding to 'mod' with the intercept as the only predictor.}
 
-\item{gaussian.pred}{For models of classes `pglmm` and `pglmm.compare` when family = gaussian, which type of prediction to calculate.}
+\item{gaussian.pred}{For models of classes `pglmm` and `pglmm_compare` when family = gaussian, which type of prediction to calculate.}
 
 \item{phy}{The phylogeny for phylogenetic models (as a 'phylo' object), which must be specified for models of class `phylolm`.}
 }
@@ -19,15 +19,15 @@ R2_pred(mod = NULL, mod.r = NULL, gaussian.pred = "tip_rm", phy = NULL)
 Calculate partial and total R2s for LMM, GLMM, PGLS, and PGLMM using R2_pred, an R2 based on the variance of the difference between the observed and predicted values of a fitted model.
 }
 \details{
-R2_pred works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', 'gls', 'pglmm', 'pglmm.compare', binaryPGLMM', and 'communityPGLMM' (family = gaussian and binomial).
+R2_pred works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', 'gls', 'pglmm', 'pglmm_compare', binaryPGLMM', and 'communityPGLMM' (family = gaussian and binomial).
 
-\strong{LMM (lmerMod), GLMM (glmerMod), PGLMM (pglmm, pglmm.compare, binaryPGLMM and communityPGLMM):}
+\strong{LMM (lmerMod), GLMM (glmerMod), PGLMM (pglmm, pglmm_compare, binaryPGLMM and communityPGLMM):}
 
 \deqn{partial R2 = 1 - var(y - y.fitted.f)/var(y - y.fitted.r)}
 
 where y are the observed data, and y.fitted.f and y.fitted.r are the fitted (predicted) values from the full and reduced models. For GLMMs and PGLMMs, the values of y.fitted are in the space of the raw data (as opposed to the 'Normal' or 'latent' space). When the reduced model 'mod.r' is not specified, the total R2 is computing using the reduced model with only the intercept.
 
-For pglmm and pglmm.compare with gaussian models, the default method for computing predicted values is "nearest_node" to correspond to predicted values in lmer, although the method "tip_rm" can be specified to correspond to the analyses in Ives (2018).
+For pglmm and pglmm_compare with gaussian models, the default method for computing predicted values is "nearest_node" to correspond to predicted values in lmer, although the method "tip_rm" can be specified to correspond to the analyses in Ives (2018).
 
 Note that the version of \code{binaryPGLMM()} in the package ape is replaced by a version contained within {rr2} that outputs all of the required information for the calculation of R2_resid.
 
@@ -142,8 +142,8 @@ e <- e[match(phy$tip.label, names(e))]
 d$y <- rbinom(n = n, size = 1, prob = inv.logit(b1 * d$x + e))
 rownames(d) <- phy$tip.label
 
-z.f <- pglmm.compare(y ~ x, data = d, family = "binomial", phy = phy)
-z.x <- pglmm.compare(y ~ 1, data = d, family = "binomial", phy = phy)
+z.f <- pglmm_compare(y ~ x, data = d, family = "binomial", phy = phy)
+z.x <- pglmm_compare(y ~ 1, data = d, family = "binomial", phy = phy)
 z.v <- glm(y ~ x, data = d, family = "binomial")
 
 R2_pred(z.f, z.x)
@@ -209,7 +209,6 @@ R2_pred(z.f, z.nested)
 R2_pred(z.nested, z.sp)
 R2_pred(z.f)
 
-## FIXED ME in phyr::pglmm.predicted.values(), Error in x$Y - fit : non-conformable arrays
 # vector - matrix
 ## These are generally larger when gaussian.pred = "nearest_node"
 #R2_pred(z.f, z.nested, gaussian.pred = "nearest_node")
