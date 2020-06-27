@@ -1,7 +1,7 @@
 Package: rr2
 Type: Package
 Title: R2s for Regression Models
-Version: 1.0.2
+Version: 1.0.3
 Authors@R: c(
     person("Anthony", "Ives", , "arives@wisc.edu", c("aut", "cre")),
     person("Daijiang", "Li", , "daijianglee@gmail.com", role = "ctb"))
