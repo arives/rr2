@@ -338,29 +338,24 @@ R2_lik.phyloglm <- function(mod = NULL, mod.r = NULL) {
     n <- dim(X)[1]
     LL <- mod$logLik
     
-    # phylolm v2.6 on CRAN does not have alphaWarn exported yet
-    # if (mod$alphaWarn == 2) { 
-    #   LL <- logLik(glm(y ~ 0 + X, family = "binomial"))
-    #   warning("In mod, alphaWarn = 2, so model refit with glm()")
-    # }
+    if (mod$alphaWarn == 2) {
+      LL <- logLik(glm(y ~ 0 + X, family = "binomial"))
+      warning("In mod, alphaWarn = 2, so model refit with glm()")
+    }
     
     if (mod$convergence != "0") { # mod has not converged
-      LL <- logLik(glm(y ~ 0 + X, family = "binomial"))
-      warning("Full model mod was not converged, so model refit with glm()")
+      warning("Full model mod was not converged")
     }
     
     if (class(mod.r)[1] == "phyloglm") {
       LL.r <- mod.r$logLik
-      # phylolm v2.6 on CRAN does not have alphaWarn exported yet
-      # if (mod.r$alphaWarn == 2) {
-      #   X.r <- mod.r$X
-      #   LL.r <- logLik(glm(y ~ 0 + X.r, family = "binomial"))
-      #   warning("In mod.r, alphaWarn = 2, so model refit with glm()")
-      # }
-      if (mod.r$convergence != "0") { # mod has not converged
+      if (mod.r$alphaWarn == 2) {
         X.r <- mod.r$X
         LL.r <- logLik(glm(y ~ 0 + X.r, family = "binomial"))
-        warning("Reduced model mod.r was not converged, so model refit with glm()")
+        warning("In mod.r, alphaWarn = 2, so model refit with glm()")
+      }
+      if (mod.r$convergence != "0") { # mod has not converged
+        warning("Reduced model mod.r was not converged")
       }
     } else {
         LL.r <- logLik(mod.r)

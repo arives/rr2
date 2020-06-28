@@ -134,3 +134,35 @@ test_that("when lmer models were fitted with REML = T,
   z.f2 <- lme4::lmer(y_re_intercept ~ x1 + x2 + (1 | u1) + (1 | u2), data = d, REML = T)
   expect_warning(R2(z.f2), "mod updated with REML = F")
 })
+
+test_that("alphaWarn for phylogenetic logistic regression with phyloglm", {
+  testthat::skip_on_cran() # don't run on CRAN since these are time consuming
+  set.seed(12345)
+  n <- 100
+  b1 <- 1.5
+  signal <- 1
+  
+  phy <- ape::compute.brlen(ape::rtree(n = n), method = 'Grafen', power = 1)
+  phy.x <- ape::compute.brlen(phy, method = 'Grafen', power = .0001)
+  
+  # Generate random data
+  x <- rnorm(n)
+  d <- data.frame(x = x, y = 0)
+  
+  e <- signal * ape::rTraitCont(phy, model = 'BM', sigma = 1)
+  e <- e[match(phy$tip.label, names(e))]
+  
+  d$y <- rbinom(n = n, size = 1, prob = rr2::inv.logit(b1 * d$x + e))
+  rownames(d) <- phy$tip.label
+  
+  # Use the function phyloglm() from the phylolm package.
+  z.f.phyloglm <- phylolm::phyloglm(y ~ x, data = d, start.alpha = 1, phy = phy)
+  z.x.phyloglm <- phylolm::phyloglm(y ~ 1, data = d, phy = phy, 
+                                    start.alpha = min(20, z.f.phyloglm$alpha))
+  z.v <- glm(y ~ x, data = d, family = 'binomial')
+  
+  expect_warning(R2(mod = z.f.phyloglm, mod.r = z.x.phyloglm), 
+                 "In mod, alphaWarn = 2, so model refit with glm()")
+  expect_warning(R2(mod = z.f.phyloglm, mod.r = z.v), 
+                 "In mod, alphaWarn = 2, so model refit with glm()")
+})

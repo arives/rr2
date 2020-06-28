@@ -210,13 +210,13 @@ R2_pred(z.nested, z.sp)
 R2_pred(z.f)
 
 # vector - matrix
-## These are generally larger when gaussian.pred = "nearest_node"
-#R2_pred(z.f, z.nested, gaussian.pred = "nearest_node")
-#R2_pred(z.nested, z.sp, gaussian.pred = "nearest_node")
-#R2_pred(z.f, gaussian.pred = "nearest_node")
+# These are generally larger when gaussian.pred = "nearest_node"
+R2_pred(z.f, z.nested, gaussian.pred = "nearest_node")
+R2_pred(z.nested, z.sp, gaussian.pred = "nearest_node")
+R2_pred(z.f, gaussian.pred = "nearest_node")
 
-# # When bayes = TRUE, gaussian.pred = "nearest_node" automatically as the only option.
-# # Commented out because CRAN does not have INLA installed
+# # When bayes = TRUE, gaussian.pred does not work.
+# # Commented out because INLA is not on CRAN
 # z.f.bayes <- pglmm(Y ~ 1 + (1|sp__) + (1|site) + (1|sp__@site),
 #                data = d, cov_ranef = list(sp = phy), bayes = TRUE)
 # z.nested.bayes <- pglmm(Y ~ 1 + (1|sp__) + (1|site),

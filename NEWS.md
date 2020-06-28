@@ -2,6 +2,7 @@
 
 * Use `phyr`'s new function styles (underscore instead of dot in function names).
 * Add methods for `phyr::pglmm()` outputs.
+* Use `alphaWarn` information returned by `phylolm::phyloglm()` to avoid calculate R^2^s on models with large alpha values.
 
 # rr2 1.0.2
 
