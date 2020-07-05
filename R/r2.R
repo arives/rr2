@@ -310,6 +310,10 @@ R2 <- function(mod = NULL, mod.r = NULL, phy = NULL, sigma2_d = c("s2w", "NS", "
     if (any(class(mod) %in% c("communityPGLMM", "pglmm")) & (resid == TRUE | lik == TRUE)) {
       message("Models of class pglmm do not have a R2_resid method.")
       resid <- FALSE
+      if (mod$bayes == TRUE) {
+        message("Models of class pglmm with bayes = TRUE do not have a R2_lik method.")
+        lik <- FALSE
+      }
     }
     
     # gls does not have a R2_resid method

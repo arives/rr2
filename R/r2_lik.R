@@ -268,10 +268,6 @@ R2_lik <- function(mod = NULL, mod.r = NULL) {
     }
 
     if (class(mod)[1] %in% c("communityPGLMM", "pglmm", "pglmm_compare")) {
-      if (mod$bayes == TRUE) {
-        stop("R2_lik is not defined for pglmm(bayes == TRUE).")
-      }
-        
       if (is.object(mod$REML) && mod$REML == TRUE) {
         warning("mod was fit with REML, so you should refit it with REML = F")
       }
