@@ -204,7 +204,7 @@
 #' R2_pred(z.nested, z.sp)
 #' R2_pred(z.f)
 #' 
-#' ## FIXED ME in phyr::pglmm.predicted.values(), Error in x$Y - fit : non-conformable arrays
+#' ## FIXED ME in phyr::pglmm_predicted_values(), Error in x$Y - fit : non-conformable arrays
 #' # vector - matrix
 #' ## These are generally larger when gaussian.pred = "nearest_node"
 #' #R2_pred(z.f, z.nested, gaussian.pred = "nearest_node")
@@ -569,12 +569,12 @@ R2_pred.pglmm.glm <- function(mod = NULL, mod.r = NULL) {
 R2_pred.pglmm.gaussian <- function(mod = NULL, mod.r = NULL, gaussian.pred = gaussian.pred) {
 
     # full model
-    Yhat <- pglmm.predicted.values(mod, gaussian.pred = gaussian.pred)
+    Yhat <- pglmm_predicted_values(mod, gaussian.pred = gaussian.pred)
     SSE.pred <- as.numeric(var(mod$Y - Yhat))
 
     # reduced model
     if (any(is.element(class(mod.r), c("pglmm", "pglmm.compare","communityPGLMM")))){
-        Yhat.r <- pglmm.predicted.values(mod.r, gaussian.pred = gaussian.pred)
+        Yhat.r <- pglmm_predicted_values(mod.r, gaussian.pred = gaussian.pred)
         SSE.pred.r <- as.numeric(var(mod.r$Y - Yhat.r))
     }
     
@@ -610,7 +610,7 @@ R2_pred.pglmm.gaussian <- function(mod = NULL, mod.r = NULL, gaussian.pred = gau
 # # these two versions for communitypglmm and lmer work like R2_pred for phylolm
 # # objects, in which the points are predicted for tips after removing the tip
 # # values.
-# pglmm.predict.alt <- function(mod) {
+# pglmm_predict_alt <- function(mod) {
 #     Y <- mod$Y
 #     X <- mod$X
 #     n <- dim(X)[1]
@@ -630,12 +630,12 @@ R2_pred.pglmm.gaussian <- function(mod = NULL, mod.r = NULL, gaussian.pred = gau
 # }
 # 
 # R2_pred.communityPGLMM.gaussian.alt <- function(mod = NULL, mod.r = NULL) {
-#     Yhat <- pglmm.predict.alt(mod)
+#     Yhat <- pglmm_predict_alt(mod)
 #     SSE.pred <- var(mod$Y - Yhat)
 #     
 #     # reduced model
 #     if (class(mod.r) == "communityPGLMM") {
-#         Yhat.r <- pglmm.predict.alt(mod.r)
+#         Yhat.r <- pglmm_predict_alt(mod.r)
 #         SSE.pred.r <- var(mod.r$Y - Yhat.r)
 #     }
 #     
