@@ -4,7 +4,7 @@
 #' an R2 based on the likelihood of the fitted model.
 #' 
 #' @param mod A regression model with one of the following classes: 'lm', 'glm', 
-#' 'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', 'gls', 'pglmm', pglmm.compare' 
+#' 'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', 'gls', 'pglmm', pglmm_compare' 
 #' or 'communityPGLMM'.
 #' @param mod.r A reduced model; if not provided, the total R2 will be given by 
 #' setting 'mod.r' to the model corresponding to 'mod' with the intercept as 
@@ -101,8 +101,8 @@
 #' rownames(d) <- phy$tip.label
 #' d$sp <- phy$tip.label
 #' 
-#' z.f <- pglmm.compare(y ~ x, data = d, phy = phy, REML=FALSE)
-#' z.x <- pglmm.compare(y ~ 1, data = d, phy = phy, REML=FALSE)
+#' z.f <- pglmm_compare(y ~ x, data = d, phy = phy, REML=FALSE)
+#' z.x <- pglmm_compare(y ~ 1, data = d, phy = phy, REML=FALSE)
 #' z.v <- glm(y ~ x, data = d)
 #' 
 #' R2_lik(z.f, z.x)
@@ -153,11 +153,11 @@
 #' R2_lik(z.f, z.v)
 #' R2_lik(z.f)
 #' 
-#' # These data can also be fit with pglmm.compare(), although note that 
+#' # These data can also be fit with pglmm_compare(), although note that 
 #' # this is a different model from phyloglm()
 #' 
-#' z.f <- pglmm.compare(y ~ x, data = d, family = "binomial", phy = phy, REML=FALSE)
-#' z.x <- pglmm.compare(y ~ 1, data = d, family = "binomial", phy = phy, REML=FALSE)
+#' z.f <- pglmm_compare(y ~ x, data = d, family = "binomial", phy = phy, REML=FALSE)
+#' z.x <- pglmm_compare(y ~ 1, data = d, family = "binomial", phy = phy, REML=FALSE)
 #' z.v <- glm(y ~ x, data = d, family = "binomial")
 #' 
 #' R2_lik(z.f, z.x)
@@ -170,8 +170,8 @@ R2_lik <- function(mod = NULL, mod.r = NULL) {
         class(mod) <- "lmerMod"
     
     if (!is.element(class(mod)[1], c("lm", "glm", "lmerMod", "glmerMod", "phylolm", 
-        "phyloglm", "gls", "pglmm", "pglmm.compare", "communityPGLMM"))) {
-        stop("mod must be class one of classes lm, glm, lmerMod, glmerMod, phylolm, phyloglm, gls, pglmm, pglmm.compare, communityPGLMM.")
+        "phyloglm", "gls", "pglmm", "pglmm_compare", "communityPGLMM"))) {
+        stop("mod must be class one of classes lm, glm, lmerMod, glmerMod, phylolm, phyloglm, gls, pglmm, pglmm_compare, communityPGLMM.")
     }
     
     if (class(mod)[1] == "lm") {
@@ -267,7 +267,7 @@ R2_lik <- function(mod = NULL, mod.r = NULL) {
       return(R2_lik.gls(mod, mod.r))
     }
 
-    if (class(mod)[1] %in% c("communityPGLMM", "pglmm", "pglmm.compare")) {
+    if (class(mod)[1] %in% c("communityPGLMM", "pglmm", "pglmm_compare")) {
       if (mod$bayes == TRUE) {
         stop("R2_lik is not defined for pglmm(bayes == TRUE).")
       }
@@ -280,8 +280,8 @@ R2_lik <- function(mod = NULL, mod.r = NULL) {
         y <- mod$Y
         mod.r <- glm(y ~ 1, family = mod$family)
       }
-      if (!is.element(class(mod.r)[1], c("communityPGLMM", "pglmm", "pglmm.compare", "glm", "lm"))) {
-        stop("mod.r must be class communityPGLMM, pglmm, pglmm.compare, glm, or lm.")
+      if (!is.element(class(mod.r)[1], c("communityPGLMM", "pglmm", "pglmm_compare", "glm", "lm"))) {
+        stop("mod.r must be class communityPGLMM, pglmm, pglmm_compare, glm, or lm.")
       }
       return(R2_lik.pglmm(mod, mod.r))
     }
@@ -290,7 +290,7 @@ R2_lik <- function(mod = NULL, mod.r = NULL) {
     #    if (mod$family == "binomial") 
     #      stop("Binary communityPGLMMs do not have log likelihood,
     #               If you are interested in LRT of random terms, use
-    #               phyr::communityPGLMM.binary.LRT()")
+    #               phyr::communitypglmm_binary.LRT()")
     #   if (mod$REML == TRUE) 
     #     warning("mod was fitted with REML, so you should refit it with REML = F")
     #   

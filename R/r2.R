@@ -28,7 +28,7 @@ NULL
 #' 
 #' Details about the methods are provided under the separate functions for \code{R2_lik()}, \code{R2_resid()}, and \code{R2_pred()}. There are also many worked examples. 
 #'   
-#' @param mod A regression model with one of the following classes: 'lm', 'glm', lmerMod', glmerMod', 'phylolm', 'gls', 'pglmm', 'pglmm.compare', binaryPGLMM', or 'communityPGLMM'.
+#' @param mod A regression model with one of the following classes: 'lm', 'glm', lmerMod', glmerMod', 'phylolm', 'gls', 'pglmm', 'pglmm_compare', binaryPGLMM', or 'communityPGLMM'.
 #' @param mod.r A reduced model; if not provided, the total R2 will be given by setting 'mod.r' to the model corresponding to 'mod' with the intercept as the only predictor.
 #' @param phy The phylogeny for phylogenetic models (as a 'phylo' object), which is not required to be specified for \code{R2_lik()} or non-phylogenetic models.
 #' @param sigma2_d Distribution-specific variance \eqn{\sigma^2_d}{sigma2d} (see Details) used in \code{R2_resid()}. For binomial GLMs, GLMMs and PGLMMs with logit link functions, options are c('s2w', 'NS', 'rNS'). For binomial GLMs, GLMMs and PGLMMs with probit link functions, options are c('s2w', 'NS'). Other families use 's2w'.
@@ -147,10 +147,10 @@ NULL
 #' R2(z.f, z.v, phy = phy)
 #' R2(z.f, phy = phy)
 #' 
-#' # These data can also be fit with pglmm.compare in {phyr}
-#' # Note that pglmm.compare will be renamed to pglmm_compare in the next version
-#' z.f <- pglmm.compare(y ~ x, data = d, phy = phy, REML=FALSE)
-#' z.x <- pglmm.compare(y ~ 1, data = d, phy = phy, REML=FALSE)
+#' # These data can also be fit with pglmm_compare in {phyr}
+#' # Note that pglmm_compare will be renamed to pglmm_compare in the next version
+#' z.f <- pglmm_compare(y ~ x, data = d, phy = phy, REML=FALSE)
+#' z.x <- pglmm_compare(y ~ 1, data = d, phy = phy, REML=FALSE)
 #' z.v <- glm(y ~ x, data = d)
 #' 
 #' R2(z.f, z.x)
@@ -217,10 +217,10 @@ NULL
 #' R2(z.f, z.v)
 #' R2(z.f)
 #' 
-#' # Use the function pglmm.compare() from the phyr package. Note that this is a 
+#' # Use the function pglmm_compare() from the phyr package. Note that this is a 
 #' # different model from phyloglm()
-#' z.f <- pglmm.compare(y ~ x, data = d, family = 'binomial', phy = phy, REML = FALSE)
-#' z.x <- pglmm.compare(y ~ 1, data = d, family = 'binomial', phy = phy, REML = FALSE)
+#' z.f <- pglmm_compare(y ~ x, data = d, family = 'binomial', phy = phy, REML = FALSE)
+#' z.x <- pglmm_compare(y ~ 1, data = d, family = 'binomial', phy = phy, REML = FALSE)
 #' z.v <- glm(y ~ x, data = d, family = 'binomial')
 #' 
 #' R2(z.f, z.x)
