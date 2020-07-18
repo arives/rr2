@@ -1,5 +1,5 @@
 #' @importFrom utils tail
-#' @importFrom phyr pglmm.predicted.values
+#' @importFrom phyr pglmm_predicted_values
 #' @importFrom stats anova binomial family glm lm logLik model.frame model.matrix model.response optim pchisq pnorm poisson quantile reorder rnorm sd sigma update var na.omit fitted predict dnorm qnorm resid 
 #' @importMethodsFrom Matrix t %*% crossprod diag tcrossprod solve determinant update
 NULL
