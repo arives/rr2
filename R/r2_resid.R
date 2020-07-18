@@ -681,7 +681,7 @@ R2_resid.pglmm.compare.glm <- function(mod = NULL, mod.r = NULL, sigma2_d = sigm
   s2 <- mod$s2n
   scal <- prod(diag(s2 * phyV))^(1/n)
   mu <- mod$mu
-  Yhat <- pglmm.predicted.values(mod)
+  Yhat <- pglmm_predicted_values(mod)
   
   if (mod$family == "poisson") 
     sig2e <- var((y - mu)/mu)
@@ -705,7 +705,7 @@ R2_resid.pglmm.compare.glm <- function(mod = NULL, mod.r = NULL, sigma2_d = sigm
     s2.r <- mod.r$s2n
     scal.r <- prod(diag(s2.r * phyV.r))^(1/n)
     mu.r <- mod.r$mu
-    Yhat.r <- pglmm.predicted.values(mod.r)
+    Yhat.r <- pglmm_predicted_values(mod.r)
     
     if (mod.r$family == "poisson") 
       sig2e.r <- var((y - mu.r)/mu.r)
