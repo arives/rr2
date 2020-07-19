@@ -15,12 +15,12 @@ Encoding: UTF-8
 LazyData: true
 Imports: 
     lme4,
-    phylolm,
+    phylolm (>= 2.6.2),
     ape,
     utils,
     Matrix,
     nlme,
-    phyr
+    phyr (>= 1.0.3)
 RoxygenNote: 7.1.1
 Suggests: 
     testthat,
