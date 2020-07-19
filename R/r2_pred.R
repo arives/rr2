@@ -609,7 +609,7 @@ R2_pred.pglmm.gaussian <- function(mod = NULL, mod.r = NULL, gaussian.pred = gau
 # # these two versions for communitypglmm and lmer work like R2_pred for phylolm
 # # objects, in which the points are predicted for tips after removing the tip
 # # values.
-# pglmm.predict.alt <- function(mod) {
+# pglmm_predict_alt <- function(mod) {
 #     Y <- mod$Y
 #     X <- mod$X
 #     n <- dim(X)[1]
@@ -629,12 +629,12 @@ R2_pred.pglmm.gaussian <- function(mod = NULL, mod.r = NULL, gaussian.pred = gau
 # }
 # 
 # R2_pred.communityPGLMM.gaussian.alt <- function(mod = NULL, mod.r = NULL) {
-#     Yhat <- pglmm.predict.alt(mod)
+#     Yhat <- pglmm_predict_alt(mod)
 #     SSE.pred <- var(mod$Y - Yhat)
 #     
 #     # reduced model
 #     if (class(mod.r) == "communityPGLMM") {
-#         Yhat.r <- pglmm.predict.alt(mod.r)
+#         Yhat.r <- pglmm_predict_alt(mod.r)
 #         SSE.pred.r <- var(mod.r$Y - Yhat.r)
 #     }
 #     
