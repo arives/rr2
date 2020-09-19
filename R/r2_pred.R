@@ -285,6 +285,20 @@ R2_pred <- function(mod = NULL, mod.r = NULL, gaussian.pred = "tip_rm", phy = NU
         return(R2_pred.glmerMod(mod, mod.r)[1])
     }
     
+    if (class(mod)[1] == "glmmTMB") {
+        if (!is.object(mod.r)) {
+            y <- model.frame(mod)[, 1]
+            mod.r <- glm(y ~ 1, family = family(mod)[[1]])
+        }
+        if (!is.element(class(mod.r)[1], c("glmmTMB", "glm"))) {
+            stop("mod.r must be class glmmTMB or glm.")
+        }
+        if (family(mod)[[1]] != family(mod.r)[[1]]) {
+            stop("Sorry, but mod and mod.r must be from the same family of distributions.")
+        }
+        return(R2_pred.glmmTMB(mod, mod.r)[1])
+    }
+
     if (class(mod)[1] == "phylolm") {
         if (!is.object(mod.r)) {
             y <- mod$y
@@ -388,6 +402,15 @@ R2_pred.lmerMod <- function(mod = NA, mod.r = NA) {
 }
 
 R2_pred.glmerMod <- function(mod = NA, mod.r = NA) {
+  y <- model.frame(mod)[, 1]
+  if(is.matrix(y)) y <- y[,1]/rowSums(y)
+  SSE.pred <- var(y - fitted(mod))
+  SSE.pred.r <- var(y - stats::fitted(mod.r))
+  R2_pred <- 1 - SSE.pred/SSE.pred.r
+  return(R2_pred)
+}
+
+R2_pred.glmmTMB <- function(mod = NA, mod.r = NA) {
   y <- model.frame(mod)[, 1]
   if(is.matrix(y)) y <- y[,1]/rowSums(y)
   SSE.pred <- var(y - fitted(mod))

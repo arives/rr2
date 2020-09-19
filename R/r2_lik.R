@@ -4,7 +4,7 @@
 #' an R2 based on the likelihood of the fitted model.
 #' 
 #' @param mod A regression model with one of the following classes: 'lm', 'glm', 
-#' 'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', 'gls', 'pglmm', pglmm_compare' 
+#' 'lmerMod', 'glmerMod', 'glmmTMB', 'phylolm', 'phyloglm', 'gls', 'pglmm', pglmm_compare' 
 #' or 'communityPGLMM'.
 #' @param mod.r A reduced model; if not provided, the total R2 will be given by 
 #' setting 'mod.r' to the model corresponding to 'mod' with the intercept as 
@@ -169,9 +169,9 @@ R2_lik <- function(mod = NULL, mod.r = NULL) {
     if (class(mod)[1] == "merModLmerTest") 
         class(mod) <- "lmerMod"
     
-    if (!is.element(class(mod)[1], c("lm", "glm", "lmerMod", "glmerMod", "phylolm", 
+    if (!is.element(class(mod)[1], c("lm", "glm", "lmerMod", "glmerMod", "glmmTMB", "phylolm", 
         "phyloglm", "gls", "pglmm", "pglmm_compare", "communityPGLMM"))) {
-        stop("mod must be class one of classes lm, glm, lmerMod, glmerMod, phylolm, phyloglm, gls, pglmm, pglmm_compare, communityPGLMM.")
+        stop("mod must be class one of classes lm, glm, lmerMod, glmerMod, glmmTMB, phylolm, phyloglm, gls, pglmm, pglmm_compare, communityPGLMM.")
     }
     
     if (class(mod)[1] == "lm") {
@@ -232,6 +232,20 @@ R2_lik <- function(mod = NULL, mod.r = NULL) {
             stop("Sorry, but mod and mod.r must be from the same family of distributions.")
         }
         return(R2_lik.glmerMod(mod, mod.r)[1])
+    }
+    
+    if (class(mod)[1] == "glmerTMB") {
+        if (!is.object(mod.r)) {
+            y <- model.frame(mod)[, 1]
+            mod.r <- glm(y ~ 1, family = family(mod)[[1]])
+        }
+        if (!is.element(class(mod.r)[1], c("glmmTMB", "glm"))) {
+            stop("mod.r must be class glmmTMB or glm.")
+        }
+        if (family(mod)[[1]] != family(mod.r)[[1]]) {
+            stop("Sorry, but mod and mod.r must be from the same family of distributions.")
+        }
+        return(R2_lik.glmmTMB(mod, mod.r)[1])
     }
     
     if (class(mod)[1] == "phylolm") {
@@ -318,6 +332,13 @@ R2_lik.glm <- R2_lik.lm
 R2_lik.lmerMod <- R2_lik.lm
 
 R2_lik.glmerMod <- function(mod = NULL, mod.r = NULL) {
+    X <- model.matrix(mod)
+    n <- dim(X)[1]
+    R2_lik <- (1 - exp(-2/n * (logLik(mod) - logLik(mod.r))))/(1 - exp(2/n * logLik(mod.r)))
+    return(R2_lik)
+}
+
+R2_lik.glmmTMB <- function(mod = NULL, mod.r = NULL) {
     X <- model.matrix(mod)
     n <- dim(X)[1]
     R2_lik <- (1 - exp(-2/n * (logLik(mod) - logLik(mod.r))))/(1 - exp(2/n * logLik(mod.r)))
