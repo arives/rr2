@@ -3,12 +3,12 @@
 #' Calculate partial and total R2s for LMM, GLMM, PGLS, and PGLMM using R2_resid, an extension of ordinary least-squares (OLS) R2s. For LMMs and GLMMs, R2_resid is related to the method proposed by Nakagawa and Schielzeth (2013).
 #' 
 
-#' @param mod A regression model with one of the following classes: 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'gls', 'pglmm_compare' or 'binaryPGLMM'. For 'glmerMod', only family = c('binomial', 'poisson') are supported.
+#' @param mod A regression model with one of the following classes: 'lm', 'glm', 'lmerMod', 'glmerMod', 'glmmTMB', 'phylolm', 'gls', 'pglmm_compare' or 'binaryPGLMM'. For 'glmerMod', only family = c('binomial', 'poisson') are supported.
 #' @param mod.r A reduced model; if not provided, the total R2 will be given by setting 'mod.r' to the model corresponding to 'mod' with the intercept as the only predictor.
 #' @param sigma2_d Distribution-specific variance \eqn{\sigma^2_d}{sigma2d} (see Details). For binomial GLMs, GLMMs and PGLMMs with logit link functions, options are c('s2w', 'NS', 'rNS'). For binomial GLMs, GLMMs and PGLMMs with probit link functions, options are c('s2w', 'NS'). Other families use 's2w'.
 #' @param phy The phylogeny for phylogenetic models (as a 'phylo' object), which must be specified for models of class `phylolm`.
 #' 
-#' @details  R2_resid works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'pglmm_compare', and 'binaryPGLMM'.
+#' @details  R2_resid works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'glmmTMB', 'phylolm', 'pglmm_compare', and 'binaryPGLMM'.
 #' 
 #' \strong{LMM (lmerMod):}
 #' 
@@ -220,8 +220,8 @@ R2_resid <- function(mod = NULL, mod.r = NULL, sigma2_d = c("s2w", "NS", "rNS"),
     if (class(mod)[1] == "merModLmerTest") 
         class(mod) <- "lmerMod"
     
-    if (!is.element(class(mod)[1], c("lm", "glm", "lmerMod", "glmerMod", "phylolm", "gls", "pglmm_compare", "binaryPGLMM"))) {
-        stop("mod must be class one of classes lm, glm, lmerMod, glmerMod, phylolm, gls, pglmm_compare, binaryPGLMM.")
+    if (!is.element(class(mod)[1], c("lm", "glm", "lmerMod", "glmerMod", "glmmTMB", "phylolm", "gls", "pglmm_compare", "binaryPGLMM"))) {
+        stop("mod must be class one of classes lm, glm, lmerMod, glmerMod, glmmTMB, phylolm, gls, pglmm_compare, binaryPGLMM.")
     }
     
     sigma2_d <- match.arg(sigma2_d)
