@@ -245,7 +245,7 @@ R2_lik <- function(mod = NULL, mod.r = NULL) {
         if (family(mod)[[1]] != family(mod.r)[[1]]) {
             stop("Sorry, but mod and mod.r must be from the same family of distributions.")
         }
-        return(R2_lik.glmmTMB(mod, mod.r)[1])
+        return(R2_lik.glmmTMB(mod, mod.r))
     }
     
     if (class(mod)[1] == "phylolm") {
