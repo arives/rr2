@@ -341,7 +341,7 @@ R2_lik.glmerMod <- function(mod = NULL, mod.r = NULL) {
 R2_lik.glmmTMB <- function(mod = NULL, mod.r = NULL) {
     X <- model.matrix(mod)
     n <- dim(X)[1]
-    R2_lik <- (1 - exp(-2/n * (logLik(mod) - logLik(mod.r))))/(1 - exp(2/n * logLik(mod.r)))
+    R2_lik <- (1 - exp(-2/n * as.numeric(logLik(mod) - logLik(mod.r))))/(1 - exp(2/n * as.numeric(logLik(mod.r))))
     return(R2_lik)
 }
 
