@@ -2,15 +2,15 @@
 #'
 #' Calculate partial and total R2s for LMM, GLMM, PGLS, and PGLMM using R2_pred, an R2 based on the variance of the difference between the observed and predicted values of a fitted model.
 #' 
-#' @param mod A regression model with one of the following classes: 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'gls', 'pglmm', pglmm_compare', 'binaryPGLMM', or 'communityPGLMM'.
+#' @param mod A regression model with one of the following classes: 'lm', 'glm', 'lmerMod', 'glmerMod', 'glmmTMB', 'phylolm', 'gls', 'pglmm', pglmm_compare', 'binaryPGLMM', or 'communityPGLMM'.
 #' @param mod.r A reduced model; if not provided, the total R2 will be given by setting 'mod.r' to the model corresponding to 'mod' with the intercept as the only predictor.
 #' @param phy The phylogeny for phylogenetic models (as a 'phylo' object), which must be specified for models of class `phylolm`.
 #' @param gaussian.pred For models of classes `pglmm` and `pglmm_compare` when family = gaussian, which type of prediction to calculate.
 #' @export
 #'
-#' @details  R2_pred works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'phylolm', 'phyloglm', 'gls', 'pglmm', 'pglmm_compare', binaryPGLMM', and 'communityPGLMM' (family = gaussian and binomial).
+#' @details  R2_pred works with classes 'lm', 'glm', 'lmerMod', 'glmerMod', 'glmmTMB', 'phylolm', 'phyloglm', 'gls', 'pglmm', 'pglmm_compare', binaryPGLMM', and 'communityPGLMM' (family = gaussian and binomial).
 #' 
-#' \strong{LMM (lmerMod), GLMM (glmerMod), PGLMM (pglmm, pglmm_compare, binaryPGLMM and communityPGLMM):}
+#' \strong{LMM (lmerMod), GLMM (glmerMod, glmmTMB), PGLMM (pglmm, pglmm_compare, binaryPGLMM and communityPGLMM):}
 #' 
 #' \deqn{partial R2 = 1 - var(y - y.fitted.f)/var(y - y.fitted.r)}
 #' 
@@ -227,10 +227,10 @@ R2_pred <- function(mod = NULL, mod.r = NULL, gaussian.pred = "tip_rm", phy = NU
     if (class(mod)[1] == "merModLmerTest") 
         class(mod) <- "lmerMod"
     
-    if (!is.element(class(mod)[1], c("lm", "glm", "lmerMod", "glmerMod", "phylolm", 
+    if (!is.element(class(mod)[1], c("lm", "glm", "lmerMod", "glmerMod", "glmmTMB", "phylolm", 
                                      "gls", "pglmm", "pglmm_compare", "binaryPGLMM",
                                      "communityPGLMM"))) {
-        stop("mod must be class one of classes lm, glm, lmerMod, glmerMod, phylolm (but not phyloglm), gls, pglmm, pglmm_compare, binaryPGLMM, communityPGLMM.")
+        stop("mod must be class one of classes lm, glm, lmerMod, glmerMod, glmmTMB, phylolm (but not phyloglm), gls, pglmm, pglmm_compare, binaryPGLMM, communityPGLMM.")
     }
     
     if (class(mod)[1] == "lm") {
@@ -285,6 +285,20 @@ R2_pred <- function(mod = NULL, mod.r = NULL, gaussian.pred = "tip_rm", phy = NU
         return(R2_pred.glmerMod(mod, mod.r)[1])
     }
     
+    if (class(mod)[1] == "glmmTMB") {
+        if (!is.object(mod.r)) {
+            y <- model.frame(mod)[, 1]
+            mod.r <- glm(y ~ 1, family = family(mod)[[1]])
+        }
+        if (!is.element(class(mod.r)[1], c("glmmTMB", "glm"))) {
+            stop("mod.r must be class glmmTMB or glm.")
+        }
+        if (family(mod)[[1]] != family(mod.r)[[1]]) {
+            stop("Sorry, but mod and mod.r must be from the same family of distributions.")
+        }
+        return(R2_pred.glmmTMB(mod, mod.r)[1])
+    }
+
     if (class(mod)[1] == "phylolm") {
         if (!is.object(mod.r)) {
             y <- mod$y
@@ -388,6 +402,15 @@ R2_pred.lmerMod <- function(mod = NA, mod.r = NA) {
 }
 
 R2_pred.glmerMod <- function(mod = NA, mod.r = NA) {
+  y <- model.frame(mod)[, 1]
+  if(is.matrix(y)) y <- y[,1]/rowSums(y)
+  SSE.pred <- var(y - fitted(mod))
+  SSE.pred.r <- var(y - stats::fitted(mod.r))
+  R2_pred <- 1 - SSE.pred/SSE.pred.r
+  return(R2_pred)
+}
+
+R2_pred.glmmTMB <- function(mod = NA, mod.r = NA) {
   y <- model.frame(mod)[, 1]
   if(is.matrix(y)) y <- y[,1]/rowSums(y)
   SSE.pred <- var(y - fitted(mod))
