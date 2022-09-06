@@ -278,7 +278,11 @@ R2_lik <- function(mod = NULL, mod.r = NULL) {
 
       if (!is.object(mod.r)) {
         y <- mod$Y
-        mod.r <- glm(y ~ 1, family = mod$family)
+        if(mod$family == "binomial" & any(y < 0 | y > 1)){
+          mod.r <- glm(cbind(y, mod$size-y) ~ 1, family = "binomial")
+        }else{
+          mod.r <- glm(y ~ 1, family = mod$famil)
+        }
       }
       if (!is.element(class(mod.r)[1], c("communityPGLMM", "pglmm", "pglmm_compare", "glm", "lm"))) {
         stop("mod.r must be class communityPGLMM, pglmm, pglmm_compare, glm, or lm.")

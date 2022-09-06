@@ -313,7 +313,11 @@ R2_pred <- function(mod = NULL, mod.r = NULL, gaussian.pred = "tip_rm", phy = NU
         if (mod$family == "gaussian") {
           mod.r <- lm(y ~ 1)
         }else{
-          mod.r <- glm(y ~ 1, family = mod$family)
+          if(any(y < 0 | y > 1)){
+            mod.r <- glm(cbind(y, mod$size-y) ~ 1, family = "binomial")
+          }else{
+            mod.r <- glm(y ~ 1, family = "binomial")
+          }
         }
       }
       
@@ -333,7 +337,11 @@ R2_pred <- function(mod = NULL, mod.r = NULL, gaussian.pred = "tip_rm", phy = NU
     if (class(mod)[1] == "binaryPGLMM") {
       if (!is.object(mod.r)) {
         y <- mod$y
-        mod.r <- glm(y ~ 1, family = "binomial")
+        if(any(y < 0 | y > 1)){
+          mod.r <- glm(cbind(y, mod$size-y) ~ 1, family = "binomial")
+        }else{
+          mod.r <- glm(y ~ 1, family = "binomial")
+        }
       }
       if (!is.element(class(mod.r)[1], c("binaryPGLMM", "glm"))) {
         stop("mod.r must be class binaryPGLMM or glm.")

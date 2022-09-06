@@ -328,7 +328,11 @@ R2_resid <- function(mod = NULL, mod.r = NULL, sigma2_d = c("s2w", "NS", "rNS"),
       }else{
         if (!is.object(mod.r)) {
           y <- mod$Y
-          mod.r <- glm(y ~ 1, family = mod$family)
+          if(any(y < 0 | y > 1)){
+            mod.r <- glm(cbind(y, mod$size-y) ~ 1, family = "binomial")
+          }else{
+            mod.r <- glm(y ~ 1, family = "binomial")
+          }
         }
         return(R2_resid.pglmm_compare.glm(mod, mod.r, sigma2_d = sigma2_d))
       }
@@ -341,8 +345,12 @@ R2_resid <- function(mod = NULL, mod.r = NULL, sigma2_d = c("s2w", "NS", "rNS"),
     if (class(mod)[1] == "binaryPGLMM") {
         if (!is.object(mod.r)) {
             y <- mod$y
-            mod.r <- glm(y ~ 1, family = "binomial")
-        }
+            if(any(y < 0 | y > 1)){
+              mod.r <- glm(cbind(y, mod$size-y) ~ 1, family = "binomial")
+            }else{
+              mod.r <- glm(y ~ 1, family = "binomial")
+            }
+         }
         if (!is.element(class(mod.r)[1], c("binaryPGLMM", "glm"))) {
             stop("mod.r must be class binaryPGLMM or glm.")
         }
