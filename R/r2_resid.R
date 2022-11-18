@@ -441,12 +441,12 @@ R2_resid.lmerMod <- function(mod = NULL, mod.r = NULL) {
     vcov <- as.data.frame(lme4::VarCorr(mod))$vcov
     sigma2 <- vcov[length(vcov)]
     
-    if (class(mod.r) == "lmerMod") {
+    if (inherits(mod.r, "lmerMod")) {
         vcov.r <- as.data.frame(lme4::VarCorr(mod.r))$vcov
         sigma2.r <- vcov.r[length(vcov.r)]
     }
     
-    if (class(mod.r) == "lm") {
+    if (inherits(mod.r, "lm")) {
         sigma2.r <- (n - p.r)/n * stats::sigma(mod.r)^2
     }
     
@@ -573,7 +573,7 @@ R2_resid.phylolm <- function(mod = NULL, mod.r = NULL, phy = NULL) {
     scal <- sum(phy.f$edge.length)/n
     sigma2 <- mod$sigma2
     
-    if (class(mod.r) == "phylolm") {
+    if (inherits(mod.r, "phylolm")) {
         if (!mod.r$model %in% c("lambda", "OUrandomRoot", "OUfixedRoot", "BM", "kappa", 
             "delta", "EB", "trend")) {
             stop("Evolution model not supported yet.")
@@ -588,7 +588,7 @@ R2_resid.phylolm <- function(mod = NULL, mod.r = NULL, phy = NULL) {
         sigma2.r <- mod.r$sigma2
     }
     
-    if (class(mod.r) == "lm") {
+    if (inherits(mod.r, "lm")) {
         X.r <- model.matrix(mod.r)
         p.r <- dim(X.r)[2]
         scal.r <- 1
@@ -620,7 +620,7 @@ R2_resid.gls.phylo <- function(mod = NULL, mod.r = NULL) {
   scal <- sum(phy.f$edge.length)/n
   sigma2 <- mod$sigma^2
   
-  if (class(mod.r) == "gls") {
+  if (inherits(mod.r, "gls")) {
     
     cormatrix.r <- nlme::corMatrix(mod.r$modelStruct$corStruct)
     if(length(cormatrix.r)>1) {
@@ -639,7 +639,7 @@ R2_resid.gls.phylo <- function(mod = NULL, mod.r = NULL) {
     sigma2.r <- mod.r$sigma^2
   }
   
-  if (class(mod.r) == "lm") {
+  if (inherits(mod.r, "lm")) {
     X.r <- model.matrix(mod.r)
     p.r <- dim(X.r)[2]
     scal.r <- 1

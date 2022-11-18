@@ -432,7 +432,7 @@ R2_pred.phylolm <- function(mod = NULL, mod.r = NULL, phy = NULL) {
   SSE.pred <- var(y - Yhat)
   
   # reduced model
-  if (class(mod.r) == "phylolm") {
+  if (inherits(mod.r, "phylolm")) {
     if (!mod.r$model %in% c("lambda", "OUrandomRoot", "OUfixedRoot", "BM", "kappa", 
                             "delta", "EB", "trend")) {
       stop("Evolution model not supported yet.")
@@ -453,7 +453,7 @@ R2_pred.phylolm <- function(mod = NULL, mod.r = NULL, phy = NULL) {
     Yhat.r <- as.numeric(stats::fitted(mod.r) + Rhat.r)
   }
   
-  if (class(mod.r) == "lm") {
+  if (inherits(mod.r, "lm")) {
     Yhat.r <- stats::fitted(mod.r)
   }
   
@@ -490,7 +490,7 @@ R2_pred.gls <- function(mod = NULL, mod.r = NULL) {
   SSE.pred <- var(y - Yhat)
   
   # reduced model
-  if (class(mod.r) == "gls") {
+  if (inherits(mod.r, "gls")) {
 
     V.r <- nlme::corMatrix(mod.r$modelStruct$corStruct)
     if(length(V.r)>1) {
@@ -514,7 +514,7 @@ R2_pred.gls <- function(mod = NULL, mod.r = NULL) {
     Yhat.r <- as.numeric(fitted(mod.r) + Rhat.r)
   }
   
-  if (class(mod.r) == "lm") {
+  if (inherits(mod.r, "lm")) {
     Yhat.r <- stats::fitted(mod.r)
   }
   
@@ -565,7 +565,7 @@ R2_pred.pglmm.glm <- function(mod = NULL, mod.r = NULL) {
   if (any(is.element(class(mod.r), c("pglmm", "pglmm_compare","communityPGLMM")))){
     SSE.pred.r <- var(mod.r$Y - mod.r$mu)
   }
-  if (any(class(mod.r) == "glm")) {
+  if (inherits(mod.r, "glm")) {
     Yhat.r <- stats::fitted(mod.r)
     SSE.pred.r <- var(mod$Y - Yhat.r)
   }
@@ -585,7 +585,7 @@ R2_pred.pglmm.gaussian <- function(mod = NULL, mod.r = NULL, gaussian.pred = gau
         SSE.pred.r <- as.numeric(var(mod.r$Y - Yhat.r))
     }
     
-    if (any(class(mod.r) == "lm")) {
+    if (inherits(mod.r, "lm")) {
         y.r <- model.frame(mod.r)[, 1]
         Yhat.r <- stats::fitted(mod.r)
         SSE.pred.r <- var(y.r - Yhat.r)
