@@ -7,3 +7,4 @@
 ^\.git$
 ^.*tar\.gz$
 ^joss
+^CRAN-SUBMISSION$
