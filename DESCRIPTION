@@ -12,7 +12,6 @@ Description: Three methods to calculate R2 for models with correlated errors,
 License: GPL-3
 Depends: R (>= 3.0), stats
 Encoding: UTF-8
-LazyData: true
 Imports: 
     lme4,
     phylolm (>= 2.6.2),
