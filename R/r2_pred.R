@@ -559,11 +559,13 @@ R2_pred.binaryPGLMM <- function(mod = NULL, mod.r = NULL) {
 
 R2_pred.pglmm.glm <- function(mod = NULL, mod.r = NULL) {
   # full model
-  SSE.pred <- var(mod$Y - mod$mu)
+  #SSE.pred <- var(mod$Y - mod$mu)
+  SSE.pred <- var(mod$Y - mod$H)
 
   # reduced model
   if (any(is.element(class(mod.r), c("pglmm", "pglmm_compare","communityPGLMM")))){
-    SSE.pred.r <- var(mod.r$Y - mod.r$mu)
+    #SSE.pred.r <- var(mod.r$Y - mod.r$mu)
+    SSE.pred.r <- var(mod.r$Y - mod.r$H)
   }
   if (inherits(mod.r, "glm")) {
     Yhat.r <- stats::fitted(mod.r)
