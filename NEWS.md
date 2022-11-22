@@ -1,3 +1,7 @@
+# rr2 1.1.0
+
+* Fixed several bugs when working with different models.
+
 # rr2 1.0.3
 
 * Use `phyr`'s new function styles (underscore instead of dot in function names).
