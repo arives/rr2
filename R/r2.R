@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
 #' The rr2 package provides methods to calculate R2 for models with correlated errors, 
 #' including Phylogenetic GLS, Phylogenetic Logistic Regression, LMMs, GLMM, and PGLMM.
 #'  
