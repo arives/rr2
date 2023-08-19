@@ -1,8 +1,8 @@
-citHeader("To cite rr2 in publications use:")
 
-citEntry(entry = "Article",
+bibentry(
+  bibtype  = "Article",
   title        = "R^2s for Correlated Data: Phylogenetic Models, LMMs, and GLMMs",
-  author       = personList(as.person("Anthony R. Ives")),
+  author       = c(as.person("Anthony R. Ives")),
   journal      = "Systematic Biology",
   year         = "2018",
   volume       = "",
@@ -17,10 +17,10 @@ citEntry(entry = "Article",
         "https://doi.org/10.1093/sysbio/syy060")
 )
 
-citEntry(entry = "Article",
+bibentry(
+  bibtype  = "Article",
   title        = "rr2: An R package to calculate R^2s for regression models",
-  author       = personList(as.person("Anthony R. Ives"),
-                            as.person("Daijiang Li")),
+  author       = c(as.person("Anthony R. Ives"), as.person("Daijiang Li")),
   journal      = "The Journal of Open Source Software",
   year         = "2018",
   volume       = "3",
