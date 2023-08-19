@@ -21,6 +21,7 @@
 #'  
 #' @docType package
 #' @name rr2
+#' @aliases rr2-package
 NULL
 
 #' Calculate R2_lik, R2_resid, and R2_pred
